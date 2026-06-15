@@ -11,6 +11,7 @@ import ImpressIssuePage from './pages/ImpressIssuePage';
 import ImpressSettlementPage from './pages/ImpressSettlementPage';
 import ProtectedRoute from "./components/ProtectedRoute"
 import NetExpenditurePage from './pages/NetExpenditurePage';
+import NetAllocationPage from './pages/NetAllocationPage';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -60,11 +61,8 @@ function Layout() {
          <Route path="/opening-balance" element={<ProtectedRoute><OpeningBalancePage /></ProtectedRoute>} />
          <Route path="/impress-issue" element={<ProtectedRoute><ImpressIssuePage /></ProtectedRoute>} />
         <Route path="/impress-settlement" element={<ProtectedRoute><ImpressSettlementPage /></ProtectedRoute>} />
-     <Route path="/net-expenditure" element={
-  <ProtectedRoute>
-    <NetExpenditurePage />
-  </ProtectedRoute>
-} />
+        <Route path="/net-expenditure" element={<ProtectedRoute><NetExpenditurePage /></ProtectedRoute>} />
+        <Route path="/net-allocation" element={<ProtectedRoute><NetAllocationPage /></ProtectedRoute>} />
       </Routes>
 
 

@@ -459,6 +459,7 @@ const SupplementaryPanel = () => {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Head</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Program</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Project</th>
+                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Object</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR66P</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR66M</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Supplementary</th>
@@ -490,6 +491,7 @@ const SupplementaryPanel = () => {
                     <td className="px-4 py-3 text-sm text-gray-900">{record.head || '-'}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{record.program || '-'}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{record.project || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{record.object || '-'}</td>
                     <td className="px-4 py-3 text-sm text-right">Rs{formatNumber(record.fr66p)}</td>
                     <td className="px-4 py-3 text-sm text-right">Rs{formatNumber(record.fr66m)}</td>
                     <td className="px-4 py-3 text-sm text-right font-semibold text-blue-600">

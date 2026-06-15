@@ -330,13 +330,22 @@ const Sidebar = () => {
             <span className="text-sm">Impress Settlement</span>
           </Link>
         </div>
-
+        {/* net expenditure */}
         <div>
-         
-<Link to="/net-expenditure" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-  <TrendingUp size={18} />
-  <span className="text-sm">Net Expenditure</span>
-</Link>
+
+          <Link to="/net-expenditure" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">Net Expenditure</span>
+          </Link>
+        </div>
+
+        {/* net allocation */}
+        <div>
+
+          <Link to="/net-allocation" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">Net Allocation</span>
+          </Link>
         </div>
 
 
