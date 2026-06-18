@@ -460,8 +460,8 @@ const SupplementaryPanel = () => {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Program</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Project</th>
                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Object</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR66P</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR66M</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR30P</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR30M</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Supplementary</th>
                 <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Actions</th>
               </tr>
@@ -656,7 +656,7 @@ const SupplementaryPanel = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">FR66P (Rs)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">FR30P (Rs)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -666,7 +666,7 @@ const SupplementaryPanel = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">FR66M (Rs)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">FR30M (Rs)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -776,7 +776,7 @@ const SupplementaryPanel = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">FR66P (Rs)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">FR30P (Rs)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -786,7 +786,7 @@ const SupplementaryPanel = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">FR66M (Rs)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">FR30M (Rs)</label>
                 <input
                   type="number"
                   step="0.01"

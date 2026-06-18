@@ -348,6 +348,24 @@ const Sidebar = () => {
           </Link>
         </div>
 
+          {/* wop */}
+        <div>
+
+          <Link to="/wop" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">wop</span>
+          </Link>
+        </div>
+
+           {/* coeow */}
+        <div>
+
+          <Link to="/coeow" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">COEOW</span>
+          </Link>
+        </div>
+
 
         {/* Supplementary */}
         <div>
