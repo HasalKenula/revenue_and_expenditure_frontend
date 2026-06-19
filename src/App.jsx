@@ -14,6 +14,7 @@ import NetExpenditurePage from './pages/NetExpenditurePage';
 import NetAllocationPage from './pages/NetAllocationPage';
 import WOPPage from './pages/WOPPage';
 import COEOWPage from './pages/COEOWPage';
+import COEHWPage from './pages/COEHWPage';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -67,6 +68,7 @@ function Layout() {
         <Route path="/net-allocation" element={<ProtectedRoute><NetAllocationPage /></ProtectedRoute>} />
          <Route path="/wop" element={<ProtectedRoute><WOPPage /></ProtectedRoute>} />
           <Route path="/coeow" element={<ProtectedRoute><COEOWPage /></ProtectedRoute>} />
+          <Route path="/coehw" element={<ProtectedRoute><COEHWPage /></ProtectedRoute>} />
       </Routes>
 
 

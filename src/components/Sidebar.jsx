@@ -367,6 +367,17 @@ const Sidebar = () => {
         </div>
 
 
+            {/* coehw */}
+        <div>
+
+          <Link to="/coehw" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">COEHW</span>
+          </Link>
+        </div>
+
+
+
         {/* Supplementary */}
         <div>
           <Link to="/supplementary">
