@@ -377,6 +377,17 @@ const Sidebar = () => {
         </div>
 
 
+      
+            {/* RCExpenditure */}
+        <div>
+
+          <Link to="/rc" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">RCExpenditure</span>
+          </Link>
+        </div>
+
+
 
         {/* Supplementary */}
         <div>
