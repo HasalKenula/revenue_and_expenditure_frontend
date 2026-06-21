@@ -16,6 +16,7 @@ import WOPPage from './pages/WOPPage';
 import COEOWPage from './pages/COEOWPage';
 import COEHWPage from './pages/COEHWPage';
 import RCExpenditurePage from './pages/RCExpenditurePage';
+import ODDPage from './pages/ODDPage';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -71,6 +72,7 @@ function Layout() {
           <Route path="/coeow" element={<ProtectedRoute><COEOWPage /></ProtectedRoute>} />
           <Route path="/coehw" element={<ProtectedRoute><COEHWPage /></ProtectedRoute>} />
           <Route path="/rc" element={<ProtectedRoute><RCExpenditurePage /></ProtectedRoute>} />
+          <Route path="/odd" element={<ProtectedRoute><ODDPage /></ProtectedRoute>} />
       </Routes>
 
 
