@@ -12,6 +12,10 @@ import ImpressSettlementPage from './pages/ImpressSettlementPage';
 import ProtectedRoute from "./components/ProtectedRoute"
 import NetExpenditurePage from './pages/NetExpenditurePage';
 import NetAllocationPage from './pages/NetAllocationPage';
+import WOPPage from './pages/WOPPage';
+import COEOWPage from './pages/COEOWPage';
+import COEHWPage from './pages/COEHWPage';
+import RCExpenditurePage from './pages/RCExpenditurePage';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -63,6 +67,10 @@ function Layout() {
         <Route path="/impress-settlement" element={<ProtectedRoute><ImpressSettlementPage /></ProtectedRoute>} />
         <Route path="/net-expenditure" element={<ProtectedRoute><NetExpenditurePage /></ProtectedRoute>} />
         <Route path="/net-allocation" element={<ProtectedRoute><NetAllocationPage /></ProtectedRoute>} />
+         <Route path="/wop" element={<ProtectedRoute><WOPPage /></ProtectedRoute>} />
+          <Route path="/coeow" element={<ProtectedRoute><COEOWPage /></ProtectedRoute>} />
+          <Route path="/coehw" element={<ProtectedRoute><COEHWPage /></ProtectedRoute>} />
+          <Route path="/rc" element={<ProtectedRoute><RCExpenditurePage /></ProtectedRoute>} />
       </Routes>
 
 
