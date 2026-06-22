@@ -407,6 +407,16 @@ const Sidebar = () => {
           </Link>
         </div>
 
+        
+             {/* Journal Summary */}
+        <div>
+
+          <Link to="/journal" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">Journal Summary</span>
+          </Link>
+        </div>
+
 
 
 

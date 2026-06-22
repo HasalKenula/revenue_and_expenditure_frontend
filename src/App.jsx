@@ -18,6 +18,7 @@ import COEHWPage from './pages/COEHWPage';
 import RCExpenditurePage from './pages/RCExpenditurePage';
 import ODDPage from './pages/ODDPage';
 import ODSPage from './pages/ODSPage';
+import JournalSummaryPage from './pages/JournalSummaryPage';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -75,6 +76,7 @@ function Layout() {
           <Route path="/rc" element={<ProtectedRoute><RCExpenditurePage /></ProtectedRoute>} />
           <Route path="/odd" element={<ProtectedRoute><ODDPage /></ProtectedRoute>} />
           <Route path="/ods" element={<ProtectedRoute><ODSPage /></ProtectedRoute>} />
+          <Route path="/journal" element={<ProtectedRoute><JournalSummaryPage /></ProtectedRoute>} />
       </Routes>
 
 
