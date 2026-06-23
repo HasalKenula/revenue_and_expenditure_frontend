@@ -405,7 +405,7 @@ const ODSPanel = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-5 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <p className="text-sm opacity-90">Total Records</p>
@@ -431,7 +431,7 @@ const ODSPanel = () => {
             {selectedMonth ? monthNames[selectedMonth] : '-'} {selectedYear}
           </p>
         </div>
-      </div>
+      </div> */}
 
       {/* Filters Display */}
       {(appliedFilters.year || appliedFilters.month) && (
@@ -551,7 +551,7 @@ const ODSPanel = () => {
                     <td className="px-2 py-2 text-gray-700">{record.object}</td>
                     <td className="px-2 py-2 text-gray-700">{record.sub_project}</td>
                     <td className="px-2 py-2 text-gray-700">{record.sub_object}</td>
-                    <td className="px-2 py-2 text-right font-medium text-green-600">
+                    <td className="px-2 py-2 text-right font-medium text-gray-600">
                       Rs{formatNumber(record.surcharge_amount)}
                     </td>
                   </tr>
@@ -562,7 +562,7 @@ const ODSPanel = () => {
               <tfoot className="bg-gray-50 border-t border-gray-200">
                 <tr className="font-semibold">
                   <td colSpan="7" className="px-2 py-3 text-right">Total:</td>
-                  <td className="px-2 py-3 text-right text-green-700">
+                  <td className="px-2 py-3 text-right text-gray-600">
                     Rs{formatNumber(totals.total_surcharge)}
                   </td>
                 </tr>

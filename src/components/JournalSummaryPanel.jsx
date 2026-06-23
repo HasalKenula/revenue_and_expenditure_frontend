@@ -685,7 +685,7 @@ const JournalSummaryPanel = () => {
             </div>
 
             {/* Summary Cards - Compact */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-1.5">
+            {/* <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-1.5">
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-1.5 text-white">
                     <p className="text-[7px] opacity-90">Records</p>
                     <p className="text-xs font-bold">{totals.total_records}</p>
@@ -765,7 +765,7 @@ const JournalSummaryPanel = () => {
                     <p className="text-[7px] opacity-90">Exp (DR-CR)</p>
                     <p className="text-xs font-bold">Rs{formatNumber(totals.total_expenditure_dr_cr)}</p>
                 </div>
-            </div>
+            </div> */}
 
             {/* Filters Display */}
             {(appliedFilters.year || appliedFilters.month) && (
@@ -852,9 +852,9 @@ const JournalSummaryPanel = () => {
                                 <th className="px-1 py-1.5 text-right font-semibold text-gray-700">Com (CR)</th>
                                 <th className="px-1 py-1.5 text-right font-semibold text-gray-700">Adv (CR)</th>
                                 <th className="px-1 py-1.5 text-right font-semibold text-gray-700">PF (CR)</th>
-                                <th className="px-1 py-1.5 text-right font-semibold text-gray-700 bg-red-50">Total Debit</th>
-                                <th className="px-1 py-1.5 text-right font-semibold text-gray-700 bg-emerald-50">Total Credit</th>
-                                <th className="px-1 py-1.5 text-right font-semibold text-gray-700 bg-rose-50">Exp (DR-CR)</th>
+                                <th className="px-1 py-1.5 text-right font-semibold text-gray-700 ">Total Debit</th>
+                                <th className="px-1 py-1.5 text-right font-semibold text-gray-700 ">Total Credit</th>
+                                <th className="px-1 py-1.5 text-right font-semibold text-gray-700 ">Exp (DR-CR)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -885,21 +885,21 @@ const JournalSummaryPanel = () => {
                                 paginatedRecords.map((record, index) => (
                                     <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
                                         <td className="px-1 py-1.5 font-medium text-gray-900 sticky left-0 bg-white">{record.trno || '-'}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-green-600">Rs{formatNumber(record.expenditure)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-purple-600">Rs{formatNumber(record.refund_revenue)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-orange-600">Rs{formatNumber(record.deposit_dr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-teal-600">Rs{formatNumber(record.commercial_dr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-pink-600">Rs{formatNumber(record.advance_dr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-indigo-600">Rs{formatNumber(record.prov_fund_dr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-yellow-600">Rs{formatNumber(record.surcharge_cr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-cyan-600">Rs{formatNumber(record.revenue_cr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-amber-600">Rs{formatNumber(record.deposit_cr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-lime-600">Rs{formatNumber(record.commercial_cr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-violet-600">Rs{formatNumber(record.advance_cr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-medium text-fuchsia-600">Rs{formatNumber(record.prov_fund_cr)}</td>
-                                        <td className="px-1 py-1.5 text-right font-bold text-red-700 bg-red-50">Rs{formatNumber(record.total_debit)}</td>
-                                        <td className="px-1 py-1.5 text-right font-bold text-emerald-700 bg-emerald-50">Rs{formatNumber(record.total_credit)}</td>
-                                        <td className={`px-1 py-1.5 text-right font-bold bg-rose-50 ${parseFloat(record.expenditure_dr_cr) >= 0 ? 'text-rose-700' : 'text-red-700'}`}>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.expenditure)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.refund_revenue)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.deposit_dr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.commercial_dr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.advance_dr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.prov_fund_dr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.surcharge_cr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.revenue_cr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.deposit_cr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.commercial_cr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.advance_cr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-medium text-gray-600">{formatNumber(record.prov_fund_cr)}</td>
+                                        <td className="px-1 py-1.5 text-right font-bold text-gray-600 ">{formatNumber(record.total_debit)}</td>
+                                        <td className="px-1 py-1.5 text-right font-bold text-gray-600 ">{formatNumber(record.total_credit)}</td>
+                                        <td className={`px-1 py-1.5 text-right font-bold  ${parseFloat(record.expenditure_dr_cr) >= 0 ? 'text-gray-600' : 'text-gray-600'}`}>
                                             Rs{formatNumber(record.expenditure_dr_cr)}
                                         </td>
                                     </tr>
@@ -910,21 +910,21 @@ const JournalSummaryPanel = () => {
                             <tfoot className="bg-gray-50 border-t border-gray-200">
                                 <tr className="font-semibold">
                                     <td className="px-1 py-1.5 text-right">Total:</td>
-                                    <td className="px-1 py-1.5 text-right text-green-700">Rs{formatNumber(totals.total_expenditure)}</td>
-                                    <td className="px-1 py-1.5 text-right text-purple-700">Rs{formatNumber(totals.total_refund_revenue)}</td>
-                                    <td className="px-1 py-1.5 text-right text-orange-700">Rs{formatNumber(totals.total_deposit_dr)}</td>
-                                    <td className="px-1 py-1.5 text-right text-teal-700">Rs{formatNumber(totals.total_commercial_dr)}</td>
-                                    <td className="px-1 py-1.5 text-right text-pink-700">Rs{formatNumber(totals.total_advance_dr)}</td>
-                                    <td className="px-1 py-1.5 text-right text-indigo-700">Rs{formatNumber(totals.total_prov_fund_dr)}</td>
-                                    <td className="px-1 py-1.5 text-right text-yellow-700">Rs{formatNumber(totals.total_surcharge_cr)}</td>
-                                    <td className="px-1 py-1.5 text-right text-cyan-700">Rs{formatNumber(totals.total_revenue_cr)}</td>
-                                    <td className="px-1 py-1.5 text-right text-amber-700">Rs{formatNumber(totals.total_deposit_cr)}</td>
-                                    <td className="px-1 py-1.5 text-right text-lime-700">Rs{formatNumber(totals.total_commercial_cr)}</td>
-                                    <td className="px-1 py-1.5 text-right text-violet-700">Rs{formatNumber(totals.total_advance_cr)}</td>
-                                    <td className="px-1 py-1.5 text-right text-fuchsia-700">Rs{formatNumber(totals.total_prov_fund_cr)}</td>
-                                    <td className="px-1 py-1.5 text-right font-bold text-red-700 bg-red-50">Rs{formatNumber(totals.total_debit)}</td>
-                                    <td className="px-1 py-1.5 text-right font-bold text-emerald-700 bg-emerald-50">Rs{formatNumber(totals.total_credit)}</td>
-                                    <td className={`px-1 py-1.5 text-right font-bold bg-rose-50 ${totals.total_expenditure_dr_cr >= 0 ? 'text-rose-700' : 'text-red-700'}`}>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_expenditure)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_refund_revenue)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_deposit_dr)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_commercial_dr)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_advance_dr)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_prov_fund_dr)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_surcharge_cr)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_revenue_cr)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_deposit_cr)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_commercial_cr)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_advance_cr)}</td>
+                                    <td className="px-1 py-1.5 text-right text-gray-600">{formatNumber(totals.total_prov_fund_cr)}</td>
+                                    <td className="px-1 py-1.5 text-right font-bold text-gray-600 ">{formatNumber(totals.total_debit)}</td>
+                                    <td className="px-1 py-1.5 text-right font-bold text-gray-600 ">{formatNumber(totals.total_credit)}</td>
+                                    <td className={`px-1 py-1.5 text-right font-bold  ${totals.total_expenditure_dr_cr >= 0 ? 'text-gray-600' : 'text-gray-600'}`}>
                                         Rs{formatNumber(totals.total_expenditure_dr_cr)}
                                     </td>
                                 </tr>
