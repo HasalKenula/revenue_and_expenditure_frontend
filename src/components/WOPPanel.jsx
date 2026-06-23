@@ -396,7 +396,7 @@ const WOPPanel = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-5 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <p className="text-sm opacity-90">Total DR</p>
@@ -420,7 +420,7 @@ const WOPPanel = () => {
           </div>
           <p className="text-2xl font-bold mt-2">{totalRecords}</p>
         </div>
-      </div>
+      </div> */}
 
       {/* Active Filters Display */}
       {(appliedFilters.year || appliedFilters.month) && (
@@ -529,8 +529,8 @@ const WOPPanel = () => {
                 paginatedRecords.map((record, index) => (
                   <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
                     <td className="px-4 py-3 font-medium text-gray-900">{record.trno}</td>
-                    <td className="px-4 py-3 text-right text-green-600 font-medium">{formatNumber(record.dr_amount)}</td>
-                    <td className="px-4 py-3 text-right text-red-600 font-medium">{formatNumber(record.cr_amount)}</td>
+                    <td className="px-4 py-3 text-right text-gray-600 font-medium">{formatNumber(record.dr_amount)}</td>
+                    <td className="px-4 py-3 text-right text-gray-600 font-medium">{formatNumber(record.cr_amount)}</td>
                   </tr>
                 ))
               )}
@@ -539,8 +539,8 @@ const WOPPanel = () => {
               <tfoot className="bg-gray-50 border-t border-gray-200">
                 <tr className="font-semibold">
                   <td className="px-4 py-3 text-right">Total:</td>
-                  <td className="px-4 py-3 text-right text-green-700">{formatNumber(totals.total_dr)}</td>
-                  <td className="px-4 py-3 text-right text-red-700">{formatNumber(totals.total_cr)}</td>
+                  <td className="px-4 py-3 text-right text-gray-600">{formatNumber(totals.total_dr)}</td>
+                  <td className="px-4 py-3 text-right text-gray-600">{formatNumber(totals.total_cr)}</td>
                 </tr>
               </tfoot>
             )}
