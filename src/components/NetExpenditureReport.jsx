@@ -1281,7 +1281,7 @@ const handleExportPDF = () => {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2">
+            {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2">
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-2 text-white shadow-lg">
                     <p className="text-xs opacity-90">Allocation</p>
                     <p className="text-sm font-bold">Rs{formatNumber(totals.total_allocation)}</p>
@@ -1341,7 +1341,7 @@ const handleExportPDF = () => {
                     <p className="text-xs opacity-90">Balance</p>
                     <p className="text-sm font-bold">Rs{formatNumber(totals.total_balance)}</p>
                 </div>
-            </div>
+            </div> */}
 
             {/* Active Filters Display */}
             {(appliedFilters.head || appliedFilters.program || appliedFilters.project || appliedFilters.month) && (
