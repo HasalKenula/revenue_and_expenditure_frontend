@@ -19,6 +19,7 @@ import RCExpenditurePage from './pages/RCExpenditurePage';
 import ODDPage from './pages/ODDPage';
 import ODSPage from './pages/ODSPage';
 import JournalSummaryPage from './pages/JournalSummaryPage';
+import Register from './pages/Register';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -46,7 +47,7 @@ import JournalSummaryPage from './pages/JournalSummaryPage';
 
 function Layout() {
   const location= useLocation();
-  const showNavbar = [ "/login"].includes(location.pathname);
+  const showNavbar = [ "/login", "/register"].includes(location.pathname);
 
   return (
     <>
@@ -58,6 +59,7 @@ function Layout() {
         {/* public routes */}
         
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<Register />} />
        
         {/* protected routes */}
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
