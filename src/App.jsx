@@ -20,6 +20,7 @@ import ODDPage from './pages/ODDPage';
 import ODSPage from './pages/ODSPage';
 import JournalSummaryPage from './pages/JournalSummaryPage';
 import Register from './pages/Register';
+import MainJournalPage from './pages/MainJournalPage';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -79,6 +80,7 @@ function Layout() {
           <Route path="/odd" element={<ProtectedRoute><ODDPage /></ProtectedRoute>} />
           <Route path="/ods" element={<ProtectedRoute><ODSPage /></ProtectedRoute>} />
           <Route path="/journal" element={<ProtectedRoute><JournalSummaryPage /></ProtectedRoute>} />
+          <Route path="/main_journal" element={<ProtectedRoute><MainJournalPage /></ProtectedRoute>} />
       </Routes>
 
 
