@@ -427,6 +427,16 @@ const Sidebar = () => {
         </div>
 
 
+         {/* main imprest balace  */}
+        <div>
+
+          <Link to="/imprestBalance" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">Imprest Balance</span>
+          </Link>
+        </div>
+
+
 
 
         {/* Supplementary */}
