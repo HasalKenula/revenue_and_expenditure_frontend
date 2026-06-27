@@ -22,6 +22,7 @@ import JournalSummaryPage from './pages/JournalSummaryPage';
 import Register from './pages/Register';
 import MainJournalPage from './pages/MainJournalPage';
 import ImprestBalancePage from './pages/ImprestBalancePage';
+import MaintenancePage from './pages/MaintenancePage';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -83,6 +84,7 @@ function Layout() {
           <Route path="/journal" element={<ProtectedRoute><JournalSummaryPage /></ProtectedRoute>} />
           <Route path="/main_journal" element={<ProtectedRoute><MainJournalPage /></ProtectedRoute>} />
           <Route path="/imprestBalance" element={<ProtectedRoute><ImprestBalancePage /></ProtectedRoute>} />
+          <Route path="/allocation_balance" element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
       </Routes>
 
 

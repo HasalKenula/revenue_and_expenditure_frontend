@@ -436,6 +436,16 @@ const Sidebar = () => {
           </Link>
         </div>
 
+        
+         {/* Allocation  balace  */}
+        <div>
+
+          <Link to="/allocation_balance" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">Allocation Balance</span>
+          </Link>
+        </div>
+
 
 
 
