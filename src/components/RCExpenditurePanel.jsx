@@ -468,7 +468,7 @@ const RCExpenditurePanel = () => {
       )}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-5 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <p className="text-sm opacity-90">Total Heads</p>
@@ -502,7 +502,7 @@ const RCExpenditurePanel = () => {
             {selectedMonth ? monthNames[selectedMonth] : 'All'}
           </p>
         </div>
-      </div>
+      </div> */}
 
       {/* Filters Display */}
       {(appliedFilters.year || appliedFilters.month) && (
@@ -627,7 +627,7 @@ const RCExpenditurePanel = () => {
                         const totalKey = `${key}_total`;
                         const value = record[totalKey] || 0;
                         return (
-                          <td key={key} className={`px-2 py-2 text-right ${isTotalRow ? 'text-blue-600' : 'text-gray-900'}`}>
+                          <td key={key} className={`px-2 py-2 text-right ${isTotalRow ? 'text-gray-600' : 'text-gray-900'}`}>
                             {formatNumber(value)}
                           </td>
                         );

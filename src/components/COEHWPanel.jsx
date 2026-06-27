@@ -451,7 +451,7 @@ const COEHWPanel = () => {
       )}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-5 text-white shadow-lg">
           <div className="flex items-center justify-between">
             <p className="text-sm opacity-90">Total Heads</p>
@@ -485,7 +485,7 @@ const COEHWPanel = () => {
             {appliedFilters.month ? monthNames[appliedFilters.month] : 'All'}
           </p>
         </div>
-      </div>
+      </div> */}
 
       {/* Active Filters Display */}
       {(appliedFilters.year || appliedFilters.month) && (
@@ -614,12 +614,12 @@ const COEHWPanel = () => {
                         const key = `month_${month}`;
                         const value = record[key] || 0;
                         return (
-                          <td key={month} className={`px-3 py-3 text-right ${isTotalRow ? 'text-blue-600' : 'text-gray-900'}`}>
+                          <td key={month} className={`px-3 py-3 text-right ${isTotalRow ? 'text-gray-600' : 'text-gray-900'}`}>
                             {formatNumber(value)}
                           </td>
                         );
                       })}
-                      <td className={`px-3 py-3 text-right font-bold ${isTotalRow ? 'text-purple-600 bg-gray-100' : 'text-gray-900'}`}>
+                      <td className={`px-3 py-3 text-right font-bold ${isTotalRow ? 'text-gray-600 bg-gray-100' : 'text-gray-900'}`}>
                         {formatNumber(record.total || 0)}
                       </td>
                     </tr>

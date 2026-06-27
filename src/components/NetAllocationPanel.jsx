@@ -1285,7 +1285,7 @@ const NetAllocationPanel = () => {
             )}
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-5 text-white shadow-lg">
                     <div className="flex items-center justify-between">
                         <p className="text-sm opacity-90">Total Allocation</p>
@@ -1325,7 +1325,7 @@ const NetAllocationPanel = () => {
                     </div>
                     <p className="text-2xl font-bold mt-2">Rs{formatNumber(totals.total_net_allocation)}</p>
                 </div>
-            </div>
+            </div> */}
 
             {/* Active Filters Display */}
             {(appliedFilters.head || appliedFilters.program || appliedFilters.project || appliedFilters.month) && (
@@ -1452,10 +1452,10 @@ const NetAllocationPanel = () => {
                                             <td className="px-4 py-3 text-gray-600">{record.subproject}</td>
                                         )}
                                         <td className="px-4 py-3 text-right text-gray-900">{formatNumber(record.allocation)}</td>
-                                        <td className="px-4 py-3 text-right text-green-600 font-medium">{formatNumber(record.fr66p)}</td>
-                                        <td className="px-4 py-3 text-right text-red-600 font-medium">{formatNumber(record.fr66m)}</td>
-                                        <td className="px-4 py-3 text-right text-yellow-600 font-medium">{formatNumber(record.supplementary)}</td>
-                                        <td className="px-4 py-3 text-right font-bold text-purple-600">{formatNumber(record.net_allocation)}</td>
+                                        <td className="px-4 py-3 text-right text-gray-600 font-medium">{formatNumber(record.fr66p)}</td>
+                                        <td className="px-4 py-3 text-right text-gray-600 font-medium">{formatNumber(record.fr66m)}</td>
+                                        <td className="px-4 py-3 text-right text-gray-600 font-medium">{formatNumber(record.supplementary)}</td>
+                                        <td className="px-4 py-3 text-right font-bold text-gray-600">{formatNumber(record.net_allocation)}</td>
                                     </tr>
                                 ))
                             )}
@@ -1464,11 +1464,11 @@ const NetAllocationPanel = () => {
                             <tfoot className="bg-gray-50 border-t border-gray-200">
                                 <tr className="font-semibold">
                                     <td colSpan={isObjectWiseView ? 1 : 2} className="px-4 py-3 text-right">Total:</td>
-                                    <td className="px-4 py-3 text-right text-blue-600">{formatNumber(totals.total_allocation)}</td>
-                                    <td className="px-4 py-3 text-right text-green-600">{formatNumber(totals.total_fr66p)}</td>
-                                    <td className="px-4 py-3 text-right text-red-600">{formatNumber(totals.total_fr66m)}</td>
-                                    <td className="px-4 py-3 text-right text-yellow-600">{formatNumber(totals.total_supplementary)}</td>
-                                    <td className="px-4 py-3 text-right font-bold text-purple-600">{formatNumber(totals.total_net_allocation)}</td>
+                                    <td className="px-4 py-3 text-right text-gray-600">{formatNumber(totals.total_allocation)}</td>
+                                    <td className="px-4 py-3 text-right text-gray-600">{formatNumber(totals.total_fr66p)}</td>
+                                    <td className="px-4 py-3 text-right text-gray-600">{formatNumber(totals.total_fr66m)}</td>
+                                    <td className="px-4 py-3 text-right text-gray-600">{formatNumber(totals.total_supplementary)}</td>
+                                    <td className="px-4 py-3 text-right font-bold text-gray-600">{formatNumber(totals.total_net_allocation)}</td>
                                 </tr>
                             </tfoot>
                         )}

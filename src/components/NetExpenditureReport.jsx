@@ -1281,7 +1281,7 @@ const handleExportPDF = () => {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2">
+            {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2">
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-2 text-white shadow-lg">
                     <p className="text-xs opacity-90">Allocation</p>
                     <p className="text-sm font-bold">Rs{formatNumber(totals.total_allocation)}</p>
@@ -1341,7 +1341,7 @@ const handleExportPDF = () => {
                     <p className="text-xs opacity-90">Balance</p>
                     <p className="text-sm font-bold">Rs{formatNumber(totals.total_balance)}</p>
                 </div>
-            </div>
+            </div> */}
 
             {/* Active Filters Display */}
             {(appliedFilters.head || appliedFilters.program || appliedFilters.project || appliedFilters.month) && (
@@ -1472,17 +1472,17 @@ const handleExportPDF = () => {
                                         <td className="px-2 py-2 font-medium text-gray-900">{record.object}</td>
                                         <td className="px-2 py-2 text-gray-600">{record.subproject}</td>
                                         <td className="px-2 py-2 text-right text-gray-900">{formatNumber(record.allocation)}</td>
-                                        <td className="px-2 py-2 text-right text-green-600">{formatNumber(record.fr66p)}</td>
-                                        <td className="px-2 py-2 text-right text-red-600">{formatNumber(record.fr66m)}</td>
-                                        <td className="px-2 py-2 text-right text-yellow-600">{formatNumber(record.supplementary)}</td>
-                                        <td className="px-2 py-2 text-right font-bold text-purple-600">{formatNumber(record.net_allocation)}</td>
-                                        <td className="px-2 py-2 text-right text-orange-600">{formatNumber(record.debit)}</td>
-                                        <td className="px-2 py-2 text-right text-amber-600">{formatNumber(record.other_dept_debit)}</td>
-                                        <td className="px-2 py-2 text-right text-teal-600">{formatNumber(record.surcharge)}</td>
-                                        <td className="px-2 py-2 text-right text-cyan-600">{formatNumber(record.other_dept_surcharge)}</td>
-                                        <td className="px-2 py-2 text-right font-bold text-indigo-600">{formatNumber(record.net_expenditure)}</td>
-                                        <td className="px-2 py-2 text-right font-bold text-violet-600">{formatNumber(record.cumulative_expenditure)}</td>
-                                        <td className={`px-2 py-2 text-right font-bold ${parseFloat(record.balance) >= 0 ? 'text-pink-600' : 'text-red-600'}`}>
+                                        <td className="px-2 py-2 text-right text-gray-600">{formatNumber(record.fr66p)}</td>
+                                        <td className="px-2 py-2 text-right text-gray-600">{formatNumber(record.fr66m)}</td>
+                                        <td className="px-2 py-2 text-right text-gray-600">{formatNumber(record.supplementary)}</td>
+                                        <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(record.net_allocation)}</td>
+                                        <td className="px-2 py-2 text-right text-gray-600">{formatNumber(record.debit)}</td>
+                                        <td className="px-2 py-2 text-right text-gray-600">{formatNumber(record.other_dept_debit)}</td>
+                                        <td className="px-2 py-2 text-right text-gray-600">{formatNumber(record.surcharge)}</td>
+                                        <td className="px-2 py-2 text-right text-gray-600">{formatNumber(record.other_dept_surcharge)}</td>
+                                        <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(record.net_expenditure)}</td>
+                                        <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(record.cumulative_expenditure)}</td>
+                                        <td className={`px-2 py-2 text-right font-bold ${parseFloat(record.balance) >= 0 ? 'text-gray-600' : 'text-gray-600'}`}>
                                             {formatNumber(record.balance)}
                                         </td>
                                     </tr>
@@ -1493,18 +1493,18 @@ const handleExportPDF = () => {
                             <tfoot className="bg-gray-50 border-t border-gray-200">
                                 <tr className="font-semibold">
                                     <td colSpan="2" className="px-2 py-2 text-right">Total:</td>
-                                    <td className="px-2 py-2 text-right text-blue-600">{formatNumber(totals.total_allocation)}</td>
-                                    <td className="px-2 py-2 text-right text-green-600">{formatNumber(totals.total_fr66p)}</td>
-                                    <td className="px-2 py-2 text-right text-red-600">{formatNumber(totals.total_fr66m)}</td>
-                                    <td className="px-2 py-2 text-right text-yellow-600">{formatNumber(totals.total_supplementary)}</td>
-                                    <td className="px-2 py-2 text-right font-bold text-purple-600">{formatNumber(totals.total_net_allocation)}</td>
-                                    <td className="px-2 py-2 text-right font-bold text-orange-600">{formatNumber(totals.total_debit)}</td>
-                                    <td className="px-2 py-2 text-right font-bold text-amber-600">{formatNumber(totals.total_other_dept_debit)}</td>
-                                    <td className="px-2 py-2 text-right font-bold text-teal-600">{formatNumber(totals.total_surcharge)}</td>
-                                    <td className="px-2 py-2 text-right font-bold text-cyan-600">{formatNumber(totals.total_other_dept_surcharge)}</td>
-                                    <td className="px-2 py-2 text-right font-bold text-indigo-600">{formatNumber(totals.total_net_expenditure)}</td>
-                                    <td className="px-2 py-2 text-right font-bold text-violet-600">{formatNumber(totals.total_cumulative_expenditure)}</td>
-                                    <td className={`px-2 py-2 text-right font-bold ${totals.total_balance >= 0 ? 'text-pink-600' : 'text-red-600'}`}>
+                                    <td className="px-2 py-2 text-right text-gray-600">{formatNumber(totals.total_allocation)}</td>
+                                    <td className="px-2 py-2 text-right text-gray-600">{formatNumber(totals.total_fr66p)}</td>
+                                    <td className="px-2 py-2 text-right text-gray-600">{formatNumber(totals.total_fr66m)}</td>
+                                    <td className="px-2 py-2 text-right text-gray-600">{formatNumber(totals.total_supplementary)}</td>
+                                    <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(totals.total_net_allocation)}</td>
+                                    <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(totals.total_debit)}</td>
+                                    <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(totals.total_other_dept_debit)}</td>
+                                    <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(totals.total_surcharge)}</td>
+                                    <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(totals.total_other_dept_surcharge)}</td>
+                                    <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(totals.total_net_expenditure)}</td>
+                                    <td className="px-2 py-2 text-right font-bold text-gray-600">{formatNumber(totals.total_cumulative_expenditure)}</td>
+                                    <td className={`px-2 py-2 text-right font-bold ${totals.total_balance >= 0 ? 'text-gray-600' : 'text-gray-600'}`}>
                                         {formatNumber(totals.total_balance)}
                                     </td>
                                 </tr>

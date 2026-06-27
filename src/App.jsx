@@ -16,6 +16,10 @@ import WOPPage from './pages/WOPPage';
 import COEOWPage from './pages/COEOWPage';
 import COEHWPage from './pages/COEHWPage';
 import RCExpenditurePage from './pages/RCExpenditurePage';
+import ODDPage from './pages/ODDPage';
+import ODSPage from './pages/ODSPage';
+import JournalSummaryPage from './pages/JournalSummaryPage';
+import Register from './pages/Register';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -43,7 +47,7 @@ import RCExpenditurePage from './pages/RCExpenditurePage';
 
 function Layout() {
   const location= useLocation();
-  const showNavbar = [ "/login"].includes(location.pathname);
+  const showNavbar = [ "/login", "/register"].includes(location.pathname);
 
   return (
     <>
@@ -55,6 +59,7 @@ function Layout() {
         {/* public routes */}
         
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<Register />} />
        
         {/* protected routes */}
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
@@ -71,6 +76,9 @@ function Layout() {
           <Route path="/coeow" element={<ProtectedRoute><COEOWPage /></ProtectedRoute>} />
           <Route path="/coehw" element={<ProtectedRoute><COEHWPage /></ProtectedRoute>} />
           <Route path="/rc" element={<ProtectedRoute><RCExpenditurePage /></ProtectedRoute>} />
+          <Route path="/odd" element={<ProtectedRoute><ODDPage /></ProtectedRoute>} />
+          <Route path="/ods" element={<ProtectedRoute><ODSPage /></ProtectedRoute>} />
+          <Route path="/journal" element={<ProtectedRoute><JournalSummaryPage /></ProtectedRoute>} />
       </Routes>
 
 

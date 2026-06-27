@@ -268,7 +268,7 @@ export default function Login() {
     return (
         <div className="flex justify-center items-center h-screen">
             <form onSubmit={handleSubmit} className="bg-white text-gray-500 max-w-[340px] w-full mx-4 md:p-6 p-4 py-8 text-left text-sm rounded-xl shadow-[0px_0px_10px_0px] shadow-black/10">
-                <h2 className="text-2xl font-bold mb-9 text-center text-gray-800">Welcome Back</h2>
+                <h2 className="text-2xl font-bold mb-9 text-center text-gray-800">Revenue and Expenditure Management System</h2>
                 <div className="flex items-center my-2 border bg-indigo-500/5 border-gray-500/10 rounded gap-1 pl-2">
                     <svg width="18" height="18" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="m2.5 4.375 3.875 2.906c.667.5 1.583.5 2.25 0L12.5 4.375" stroke="#6B7280" strokeOpacity=".6" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
