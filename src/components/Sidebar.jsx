@@ -348,7 +348,7 @@ const Sidebar = () => {
           </Link>
         </div>
 
-          {/* wop */}
+        {/* wop */}
         <div>
 
           <Link to="/wop" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -357,7 +357,7 @@ const Sidebar = () => {
           </Link>
         </div>
 
-           {/* coeow */}
+        {/* coeow */}
         <div>
 
           <Link to="/coeow" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -367,7 +367,7 @@ const Sidebar = () => {
         </div>
 
 
-            {/* coehw */}
+        {/* coehw */}
         <div>
 
           <Link to="/coehw" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -377,8 +377,8 @@ const Sidebar = () => {
         </div>
 
 
-      
-            {/* RCExpenditure */}
+
+        {/* RCExpenditure */}
         <div>
 
           <Link to="/rc" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -388,7 +388,7 @@ const Sidebar = () => {
         </div>
 
 
-             {/* ODD */}
+        {/* ODD */}
         <div>
 
           <Link to="/odd" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -397,8 +397,8 @@ const Sidebar = () => {
           </Link>
         </div>
 
-        
-             {/* ODS */}
+
+        {/* ODS */}
         <div>
 
           <Link to="/ods" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -407,8 +407,8 @@ const Sidebar = () => {
           </Link>
         </div>
 
-        
-             {/* Journal Summary */}
+
+        {/* Journal Summary */}
         <div>
 
           <Link to="/journal" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -417,7 +417,7 @@ const Sidebar = () => {
           </Link>
         </div>
 
-          {/* main Journal Summary */}
+        {/* main Journal Summary */}
         <div>
 
           <Link to="/main_journal" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -427,7 +427,7 @@ const Sidebar = () => {
         </div>
 
 
-         {/* main imprest balace  */}
+        {/* main imprest balace  */}
         <div>
 
           <Link to="/imprestBalance" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -436,8 +436,8 @@ const Sidebar = () => {
           </Link>
         </div>
 
-        
-         {/* Allocation  balace  */}
+
+        {/* Allocation  balace  */}
         <div>
 
           <Link to="/allocation_balance" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
@@ -445,6 +445,17 @@ const Sidebar = () => {
             <span className="text-sm">Allocation Balance</span>
           </Link>
         </div>
+
+
+        {/* CBG report  */}
+        <div>
+
+          <Link to="/cbg" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">CBG</span>
+          </Link>
+        </div>
+
 
 
 
