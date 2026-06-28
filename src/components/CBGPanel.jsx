@@ -173,7 +173,7 @@ const CBGPanel = () => {
         const agriData = response.data.data.agriculture_ministry || [];
         const landData = response.data.data.land_ministry || [];
         const secretaryData = response.data.data.main_secretary || [];
-        
+
         setMainMinistryData(mainData);
         setEducationMinistryData(eduData);
         setAnimalMinistryData(animalData);
@@ -380,249 +380,487 @@ const CBGPanel = () => {
   };
 
 
-const handleExportPDF = () => {
-  if (mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
+
+  // const handleExportPDF = () => {
+  //   if (mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
+  //     animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
+  //     landMinistryData.length === 0 && mainSecretaryData.length === 0) {
+  //     alert('No data to export');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   try {
+  //     const doc = new jsPDF({
+  //       orientation: 'portrait',
+  //       unit: 'mm',
+  //       format: 'a4'
+  //     });
+
+  //     const pageWidth = doc.internal.pageSize.getWidth();
+  //     const pageHeight = doc.internal.pageSize.getHeight();
+  //     const currentDate = new Date().toLocaleString();
+  //     const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
+
+  //     // Header
+  //     doc.setFontSize(16);
+  //     doc.setFont('helvetica', 'bold');
+  //     doc.text('CBG Report', pageWidth / 2, 15, { align: 'center' });
+
+  //     doc.setFontSize(10);
+  //     doc.setFont('helvetica', 'normal');
+  //     doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 22, { align: 'center' });
+
+  //     // Filter information
+  //     let filterText = `Year: ${appliedFilters.year} | Month: ${monthText}`;
+  //     if (appliedFilters.view_type === 'cumulative') {
+  //       filterText += ` | View: Cumulative (Jan - ${monthText})`;
+  //     } else {
+  //       filterText += ` | View: Monthly (${monthText})`;
+  //     }
+  //     doc.setFontSize(9);
+  //     doc.text(filterText, pageWidth / 2, 29, { align: 'center' });
+
+  //     doc.setDrawColor(200, 200, 200);
+  //     doc.line(15, 40, pageWidth - 15, 40);
+
+
+  //     // Table headers
+  //     const tableHeaders = ['TR No', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Debit', 'Other Debit', 'Total Expenditure'];
+
+  //     // Prepare all tables data
+  //     const tables = [
+  //       { data: mainMinistryData, title: 'MAIN MINISTRY (TRNO: 304)', color: [41, 128, 185] },
+  //       { data: educationMinistryData, title: 'EDUCATION MINISTRY (TRNO: 318)', color: [41, 128, 185] },
+  //       { data: animalMinistryData, title: 'ANIMAL MINISTRY (TRNO: 311)', color: [41, 128, 185] },
+  //       { data: agricultureMinistryData, title: 'AGRICULTURE MINISTRY (TRNO: 314)', color: [41, 128, 185] },
+  //       { data: landMinistryData, title: 'LAND MINISTRY (TRNO: 308)', color: [41, 128, 185] },
+  //       { data: mainSecretaryData, title: 'MAIN SECRETARY MINISTRY (TRNO: 320)', color: [41, 128, 185] }
+  //     ];
+
+  //     let startY = 35;
+
+  //     // Process each table
+  //     tables.forEach((table, index) => {
+  //       if (table.data.length === 0) return;
+
+  //       // Calculate table width to center it
+  //       const columnWidths = [16, 16, 16, 18, 16, 24, 20, 22, 22];
+  //       const totalTableWidth = columnWidths.reduce((a, b) => a + b, 0);
+  //       const leftMargin = (pageWidth - totalTableWidth) / 2;
+
+  //       // Add new page if needed (except for first table)
+  //       if (index > 0 && startY > 200) {
+  //         doc.addPage();
+  //         startY = 25;
+  //       }
+
+  //       // Add space between tables (10mm gap)
+  //       if (index > 0) {
+  //         startY += 10;
+  //       }
+
+  //       // Table title
+  //       doc.setFontSize(10);
+  //       doc.setFont('helvetica', 'bold');
+  //       doc.setTextColor(table.color[0], table.color[1], table.color[2]);
+  //       doc.text(table.title, pageWidth / 2, startY, { align: 'center' });
+
+  //       // Prepare table body
+  //       const tableBody = table.data.map(record => [
+  //         record.trno ,
+  //         record.program ,
+  //         record.project ,
+  //         record.sub_project ,
+  //         record.object ,
+  //         record.subject_name ,
+  //         formatNumber(record.debit),
+  //         formatNumber(record.other_debit),
+  //         formatNumber(record.total_expenditure)
+  //       ]);
+
+  //       // Generate table with centered position
+  //       autoTable(doc, {
+  //         head: [tableHeaders],
+  //         body: tableBody,
+  //         startY: startY + 5,
+  //         theme: 'striped',
+  //         headStyles: {
+  //           fillColor: table.color,
+  //           textColor: [255, 255, 255],
+  //           fontSize: 7,
+  //           fontStyle: 'bold',
+  //           halign: 'center',
+  //           cellPadding: 2
+  //         },
+  //         bodyStyles: {
+  //           fontSize: 6,
+  //           cellPadding: 2
+  //         },
+  //         columnStyles: {
+  //           0: { cellWidth: 16, halign: 'center' },
+  //           1: { cellWidth: 16, halign: 'center' },
+  //           2: { cellWidth: 16, halign: 'center' },
+  //           3: { cellWidth: 18, halign: 'center' },
+  //           4: { cellWidth: 16, halign: 'center' },
+  //           5: { cellWidth: 24, halign: 'left' },
+  //           6: { cellWidth: 20, halign: 'right' },
+  //           7: { cellWidth: 22, halign: 'right' },
+  //           8: { cellWidth: 22, halign: 'right' }
+  //         },
+  //         alternateRowStyles: { fillColor: [245, 245, 245] },
+  //         margin: { left: leftMargin, right: leftMargin },
+  //         tableWidth: 'auto'
+  //       });
+
+  //       // Update start position for next table with more space
+  //       startY = doc.lastAutoTable.finalY + 12;
+  //     });
+
+  //     // Add Summary Page
+  //     doc.addPage();
+
+  //     doc.setFontSize(16);
+  //     doc.setFont('helvetica', 'bold');
+  //     doc.setTextColor(41, 128, 185);
+  //     doc.text('SUMMARY', pageWidth / 2, 20, { align: 'center' });
+
+  //     doc.setFontSize(10);
+  //     doc.setFont('helvetica', 'normal');
+  //     doc.text('Ministry-wise Total Expenditure Summary', pageWidth / 2, 28, { align: 'center' });
+
+  //     const summaryData = [
+  //       ['Main Ministry', '304', formatNumber(totals.main_total_expenditure)],
+  //       ['Education Ministry', '318', formatNumber(totals.edu_total_expenditure)],
+  //       ['Animal Ministry', '311', formatNumber(totals.animal_total_expenditure)],
+  //       ['Agriculture Ministry', '314', formatNumber(totals.agri_total_expenditure)],
+  //       ['Land Ministry', '308', formatNumber(totals.land_total_expenditure)],
+  //       ['Main Secretary Ministry', '320', formatNumber(totals.secretary_total_expenditure)]
+  //     ];
+
+  //     const grandTotal = parseFloat(totals.main_total_expenditure) +
+  //       parseFloat(totals.edu_total_expenditure) +
+  //       parseFloat(totals.animal_total_expenditure) +
+  //       parseFloat(totals.agri_total_expenditure) +
+  //       parseFloat(totals.land_total_expenditure) +
+  //       parseFloat(totals.secretary_total_expenditure);
+
+  //     summaryData.push(['GRAND TOTAL', '', formatNumber(grandTotal)]);
+
+  //     // Calculate summary table width to center it
+  //     const summaryColumnWidths = [80, 40, 60];
+  //     const summaryTotalWidth = summaryColumnWidths.reduce((a, b) => a + b, 0);
+  //     const summaryLeftMargin = (pageWidth - summaryTotalWidth) / 2;
+
+  //     autoTable(doc, {
+  //       head: [['Ministry', 'TRNO', 'Total Expenditure (Rs)']],
+  //       body: summaryData,
+  //       startY: 35,
+  //       theme: 'striped',
+  //       headStyles: {
+  //         fillColor: [41, 128, 185],
+  //         textColor: [255, 255, 255],
+  //         fontSize: 9,
+  //         fontStyle: 'bold',
+  //         halign: 'center',
+  //         cellPadding: 3
+  //       },
+  //       bodyStyles: {
+  //         fontSize: 8,
+  //         cellPadding: 3
+  //       },
+  //       columnStyles: {
+  //         0: { cellWidth: 80, halign: 'left' },
+  //         1: { cellWidth: 40, halign: 'center' },
+  //         2: { cellWidth: 60, halign: 'right' }
+  //       },
+  //       alternateRowStyles: { fillColor: [245, 245, 245] },
+  //       margin: { left: summaryLeftMargin, right: summaryLeftMargin },
+  //       tableWidth: 'auto'
+  //     });
+
+  //     // Add page numbers to all pages (after all content is generated)
+  //     const totalPages = doc.internal.getNumberOfPages();
+  //     for (let i = 1; i <= totalPages; i++) {
+  //       doc.setPage(i);
+  //       doc.setFontSize(8);
+  //       doc.setFont('helvetica', 'normal');
+  //       doc.setTextColor(128, 128, 128);
+
+  //       // Draw a line above the page number
+  //       doc.setDrawColor(200, 200, 200);
+  //       doc.setLineWidth(0.2);
+  //       doc.line(20, pageHeight - 12, pageWidth - 20, pageHeight - 12);
+
+  //       // Add page number
+  //       doc.text(
+  //         `Page ${i} of ${totalPages}`,
+  //         pageWidth / 2,
+  //         pageHeight - 5,
+  //         { align: 'center' }
+  //       );
+  //     }
+
+  //     // Save PDF
+  //     const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
+  //     const fileName = `cbg_report_${viewText}_${appliedFilters.year}_${monthText}.pdf`;
+  //     doc.save(fileName);
+  //     alert('PDF exported successfully!');
+
+  //   } catch (error) {
+  //     console.error('Error generating PDF:', error);
+  //     alert('Failed to generate PDF: ' + error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+  const handleExportPDF = () => {
+    if (mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
       animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
       landMinistryData.length === 0 && mainSecretaryData.length === 0) {
-    alert('No data to export');
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const currentDate = new Date().toLocaleString();
-    const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
-
-    // Header
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Ministry Expenditure Report', pageWidth / 2, 15, { align: 'center' });
-    
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 22, { align: 'center' });
-    
-    // Filter information
-    let filterText = `Year: ${appliedFilters.year} | Month: ${monthText}`;
-    if (appliedFilters.view_type === 'cumulative') {
-      filterText += ` | View: Cumulative (Jan - ${monthText})`;
-    } else {
-      filterText += ` | View: Monthly (${monthText})`;
+      alert('No data to export');
+      return;
     }
-    doc.setFontSize(9);
-    doc.text(filterText, pageWidth / 2, 29, { align: 'center' });
 
-    // Table headers
-    const tableHeaders = ['TR No', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Debit', 'Other Debit', 'Total Expenditure'];
+    setLoading(true);
 
-    // Prepare all tables data
-    const tables = [
-      { data: mainMinistryData, title: 'MAIN MINISTRY (TRNO: 304)', color: [41, 128, 185] },
-      { data: educationMinistryData, title: 'EDUCATION MINISTRY (TRNO: 318)', color: [46, 204, 113] },
-      { data: animalMinistryData, title: 'ANIMAL MINISTRY (TRNO: 311)', color: [243, 156, 18] },
-      { data: agricultureMinistryData, title: 'AGRICULTURE MINISTRY (TRNO: 314)', color: [39, 174, 96] },
-      { data: landMinistryData, title: 'LAND MINISTRY (TRNO: 308)', color: [142, 68, 173] },
-      { data: mainSecretaryData, title: 'MAIN SECRETARY MINISTRY (TRNO: 320)', color: [192, 57, 43] }
-    ];
-
-    let startY = 35;
-
-    // Process each table
-    tables.forEach((table, index) => {
-      if (table.data.length === 0) return;
-
-      // Calculate table width to center it
-      const totalColumns = tableHeaders.length;
-      const columnWidths = [16, 16, 16, 18, 16, 24, 20, 22, 22];
-      const totalTableWidth = columnWidths.reduce((a, b) => a + b, 0);
-      const leftMargin = (pageWidth - totalTableWidth) / 2;
-
-      // Add new page if needed (except for first table)
-      if (index > 0 && startY > 200) {
-        doc.addPage();
-        startY = 25;
-      }
-
-      // Add space between tables (10mm gap)
-      if (index > 0) {
-        startY += 10;
-      }
-
-      // Table title
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(table.color[0], table.color[1], table.color[2]);
-      doc.text(table.title, pageWidth / 2, startY, { align: 'center' });
-
-      // Prepare table body
-      const tableBody = table.data.map(record => [
-        record.trno || '-',
-        record.program || '-',
-        record.project || '-',
-        record.sub_project || '-',
-        record.object || '-',
-        record.subject_name || '-',
-        formatNumber(record.debit),
-        formatNumber(record.other_debit),
-        formatNumber(record.total_expenditure)
-      ]);
-
-      // Generate table with centered position
-      autoTable(doc, {
-        head: [tableHeaders],
-        body: tableBody,
-        startY: startY + 5,
-        theme: 'striped',
-        headStyles: {
-          fillColor: table.color,
-          textColor: [255, 255, 255],
-          fontSize: 7,
-          fontStyle: 'bold',
-          halign: 'center',
-          cellPadding: 2
-        },
-        bodyStyles: {
-          fontSize: 6,
-          cellPadding: 2
-        },
-        columnStyles: {
-          0: { cellWidth: 16, halign: 'center' },
-          1: { cellWidth: 16, halign: 'center' },
-          2: { cellWidth: 16, halign: 'center' },
-          3: { cellWidth: 18, halign: 'center' },
-          4: { cellWidth: 16, halign: 'center' },
-          5: { cellWidth: 24, halign: 'left' },
-          6: { cellWidth: 20, halign: 'right' },
-          7: { cellWidth: 22, halign: 'right' },
-          8: { cellWidth: 22, halign: 'right' }
-        },
-        alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { left: leftMargin, right: leftMargin },
-        tableWidth: 'auto',
-        didDrawPage: function(data) {
-          // Add page numbers
-          const pageCount = doc.internal.getNumberOfPages();
-          for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setTextColor(128, 128, 128);
-            doc.text(
-              `Page ${i} of ${pageCount}`,
-              pageWidth / 2,
-              doc.internal.pageSize.getHeight() - 10,
-              { align: 'center' }
-            );
-          }
-        }
+    try {
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
       });
 
-      // Update start position for next table with more space
-      startY = doc.lastAutoTable.finalY + 12;
-    });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const currentDate = new Date().toLocaleString();
+      const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
 
-    // Add Summary Page
-    doc.addPage();
-    
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(41, 128, 185);
-    doc.text('SUMMARY', pageWidth / 2, 20, { align: 'center' });
+      // Header
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(0, 0, 0);
+      doc.text('CBG Report', pageWidth / 2, 15, { align: 'center' });
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Ministry-wise Total Expenditure Summary', pageWidth / 2, 28, { align: 'center' });
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 22, { align: 'center' });
 
-    const summaryData = [
-      ['Main Ministry', '304', formatNumber(totals.main_total_expenditure)],
-      ['Education Ministry', '318', formatNumber(totals.edu_total_expenditure)],
-      ['Animal Ministry', '311', formatNumber(totals.animal_total_expenditure)],
-      ['Agriculture Ministry', '314', formatNumber(totals.agri_total_expenditure)],
-      ['Land Ministry', '308', formatNumber(totals.land_total_expenditure)],
-      ['Main Secretary Ministry', '320', formatNumber(totals.secretary_total_expenditure)]
-    ];
-
-    const grandTotal = parseFloat(totals.main_total_expenditure) + 
-                       parseFloat(totals.edu_total_expenditure) + 
-                       parseFloat(totals.animal_total_expenditure) + 
-                       parseFloat(totals.agri_total_expenditure) + 
-                       parseFloat(totals.land_total_expenditure) + 
-                       parseFloat(totals.secretary_total_expenditure);
-
-    summaryData.push(['GRAND TOTAL', '', formatNumber(grandTotal)]);
-
-    // Calculate summary table width to center it
-    const summaryColumnWidths = [80, 40, 60];
-    const summaryTotalWidth = summaryColumnWidths.reduce((a, b) => a + b, 0);
-    const summaryLeftMargin = (pageWidth - summaryTotalWidth) / 2;
-
-    autoTable(doc, {
-      head: [['Ministry', 'TRNO', 'Total Expenditure (Rs)']],
-      body: summaryData,
-      startY: 35,
-      theme: 'striped',
-      headStyles: {
-        fillColor: [41, 128, 185],
-        textColor: [255, 255, 255],
-        fontSize: 9,
-        fontStyle: 'bold',
-        halign: 'center',
-        cellPadding: 3
-      },
-      bodyStyles: {
-        fontSize: 8,
-        cellPadding: 3
-      },
-      columnStyles: {
-        0: { cellWidth: 80, halign: 'left' },
-        1: { cellWidth: 40, halign: 'center' },
-        2: { cellWidth: 60, halign: 'right' }
-      },
-      alternateRowStyles: { fillColor: [245, 248, 250] },
-      margin: { left: summaryLeftMargin, right: summaryLeftMargin },
-      tableWidth: 'auto',
-      didDrawPage: function(data) {
-        // Add page numbers
-        const pageCount = doc.internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-          doc.setPage(i);
-          doc.setFontSize(8);
-          doc.setTextColor(128, 128, 128);
-          doc.text(
-            `Page ${i} of ${pageCount}`,
-            pageWidth / 2,
-            doc.internal.pageSize.getHeight() - 10,
-            { align: 'center' }
-          );
-        }
+      // Filter information
+      let filterText = `Year: ${appliedFilters.year} | Month: ${monthText}`;
+      if (appliedFilters.view_type === 'cumulative') {
+        filterText += ` | View: Cumulative (Jan - ${monthText})`;
+      } else {
+        filterText += ` | View: Monthly (${monthText})`;
       }
-    });
+      doc.setFontSize(9);
+      doc.text(filterText, pageWidth / 2, 29, { align: 'center' });
 
-    // Save PDF
-    const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
-    const fileName = `cbg_report_${viewText}_${appliedFilters.year}_${monthText}.pdf`;
-    doc.save(fileName);
-    alert('PDF exported successfully!');
+      // Draw line
+      doc.setDrawColor(200, 200, 200);
+      //doc.setLineWidth(0.5);
+      doc.line(15, 40, pageWidth - 15, 40);
 
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    alert('Failed to generate PDF: ' + error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+      // Table headers
+      const tableHeaders = ['TR No', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Debit', 'Other Debit', 'Total Expenditure'];
+
+      // Prepare all tables data
+      const tables = [
+        { data: mainMinistryData, title: 'MAIN MINISTRY (TRNO: 304)', color: [41, 128, 185] },
+        { data: educationMinistryData, title: 'EDUCATION MINISTRY (TRNO: 318)', color: [41, 128, 185] },
+        { data: animalMinistryData, title: 'ANIMAL MINISTRY (TRNO: 311)', color: [41, 128, 185] },
+        { data: agricultureMinistryData, title: 'AGRICULTURE MINISTRY (TRNO: 314)', color: [41, 128, 185] },
+        { data: landMinistryData, title: 'LAND MINISTRY (TRNO: 308)', color: [41, 128, 185] },
+        { data: mainSecretaryData, title: 'MAIN SECRETARY MINISTRY (TRNO: 320)', color: [41, 128, 185] }
+      ];
+
+      // Start Y position - 8mm gap after the line
+      let startY = 48;
+
+      // Process each table
+      tables.forEach((table, index) => {
+        if (table.data.length === 0) return;
+
+        // Calculate table width to center it
+        const columnWidths = [16, 16, 16, 18, 16, 24, 20, 22, 22];
+        const totalTableWidth = columnWidths.reduce((a, b) => a + b, 0);
+        const leftMargin = (pageWidth - totalTableWidth) / 2;
+
+        // Add new page if needed (except for first table)
+        if (index > 0 && startY > 200) {
+          doc.addPage();
+          startY = 25;
+        }
+
+        // Add space between tables (10mm gap)
+        if (index > 0) {
+          startY += 10;
+        }
+
+        // Table title
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(table.color[0], table.color[1], table.color[2]);
+        doc.text(table.title, pageWidth / 2, startY, { align: 'center' });
+
+        // Prepare table body
+        const tableBody = table.data.map(record => [
+          record.trno ,
+          record.program ,
+          record.project ,
+          record.sub_project ,
+          record.object ,
+          record.subject_name ,
+          formatNumber(record.debit),
+          formatNumber(record.other_debit),
+          formatNumber(record.total_expenditure)
+        ]);
+
+        // Generate table with centered position
+        autoTable(doc, {
+          head: [tableHeaders],
+          body: tableBody,
+          startY: startY + 5,
+          theme: 'striped',
+          headStyles: {
+            fillColor: table.color,
+            textColor: [255, 255, 255],
+            fontSize: 7,
+            fontStyle: 'bold',
+            halign: 'center',
+            cellPadding: 2
+          },
+          bodyStyles: {
+            fontSize: 6,
+            cellPadding: 2
+          },
+          columnStyles: {
+            0: { cellWidth: 16, halign: 'center' },
+            1: { cellWidth: 16, halign: 'center' },
+            2: { cellWidth: 16, halign: 'center' },
+            3: { cellWidth: 18, halign: 'center' },
+            4: { cellWidth: 16, halign: 'center' },
+            5: { cellWidth: 24, halign: 'left' },
+            6: { cellWidth: 20, halign: 'right' },
+            7: { cellWidth: 22, halign: 'right' },
+            8: { cellWidth: 22, halign: 'right' }
+          },
+          alternateRowStyles: { fillColor: [245, 245, 245] },
+          margin: { left: leftMargin, right: leftMargin },
+          tableWidth: 'auto'
+        });
+
+        // Update start position for next table with more space
+        startY = doc.lastAutoTable.finalY + 12;
+      });
+
+      // Add Summary Page
+      doc.addPage();
+
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(41, 128, 185);
+      doc.text('SUMMARY', pageWidth / 2, 20, { align: 'center' });
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text('Total Expenditure Summary', pageWidth / 2, 28, { align: 'center' });
+
+      const summaryData = [
+        ['Main Ministry', '304', formatNumber(totals.main_total_expenditure)],
+        ['Education Ministry', '318', formatNumber(totals.edu_total_expenditure)],
+        ['Animal Ministry', '311', formatNumber(totals.animal_total_expenditure)],
+        ['Agriculture Ministry', '314', formatNumber(totals.agri_total_expenditure)],
+        ['Land Ministry', '308', formatNumber(totals.land_total_expenditure)],
+        ['Main Secretary Ministry', '320', formatNumber(totals.secretary_total_expenditure)]
+      ];
+
+      const grandTotal = parseFloat(totals.main_total_expenditure) +
+        parseFloat(totals.edu_total_expenditure) +
+        parseFloat(totals.animal_total_expenditure) +
+        parseFloat(totals.agri_total_expenditure) +
+        parseFloat(totals.land_total_expenditure) +
+        parseFloat(totals.secretary_total_expenditure);
+
+      summaryData.push(['GRAND TOTAL', '', formatNumber(grandTotal)]);
+
+      // Calculate summary table width to center it
+      const summaryColumnWidths = [80, 40, 60];
+      const summaryTotalWidth = summaryColumnWidths.reduce((a, b) => a + b, 0);
+      const summaryLeftMargin = (pageWidth - summaryTotalWidth) / 2;
+
+      autoTable(doc, {
+        head: [['Ministry', 'TRNO', 'Total Expenditure (Rs)']],
+        body: summaryData,
+        startY: 35,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: [255, 255, 255],
+          fontSize: 9,
+          fontStyle: 'bold',
+          halign: 'center',
+          cellPadding: 3
+        },
+        bodyStyles: {
+          fontSize: 8,
+          cellPadding: 3
+        },
+        columnStyles: {
+          0: { cellWidth: 80, halign: 'left' },
+          1: { cellWidth: 40, halign: 'center' },
+          2: { cellWidth: 60, halign: 'right' }
+        },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: { left: summaryLeftMargin, right: summaryLeftMargin },
+        tableWidth: 'auto'
+      });
+
+      // Add page numbers to all pages (after all content is generated)
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(128, 128, 128);
+
+        // Draw a line above the page number
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.2);
+        doc.line(20, pageHeight - 12, pageWidth - 20, pageHeight - 12);
+
+        // Add page number
+        doc.text(
+          `Page ${i} of ${totalPages}`,
+          pageWidth / 2,
+          pageHeight - 5,
+          { align: 'center' }
+        );
+      }
+
+      // Save PDF
+      const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
+      const fileName = `cbg_report_${viewText}_${appliedFilters.year}_${monthText}.pdf`;
+      doc.save(fileName);
+      alert('PDF exported successfully!');
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleExportCSV = async () => {
-    if (mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
-        animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-        landMinistryData.length === 0 && mainSecretaryData.length === 0) {
+    if (mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
+      animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
+      landMinistryData.length === 0 && mainSecretaryData.length === 0) {
       alert('No data to export');
       return;
     }
@@ -710,11 +948,11 @@ const handleExportPDF = () => {
               {dataRows.map((record, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
                   <td className="px-3 py-2 text-gray-700">{record.trno}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.program }</td>
-                  <td className="px-3 py-2 text-gray-700">{record.project }</td>
+                  <td className="px-3 py-2 text-gray-700">{record.program}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.project}</td>
                   <td className="px-3 py-2 text-gray-700">{record.sub_project}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.object }</td>
-                  <td className="px-3 py-2 text-gray-700">{record.subject_name }</td>
+                  <td className="px-3 py-2 text-gray-700">{record.object}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.subject_name}</td>
                   <td className="px-3 py-2 text-right text-gray-600">Rs{formatNumber(record.debit)}</td>
                   <td className="px-3 py-2 text-right text-gray-600">Rs{formatNumber(record.other_debit)}</td>
                   <td className="px-3 py-2 text-right font-bold text-gray-700">Rs{formatNumber(record.total_expenditure)}</td>
@@ -752,13 +990,13 @@ const handleExportPDF = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-800">CBG Report</h1>
             <p className="text-sm text-gray-500 mt-1">
-              Expenditure details 
+              Expenditure details
             </p>
           </div>
           {appliedFilters.year && appliedFilters.month && (
             <div className="bg-blue-50 rounded-lg px-3 py-2">
               <p className="text-sm text-blue-700">
-                <span className="font-medium">Year:</span> {appliedFilters.year} | 
+                <span className="font-medium">Year:</span> {appliedFilters.year} |
                 <span className="font-medium ml-2">Month:</span> {monthNames[appliedFilters.month]}
                 <span className="font-medium ml-2">| View:</span> {appliedFilters.view_type === 'cumulative' ? 'Cumulative' : 'Monthly'}
               </p>
@@ -876,8 +1114,8 @@ const handleExportPDF = () => {
               </span>
             )}
           </div>
-          <button 
-            onClick={clearFilters} 
+          <button
+            onClick={clearFilters}
             className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
           >
             <X size={14} /> Clear All
@@ -887,47 +1125,45 @@ const handleExportPDF = () => {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
-        <button 
-          onClick={() => setShowFilterModal(true)} 
+        <button
+          onClick={() => setShowFilterModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
         >
           <Filter size={16} />
           <span>Filter</span>
         </button>
-        <button 
-          onClick={handleExportPDF} 
-          disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
-                    animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-                    landMinistryData.length === 0 && mainSecretaryData.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            mainMinistryData.length > 0 || educationMinistryData.length > 0 || 
+        <button
+          onClick={handleExportPDF}
+          disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
+            animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
+            landMinistryData.length === 0 && mainSecretaryData.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${mainMinistryData.length > 0 || educationMinistryData.length > 0 ||
             animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
             landMinistryData.length > 0 || mainSecretaryData.length > 0
-              ? 'bg-red-600 text-white hover:bg-red-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+            ? 'bg-red-600 text-white hover:bg-red-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
           <FileText size={16} />
           <span>Export PDF</span>
         </button>
-        <button 
-          onClick={handleExportCSV} 
-          disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
-                    animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-                    landMinistryData.length === 0 && mainSecretaryData.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            mainMinistryData.length > 0 || educationMinistryData.length > 0 || 
+        <button
+          onClick={handleExportCSV}
+          disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
+            animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
+            landMinistryData.length === 0 && mainSecretaryData.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${mainMinistryData.length > 0 || educationMinistryData.length > 0 ||
             animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
             landMinistryData.length > 0 || mainSecretaryData.length > 0
-              ? 'bg-green-600 text-white hover:bg-green-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+            ? 'bg-green-600 text-white hover:bg-green-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
           <Download size={16} />
           <span>Export CSV</span>
         </button>
-        <button 
-          onClick={refreshData} 
+        <button
+          onClick={refreshData}
           className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
         >
           <RefreshCw size={16} />
@@ -944,39 +1180,39 @@ const handleExportPDF = () => {
       ) : (
         <>
           {renderTable(
-            mainMinistryData, 
-            'Main Ministry', 
-            <Building2 size={20} className="text-blue-600" />, 
+            mainMinistryData,
+            'Main Ministry',
+            <Building2 size={20} className="text-blue-600" />,
             304
           )}
           {renderTable(
-            educationMinistryData, 
-            'Education Ministry', 
-            <GraduationCap size={20} className="text-green-600" />, 
+            educationMinistryData,
+            'Education Ministry',
+            <GraduationCap size={20} className="text-green-600" />,
             318
           )}
           {renderTable(
-            animalMinistryData, 
-            'Animal Ministry', 
-            <PawPrint size={20} className="text-orange-600" />, 
+            animalMinistryData,
+            'Animal Ministry',
+            <PawPrint size={20} className="text-orange-600" />,
             311
           )}
           {renderTable(
-            agricultureMinistryData, 
-            'Agriculture Ministry', 
-            <Sprout size={20} className="text-emerald-600" />, 
+            agricultureMinistryData,
+            'Agriculture Ministry',
+            <Sprout size={20} className="text-emerald-600" />,
             314
           )}
           {renderTable(
-            landMinistryData, 
-            'Land Ministry', 
-            <Mountain size={20} className="text-violet-600" />, 
+            landMinistryData,
+            'Land Ministry',
+            <Mountain size={20} className="text-violet-600" />,
             308
           )}
           {renderTable(
-            mainSecretaryData, 
-            'Main Secretary Ministry', 
-            <Users size={20} className="text-red-600" />, 
+            mainSecretaryData,
+            'Main Secretary Ministry',
+            <Users size={20} className="text-red-600" />,
             320
           )}
         </>
@@ -988,8 +1224,8 @@ const handleExportPDF = () => {
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Filter Ministry Report</h3>
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
                 <X size={20} />
@@ -1047,8 +1283,8 @@ const handleExportPDF = () => {
                   <option value="monthly">Monthly (Month only)</option>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  {filters.view_type === 'cumulative' 
-                    ? 'Shows cumulative data from January to selected month' 
+                  {filters.view_type === 'cumulative'
+                    ? 'Shows cumulative data from January to selected month'
                     : 'Shows data for the selected month only'}
                 </p>
               </div>
@@ -1058,22 +1294,22 @@ const handleExportPDF = () => {
                   <strong>Note:</strong> This report shows expenditure details for six ministries.
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
-                  <strong>Main:</strong> TRNO 304 | <strong>Education:</strong> TRNO 318 | 
-                  <strong>Animal:</strong> TRNO 311 | <strong>Agriculture:</strong> TRNO 314 | 
+                  <strong>Main:</strong> TRNO 304 | <strong>Education:</strong> TRNO 318 |
+                  <strong>Animal:</strong> TRNO 311 | <strong>Agriculture:</strong> TRNO 314 |
                   <strong>Land:</strong> TRNO 308 | <strong>Main Secretary:</strong> TRNO 320
                 </p>
               </div>
             </div>
 
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
-              <button 
-                onClick={applyFilters} 
+              <button
+                onClick={applyFilters}
                 disabled={!filters.year || !filters.month}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
