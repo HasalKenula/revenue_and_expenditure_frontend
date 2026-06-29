@@ -19,7 +19,8 @@ import {
   GraduationCap,
   PawPrint,
   Sprout,
-  Mountain
+  Mountain,
+  Users
 } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -83,6 +84,7 @@ const PSDPanel = () => {
   const [animalMinistryData, setAnimalMinistryData] = useState([]);
   const [agricultureMinistryData, setAgricultureMinistryData] = useState([]);
   const [landMinistryData, setLandMinistryData] = useState([]);
+  const [mainSecretaryData, setMainSecretaryData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(20);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -108,7 +110,10 @@ const PSDPanel = () => {
     agri_total_expenditure: 0,
     land_total_debit: 0,
     land_total_other_debit: 0,
-    land_total_expenditure: 0
+    land_total_expenditure: 0,
+    secretary_total_debit: 0,
+    secretary_total_other_debit: 0,
+    secretary_total_expenditure: 0
   });
 
   const [filters, setFilters] = useState({
@@ -147,6 +152,7 @@ const PSDPanel = () => {
       setAnimalMinistryData([]);
       setAgricultureMinistryData([]);
       setLandMinistryData([]);
+      setMainSecretaryData([]);
       return;
     }
 
@@ -166,12 +172,14 @@ const PSDPanel = () => {
         const animalData = response.data.data.animal_ministry || [];
         const agriData = response.data.data.agriculture_ministry || [];
         const landData = response.data.data.land_ministry || [];
+        const secretaryData = response.data.data.main_secretary || [];
         
         setMainMinistryData(mainData);
         setEducationMinistryData(eduData);
         setAnimalMinistryData(animalData);
         setAgricultureMinistryData(agriData);
         setLandMinistryData(landData);
+        setMainSecretaryData(secretaryData);
         setMonths(response.data.data.months || []);
         setMonthNamesList(response.data.data.month_names || {});
         setSelectedYear(response.data.data.filters?.year || '');
@@ -184,6 +192,7 @@ const PSDPanel = () => {
         let animalTotalDebit = 0, animalTotalOtherDebit = 0, animalTotalExpenditure = 0;
         let agriTotalDebit = 0, agriTotalOtherDebit = 0, agriTotalExpenditure = 0;
         let landTotalDebit = 0, landTotalOtherDebit = 0, landTotalExpenditure = 0;
+        let secretaryTotalDebit = 0, secretaryTotalOtherDebit = 0, secretaryTotalExpenditure = 0;
 
         mainData.forEach(record => {
           if (record.subject_name !== 'Total') {
@@ -225,6 +234,14 @@ const PSDPanel = () => {
           }
         });
 
+        secretaryData.forEach(record => {
+          if (record.subject_name !== 'Total') {
+            secretaryTotalDebit += record.debit || 0;
+            secretaryTotalOtherDebit += record.other_debit || 0;
+            secretaryTotalExpenditure += record.total_expenditure || 0;
+          }
+        });
+
         setTotals({
           main_total_debit: mainTotalDebit,
           main_total_other_debit: mainTotalOtherDebit,
@@ -240,10 +257,13 @@ const PSDPanel = () => {
           agri_total_expenditure: agriTotalExpenditure,
           land_total_debit: landTotalDebit,
           land_total_other_debit: landTotalOtherDebit,
-          land_total_expenditure: landTotalExpenditure
+          land_total_expenditure: landTotalExpenditure,
+          secretary_total_debit: secretaryTotalDebit,
+          secretary_total_other_debit: secretaryTotalOtherDebit,
+          secretary_total_expenditure: secretaryTotalExpenditure
         });
 
-        const total = mainData.length + eduData.length + animalData.length + agriData.length + landData.length;
+        const total = mainData.length + eduData.length + animalData.length + agriData.length + landData.length + secretaryData.length;
         setTotalRecords(total);
         setLastPage(Math.ceil(total / entriesPerPage));
         setCurrentPage(1);
@@ -309,6 +329,7 @@ const PSDPanel = () => {
     setAnimalMinistryData([]);
     setAgricultureMinistryData([]);
     setLandMinistryData([]);
+    setMainSecretaryData([]);
     setTotals({
       main_total_debit: 0,
       main_total_other_debit: 0,
@@ -324,7 +345,10 @@ const PSDPanel = () => {
       agri_total_expenditure: 0,
       land_total_debit: 0,
       land_total_other_debit: 0,
-      land_total_expenditure: 0
+      land_total_expenditure: 0,
+      secretary_total_debit: 0,
+      secretary_total_other_debit: 0,
+      secretary_total_expenditure: 0
     });
     setCurrentPage(1);
     setTotalRecords(0);
@@ -336,7 +360,7 @@ const PSDPanel = () => {
   const handleExportPDF = () => {
     if (mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
         animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-        landMinistryData.length === 0) {
+        landMinistryData.length === 0 && mainSecretaryData.length === 0) {
       alert('No data to export');
       return;
     }
@@ -387,7 +411,8 @@ const PSDPanel = () => {
         { data: educationMinistryData, title: 'EDUCATION MINISTRY', trno: '318', icon: '🎓', color: [46, 204, 113] },
         { data: animalMinistryData, title: 'ANIMAL MINISTRY', trno: '311', icon: '🐾', color: [243, 156, 18] },
         { data: agricultureMinistryData, title: 'AGRICULTURE MINISTRY', trno: '314', icon: '🌱', color: [39, 174, 96] },
-        { data: landMinistryData, title: 'LAND MINISTRY', trno: '308', icon: '⛰️', color: [142, 68, 173] }
+        { data: landMinistryData, title: 'LAND MINISTRY', trno: '308', icon: '⛰️', color: [142, 68, 173] },
+        { data: mainSecretaryData, title: 'MAIN SECRETARY MINISTRY', trno: '320', icon: '👥', color: [192, 57, 43] }
       ];
 
       let startY = 48;
@@ -410,7 +435,7 @@ const PSDPanel = () => {
           formatNumber(record.total_expenditure)
         ]);
 
-        doc.setFontSize(11);
+        doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(table.color[0], table.color[1], table.color[2]);
         doc.text(`${table.icon} ${table.title} (TRNO: ${table.trno})`, pageWidth / 2, startY + 5, { align: 'center' });
@@ -423,13 +448,13 @@ const PSDPanel = () => {
           headStyles: {
             fillColor: table.color,
             textColor: [255, 255, 255],
-            fontSize: 6.5,
+            fontSize: 6,
             fontStyle: 'bold',
             halign: 'center',
             cellPadding: 1.5
           },
           bodyStyles: {
-            fontSize: 6.5,
+            fontSize: 6,
             cellPadding: 1.5,
             textColor: [0, 0, 0]
           },
@@ -499,7 +524,7 @@ const PSDPanel = () => {
   const handleExportCSV = async () => {
     if (mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
         animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-        landMinistryData.length === 0) {
+        landMinistryData.length === 0 && mainSecretaryData.length === 0) {
       alert('No data to export');
       return;
     }
@@ -661,7 +686,7 @@ const PSDPanel = () => {
       )}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-15 gap-1">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-18 gap-1">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded p-1 text-white shadow-lg">
           <p className="text-[5px] opacity-90">Main-D</p>
           <p className="text-[7px] font-bold truncate">Rs{formatNumber(totals.main_total_debit)}</p>
@@ -722,6 +747,18 @@ const PSDPanel = () => {
           <p className="text-[5px] opacity-90">Land-E</p>
           <p className="text-[7px] font-bold truncate">Rs{formatNumber(totals.land_total_expenditure)}</p>
         </div>
+        <div className="bg-gradient-to-r from-red-500 to-red-600 rounded p-1 text-white shadow-lg">
+          <p className="text-[5px] opacity-90">Sec-D</p>
+          <p className="text-[7px] font-bold truncate">Rs{formatNumber(totals.secretary_total_debit)}</p>
+        </div>
+        <div className="bg-gradient-to-r from-rose-500 to-rose-600 rounded p-1 text-white shadow-lg">
+          <p className="text-[5px] opacity-90">Sec-O</p>
+          <p className="text-[7px] font-bold truncate">Rs{formatNumber(totals.secretary_total_other_debit)}</p>
+        </div>
+        <div className="bg-gradient-to-r from-pink-500 to-pink-600 rounded p-1 text-white shadow-lg">
+          <p className="text-[5px] opacity-90">Sec-E</p>
+          <p className="text-[7px] font-bold truncate">Rs{formatNumber(totals.secretary_total_expenditure)}</p>
+        </div>
       </div>
 
       {/* Filters Display */}
@@ -763,11 +800,11 @@ const PSDPanel = () => {
           onClick={handleExportPDF} 
           disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
                     animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-                    landMinistryData.length === 0} 
+                    landMinistryData.length === 0 && mainSecretaryData.length === 0} 
           className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
             mainMinistryData.length > 0 || educationMinistryData.length > 0 || 
             animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
-            landMinistryData.length > 0
+            landMinistryData.length > 0 || mainSecretaryData.length > 0
               ? 'bg-red-600 text-white hover:bg-red-700' 
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
@@ -779,11 +816,11 @@ const PSDPanel = () => {
           onClick={handleExportCSV} 
           disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
                     animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-                    landMinistryData.length === 0} 
+                    landMinistryData.length === 0 && mainSecretaryData.length === 0} 
           className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
             mainMinistryData.length > 0 || educationMinistryData.length > 0 || 
             animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
-            landMinistryData.length > 0
+            landMinistryData.length > 0 || mainSecretaryData.length > 0
               ? 'bg-green-600 text-white hover:bg-green-700' 
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
@@ -837,6 +874,12 @@ const PSDPanel = () => {
             'Land Ministry', 
             <Mountain size={20} className="text-violet-600" />, 
             308
+          )}
+          {renderTable(
+            mainSecretaryData, 
+            'Main Secretary Ministry', 
+            <Users size={20} className="text-red-600" />, 
+            320
           )}
         </>
       )}
@@ -914,12 +957,12 @@ const PSDPanel = () => {
 
               <div className="bg-blue-50 rounded-lg p-3">
                 <p className="text-xs text-blue-700">
-                  <strong>Note:</strong> This report shows PSD expenditure details for five ministries.
+                  <strong>Note:</strong> This report shows PSD expenditure details for six ministries.
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
                   <strong>Main:</strong> TRNO 304 | <strong>Education:</strong> TRNO 318 | 
                   <strong>Animal:</strong> TRNO 311 | <strong>Agriculture:</strong> TRNO 314 | 
-                  <strong>Land:</strong> TRNO 308
+                  <strong>Land:</strong> TRNO 308 | <strong>Main Secretary:</strong> TRNO 320
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
                   <strong>Debit = DR(1000) - CR(2000)</strong>
