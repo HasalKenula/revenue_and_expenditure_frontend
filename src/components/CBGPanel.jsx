@@ -708,12 +708,12 @@ const CBGPanel = () => {
 
         // Prepare table body
         const tableBody = table.data.map(record => [
-          record.trno ,
-          record.program ,
-          record.project ,
-          record.sub_project ,
-          record.object ,
-          record.subject_name ,
+          record.trno,
+          record.program,
+          record.project,
+          record.sub_project,
+          record.object,
+          record.subject_name,
           formatNumber(record.debit),
           formatNumber(record.other_debit),
           formatNumber(record.total_expenditure)
@@ -768,58 +768,119 @@ const CBGPanel = () => {
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-      doc.text('Total Expenditure Summary', pageWidth / 2, 28, { align: 'center' });
+      doc.text('CBG Summary', pageWidth / 2, 28, { align: 'center' });
+
+      // Calculate summary table width to center it
+      const summaryColumnWidths = [55, 30, 40, 45, 40];
+      const summaryTotalWidth = summaryColumnWidths.reduce((a, b) => a + b, 0);
+      const summaryLeftMargin = (pageWidth - summaryTotalWidth) / 2;
 
       const summaryData = [
-        ['Main Ministry', '304', formatNumber(totals.main_total_expenditure)],
-        ['Education Ministry', '318', formatNumber(totals.edu_total_expenditure)],
-        ['Animal Ministry', '311', formatNumber(totals.animal_total_expenditure)],
-        ['Agriculture Ministry', '314', formatNumber(totals.agri_total_expenditure)],
-        ['Land Ministry', '308', formatNumber(totals.land_total_expenditure)],
-        ['Main Secretary Ministry', '320', formatNumber(totals.secretary_total_expenditure)]
+        ['Main Ministry', '304',
+          formatNumber(totals.main_total_debit),
+          formatNumber(totals.main_total_other_debit),
+          formatNumber(totals.main_total_expenditure)
+        ],
+        ['Education Ministry', '318',
+          formatNumber(totals.edu_total_debit),
+          formatNumber(totals.edu_total_other_debit),
+          formatNumber(totals.edu_total_expenditure)
+        ],
+        ['Animal Ministry', '311',
+          formatNumber(totals.animal_total_debit),
+          formatNumber(totals.animal_total_other_debit),
+          formatNumber(totals.animal_total_expenditure)
+        ],
+        ['Agriculture Ministry', '314',
+          formatNumber(totals.agri_total_debit),
+          formatNumber(totals.agri_total_other_debit),
+          formatNumber(totals.agri_total_expenditure)
+        ],
+        ['Land Ministry', '308',
+          formatNumber(totals.land_total_debit),
+          formatNumber(totals.land_total_other_debit),
+          formatNumber(totals.land_total_expenditure)
+        ],
+        ['Main Secretary Ministry', '320',
+          formatNumber(totals.secretary_total_debit),
+          formatNumber(totals.secretary_total_other_debit),
+          formatNumber(totals.secretary_total_expenditure)
+        ]
       ];
 
-      const grandTotal = parseFloat(totals.main_total_expenditure) +
+      const grandTotalDebit = parseFloat(totals.main_total_debit) +
+        parseFloat(totals.edu_total_debit) +
+        parseFloat(totals.animal_total_debit) +
+        parseFloat(totals.agri_total_debit) +
+        parseFloat(totals.land_total_debit) +
+        parseFloat(totals.secretary_total_debit);
+
+      const grandTotalOtherDebit = parseFloat(totals.main_total_other_debit) +
+        parseFloat(totals.edu_total_other_debit) +
+        parseFloat(totals.animal_total_other_debit) +
+        parseFloat(totals.agri_total_other_debit) +
+        parseFloat(totals.land_total_other_debit) +
+        parseFloat(totals.secretary_total_other_debit);
+
+      const grandTotalExpenditure = parseFloat(totals.main_total_expenditure) +
         parseFloat(totals.edu_total_expenditure) +
         parseFloat(totals.animal_total_expenditure) +
         parseFloat(totals.agri_total_expenditure) +
         parseFloat(totals.land_total_expenditure) +
         parseFloat(totals.secretary_total_expenditure);
 
-      summaryData.push(['GRAND TOTAL', '', formatNumber(grandTotal)]);
+      summaryData.push([
+        'GRAND TOTAL',
+        '',
+        formatNumber(grandTotalDebit),
+        formatNumber(grandTotalOtherDebit),
+        formatNumber(grandTotalExpenditure)
+      ]);
 
-      // Calculate summary table width to center it
-      const summaryColumnWidths = [80, 40, 60];
-      const summaryTotalWidth = summaryColumnWidths.reduce((a, b) => a + b, 0);
-      const summaryLeftMargin = (pageWidth - summaryTotalWidth) / 2;
-
+      // Use tableWidth: 'auto' and the calculated margin
       autoTable(doc, {
-        head: [['Ministry', 'TRNO', 'Total Expenditure (Rs)']],
+        head: [['Ministry', 'TRNO', 'Total Debit (Rs)', 'Total Other Debit (Rs)', 'Total Expenditure (Rs)']],
         body: summaryData,
         startY: 35,
         theme: 'striped',
         headStyles: {
           fillColor: [41, 128, 185],
           textColor: [255, 255, 255],
-          fontSize: 9,
+          fontSize: 8,
           fontStyle: 'bold',
           halign: 'center',
-          cellPadding: 3
+          cellPadding: 2.5
         },
         bodyStyles: {
-          fontSize: 8,
-          cellPadding: 3
+          fontSize: 7.5,
+          cellPadding: 2.5
         },
         columnStyles: {
-          0: { cellWidth: 80, halign: 'left' },
-          1: { cellWidth: 40, halign: 'center' },
-          2: { cellWidth: 60, halign: 'right' }
+          0: { cellWidth: 40, halign: 'left' },
+          1: { cellWidth: 20, halign: 'center' },
+          2: { cellWidth: 40, halign: 'right' },
+          3: { cellWidth: 40, halign: 'right' },
+          4: { cellWidth: 40, halign: 'right' }
         },
-        alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { left: summaryLeftMargin, right: summaryLeftMargin },
-        tableWidth: 'auto'
-      });
 
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: {
+          left: 15,
+          right: 15,
+          top: 35,
+          bottom: 20
+        },
+        tableWidth: 180,
+
+        didParseCell: function (data) {
+          // Make grand total row bold
+          if (data.row.index === summaryData.length - 1) {
+            data.cell.styles.fontStyle = 'bold';
+            data.cell.styles.fillColor = [245, 245, 245];
+            data.cell.styles.textColor = [0, 0, 0];
+          }
+        }
+      });
       // Add page numbers to all pages (after all content is generated)
       const totalPages = doc.internal.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {

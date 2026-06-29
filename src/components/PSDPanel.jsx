@@ -173,7 +173,7 @@ const PSDPanel = () => {
         const agriData = response.data.data.agriculture_ministry || [];
         const landData = response.data.data.land_ministry || [];
         const secretaryData = response.data.data.main_secretary || [];
-        
+
         setMainMinistryData(mainData);
         setEducationMinistryData(eduData);
         setAnimalMinistryData(animalData);
@@ -358,9 +358,9 @@ const PSDPanel = () => {
   };
 
   const handleExportPDF = () => {
-    if (mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
-        animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-        landMinistryData.length === 0 && mainSecretaryData.length === 0) {
+    if (mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
+      animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
+      landMinistryData.length === 0 && mainSecretaryData.length === 0) {
       alert('No data to export');
       return;
     }
@@ -369,7 +369,7 @@ const PSDPanel = () => {
 
     try {
       const doc = new jsPDF({
-        orientation: 'landscape',
+        orientation: 'portrait',
         unit: 'mm',
         format: 'a4'
       });
@@ -377,19 +377,19 @@ const PSDPanel = () => {
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const currentDate = new Date().toLocaleString();
+      const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
 
       // Header
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(0, 0, 0);
-      doc.text('PSD Report', pageWidth / 2, 20, { align: 'center' });
+      doc.text('PSD Report', pageWidth / 2, 15, { align: 'center' });
 
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(60, 60, 60);
-      doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 28, { align: 'center' });
+      doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 22, { align: 'center' });
 
-      const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
+      // Filter information
       let filterText = `Year: ${appliedFilters.year} | Month: ${monthText}`;
       if (appliedFilters.view_type === 'cumulative') {
         filterText += ` | View: Cumulative (Jan - ${monthText})`;
@@ -397,117 +397,253 @@ const PSDPanel = () => {
         filterText += ` | View: Monthly (${monthText})`;
       }
       doc.setFontSize(9);
-      doc.setTextColor(60, 60, 60);
-      doc.text(filterText, pageWidth / 2, 36, { align: 'center' });
+      doc.text(filterText, pageWidth / 2, 29, { align: 'center' });
 
+      // Draw line
       doc.setDrawColor(200, 200, 200);
       doc.line(15, 40, pageWidth - 15, 40);
 
-      const tableHeaders = ['TR No', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Debit (Rs)', 'Other Debit (Rs)', 'Total Expenditure (Rs)'];
+      // Table headers
+      const tableHeaders = ['TR No', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Debit', 'Other Debit', 'Total Expenditure'];
 
-      // Prepare all tables
+      // Prepare all tables data with different colors for each ministry
       const tables = [
-        { data: mainMinistryData, title: 'MAIN MINISTRY', trno: '304', icon: '🏛️', color: [41, 128, 185] },
-        { data: educationMinistryData, title: 'EDUCATION MINISTRY', trno: '318', icon: '🎓', color: [46, 204, 113] },
-        { data: animalMinistryData, title: 'ANIMAL MINISTRY', trno: '311', icon: '🐾', color: [243, 156, 18] },
-        { data: agricultureMinistryData, title: 'AGRICULTURE MINISTRY', trno: '314', icon: '🌱', color: [39, 174, 96] },
-        { data: landMinistryData, title: 'LAND MINISTRY', trno: '308', icon: '⛰️', color: [142, 68, 173] },
-        { data: mainSecretaryData, title: 'MAIN SECRETARY MINISTRY', trno: '320', icon: '👥', color: [192, 57, 43] }
+        { data: mainMinistryData, title: 'MAIN MINISTRY (TRNO: 304)', color: [41, 128, 185] },
+        { data: educationMinistryData, title: 'EDUCATION MINISTRY (TRNO: 318)', color: [41, 128, 185] },
+        { data: animalMinistryData, title: 'ANIMAL MINISTRY (TRNO: 311)', color: [41, 128, 185] },
+        { data: agricultureMinistryData, title: 'AGRICULTURE MINISTRY (TRNO: 314)', color: [41, 128, 185] },
+        { data: landMinistryData, title: 'LAND MINISTRY (TRNO: 308)', color: [41, 128, 185] },
+        { data: mainSecretaryData, title: 'MAIN SECRETARY MINISTRY (TRNO: 320)', color: [41, 128, 185] }
       ];
 
+      // Start Y position - 8mm gap after the line
       let startY = 48;
 
+      // Process each table
       tables.forEach((table, index) => {
+        if (table.data.length === 0) return;
+
+        // Calculate table width to center it
+        const columnWidths = [16, 16, 16, 18, 16, 24, 20, 22, 22];
+        const totalTableWidth = columnWidths.reduce((a, b) => a + b, 0);
+        const leftMargin = (pageWidth - totalTableWidth) / 2;
+
+        // Add new page if needed (except for first table)
         if (index > 0 && startY > 200) {
           doc.addPage();
-          startY = 20;
+          startY = 25;
         }
 
+        // Add space between tables (10mm gap)
+        if (index > 0) {
+          startY += 10;
+        }
+
+        // Table title
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(table.color[0], table.color[1], table.color[2]);
+        doc.text(table.title, pageWidth / 2, startY, { align: 'center' });
+
+        // Prepare table body
         const tableBody = table.data.map(record => [
-          record.trno || '-',
-          record.program || '-',
-          record.project || '-',
-          record.sub_project || '-',
-          record.object || '-',
-          record.subject_name || '-',
+          record.trno,
+          record.program,
+          record.project,
+          record.sub_project,
+          record.object,
+          record.subject_name,
           formatNumber(record.debit),
           formatNumber(record.other_debit),
           formatNumber(record.total_expenditure)
         ]);
 
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(table.color[0], table.color[1], table.color[2]);
-        doc.text(`${table.icon} ${table.title} (TRNO: ${table.trno})`, pageWidth / 2, startY + 5, { align: 'center' });
-
+        // Generate table with centered position
         autoTable(doc, {
           head: [tableHeaders],
           body: tableBody,
-          startY: startY + 9,
+          startY: startY + 5,
           theme: 'striped',
           headStyles: {
             fillColor: table.color,
             textColor: [255, 255, 255],
-            fontSize: 6,
+            fontSize: 7,
             fontStyle: 'bold',
             halign: 'center',
-            cellPadding: 1.5
+            cellPadding: 2
           },
           bodyStyles: {
             fontSize: 6,
-            cellPadding: 1.5,
-            textColor: [0, 0, 0]
+            cellPadding: 2
           },
           columnStyles: {
-            0: { cellWidth: 13, halign: 'center' },
-            1: { cellWidth: 13, halign: 'center' },
-            2: { cellWidth: 13, halign: 'center' },
-            3: { cellWidth: 16, halign: 'center' },
-            4: { cellWidth: 13, halign: 'center' },
-            5: { cellWidth: 22, halign: 'left' },
-            6: { cellWidth: 16, halign: 'right' },
-            7: { cellWidth: 18, halign: 'right' },
-            8: { cellWidth: 20, halign: 'right' }
+            0: { cellWidth: 16, halign: 'center' },
+            1: { cellWidth: 16, halign: 'center' },
+            2: { cellWidth: 16, halign: 'center' },
+            3: { cellWidth: 18, halign: 'center' },
+            4: { cellWidth: 16, halign: 'center' },
+            5: { cellWidth: 24, halign: 'left' },
+            6: { cellWidth: 20, halign: 'right' },
+            7: { cellWidth: 22, halign: 'right' },
+            8: { cellWidth: 22, halign: 'right' }
           },
           alternateRowStyles: { fillColor: [245, 245, 245] },
-          margin: { top: startY + 9, left: 6, right: 6, bottom: 5 },
+          margin: { left: leftMargin, right: leftMargin },
           tableWidth: 'auto',
-          didParseCell: function(data) {
-            if (data.row.index === 0) return;
-            if (data.row.index === table.data.length - 1) {
-              data.cell.styles.fontStyle = 'bold';
-              data.cell.styles.fillColor = [220, 220, 220];
-              data.cell.styles.textColor = [0, 0, 0];
-              data.cell.styles.lineWidth = 0.5;
-              data.cell.styles.lineColor = [100, 100, 100];
-            }
-            if (data.column.index === 8) {
-              data.cell.styles.fontStyle = 'bold';
-              data.cell.styles.textColor = table.color;
-            }
-          }
         });
 
-        startY = doc.lastAutoTable?.finalY || 150;
-        startY += 8;
+        // Update start position for next table with more space
+        startY = doc.lastAutoTable.finalY + 12;
       });
 
-      // Footer
-      const pageCount = doc.internal.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
+     
+      // Add Summary Page
+      doc.addPage();
+
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(41, 128, 185);
+      doc.text('SUMMARY', pageWidth / 2, 20, { align: 'center' });
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text('PSD Summary', pageWidth / 2, 28, { align: 'center' });
+
+      // Calculate summary table width to center it
+      const summaryColumnWidths = [55, 30, 40, 45, 40];
+      const summaryTotalWidth = summaryColumnWidths.reduce((a, b) => a + b, 0);
+      const summaryLeftMargin = (pageWidth - summaryTotalWidth) / 2;
+
+      const summaryData = [
+        ['Main Ministry', '304',
+          formatNumber(totals.main_total_debit),
+          formatNumber(totals.main_total_other_debit),
+          formatNumber(totals.main_total_expenditure)
+        ],
+        ['Education Ministry', '318',
+          formatNumber(totals.edu_total_debit),
+          formatNumber(totals.edu_total_other_debit),
+          formatNumber(totals.edu_total_expenditure)
+        ],
+        ['Animal Ministry', '311',
+          formatNumber(totals.animal_total_debit),
+          formatNumber(totals.animal_total_other_debit),
+          formatNumber(totals.animal_total_expenditure)
+        ],
+        ['Agriculture Ministry', '314',
+          formatNumber(totals.agri_total_debit),
+          formatNumber(totals.agri_total_other_debit),
+          formatNumber(totals.agri_total_expenditure)
+        ],
+        ['Land Ministry', '308',
+          formatNumber(totals.land_total_debit),
+          formatNumber(totals.land_total_other_debit),
+          formatNumber(totals.land_total_expenditure)
+        ],
+        ['Main Secretary Ministry', '320',
+          formatNumber(totals.secretary_total_debit),
+          formatNumber(totals.secretary_total_other_debit),
+          formatNumber(totals.secretary_total_expenditure)
+        ]
+      ];
+
+      const grandTotalDebit = parseFloat(totals.main_total_debit) +
+        parseFloat(totals.edu_total_debit) +
+        parseFloat(totals.animal_total_debit) +
+        parseFloat(totals.agri_total_debit) +
+        parseFloat(totals.land_total_debit) +
+        parseFloat(totals.secretary_total_debit);
+
+      const grandTotalOtherDebit = parseFloat(totals.main_total_other_debit) +
+        parseFloat(totals.edu_total_other_debit) +
+        parseFloat(totals.animal_total_other_debit) +
+        parseFloat(totals.agri_total_other_debit) +
+        parseFloat(totals.land_total_other_debit) +
+        parseFloat(totals.secretary_total_other_debit);
+
+      const grandTotalExpenditure = parseFloat(totals.main_total_expenditure) +
+        parseFloat(totals.edu_total_expenditure) +
+        parseFloat(totals.animal_total_expenditure) +
+        parseFloat(totals.agri_total_expenditure) +
+        parseFloat(totals.land_total_expenditure) +
+        parseFloat(totals.secretary_total_expenditure);
+
+      summaryData.push([
+        'GRAND TOTAL',
+        '',
+        formatNumber(grandTotalDebit),
+        formatNumber(grandTotalOtherDebit),
+        formatNumber(grandTotalExpenditure)
+      ]);
+
+      // Use tableWidth: 'auto' and the calculated margin
+      autoTable(doc, {
+        head: [['Ministry', 'TRNO', 'Total Debit (Rs)', 'Total Other Debit (Rs)', 'Total Expenditure (Rs)']],
+        body: summaryData,
+        startY: 35,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: [255, 255, 255],
+          fontSize: 8,
+          fontStyle: 'bold',
+          halign: 'center',
+          cellPadding: 2.5
+        },
+        bodyStyles: {
+          fontSize: 7.5,
+          cellPadding: 2.5
+        },
+        columnStyles: {
+          0: { cellWidth: 40, halign: 'left' },
+          1: { cellWidth: 20, halign: 'center' },
+          2: { cellWidth: 40, halign: 'right' },
+          3: { cellWidth: 40, halign: 'right' },
+          4: { cellWidth: 40, halign: 'right' }
+        },
+
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: {
+          left: 15,
+          right: 15,
+          top: 35,
+          bottom: 20
+        },
+        tableWidth: 180,
+
+        didParseCell: function (data) {
+          // Make grand total row bold
+          if (data.row.index === summaryData.length - 1) {
+            data.cell.styles.fontStyle = 'bold';
+            data.cell.styles.fillColor = [245, 245, 245];
+            data.cell.styles.textColor = [0, 0, 0];
+          }
+        }
+      });
+      // Add page numbers to all pages (after all content is generated)
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
-        doc.setDrawColor(200, 200, 200);
-        doc.line(10, pageHeight - 12, pageWidth - 10, pageHeight - 12);
         doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
         doc.setTextColor(128, 128, 128);
+
+        // Draw a line above the page number
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.2);
+        doc.line(20, pageHeight - 12, pageWidth - 20, pageHeight - 12);
+
+        // Add page number
         doc.text(
-          `Page ${i} of ${pageCount}`,
+          `Page ${i} of ${totalPages}`,
           pageWidth / 2,
           pageHeight - 5,
           { align: 'center' }
         );
       }
 
+      // Save PDF
       const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
       const fileName = `psd_report_${viewText}_${appliedFilters.year}_${monthText}.pdf`;
       doc.save(fileName);
@@ -522,9 +658,9 @@ const PSDPanel = () => {
   };
 
   const handleExportCSV = async () => {
-    if (mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
-        animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-        landMinistryData.length === 0 && mainSecretaryData.length === 0) {
+    if (mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
+      animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
+      landMinistryData.length === 0 && mainSecretaryData.length === 0) {
       alert('No data to export');
       return;
     }
@@ -611,23 +747,23 @@ const PSDPanel = () => {
             <tbody>
               {dataRows.map((record, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-gray-700">{record.trno || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.program || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.project || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.sub_project || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.object || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.subject_name || '-'}</td>
-                  <td className="px-3 py-2 text-right text-green-600">Rs{formatNumber(record.debit)}</td>
-                  <td className="px-3 py-2 text-right text-blue-600">Rs{formatNumber(record.other_debit)}</td>
-                  <td className="px-3 py-2 text-right font-bold text-purple-700">Rs{formatNumber(record.total_expenditure)}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.trno}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.program}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.project}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.sub_project}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.object }</td>
+                  <td className="px-3 py-2 text-gray-700">{record.subject_name}</td>
+                  <td className="px-3 py-2 text-right text-gray-600">Rs{formatNumber(record.debit)}</td>
+                  <td className="px-3 py-2 text-right text-gray-600">Rs{formatNumber(record.other_debit)}</td>
+                  <td className="px-3 py-2 text-right font-bold text-gray-700">Rs{formatNumber(record.total_expenditure)}</td>
                 </tr>
               ))}
               {totalRow && (
                 <tr className="bg-gray-100 font-bold border-t-2 border-gray-300">
-                  <td colSpan="6" className="px-3 py-2 text-right text-blue-700">TOTAL:</td>
-                  <td className="px-3 py-2 text-right text-green-700">Rs{formatNumber(totalRow.debit)}</td>
-                  <td className="px-3 py-2 text-right text-blue-700">Rs{formatNumber(totalRow.other_debit)}</td>
-                  <td className="px-3 py-2 text-right text-purple-700">Rs{formatNumber(totalRow.total_expenditure)}</td>
+                  <td colSpan="6" className="px-3 py-2 text-right text-gray-700">TOTAL:</td>
+                  <td className="px-3 py-2 text-right text-gray-700">Rs{formatNumber(totalRow.debit)}</td>
+                  <td className="px-3 py-2 text-right text-gray-700">Rs{formatNumber(totalRow.other_debit)}</td>
+                  <td className="px-3 py-2 text-right text-gray-700">Rs{formatNumber(totalRow.total_expenditure)}</td>
                 </tr>
               )}
             </tbody>
@@ -660,7 +796,7 @@ const PSDPanel = () => {
           {appliedFilters.year && appliedFilters.month && (
             <div className="bg-blue-50 rounded-lg px-3 py-2">
               <p className="text-sm text-blue-700">
-                <span className="font-medium">Year:</span> {appliedFilters.year} | 
+                <span className="font-medium">Year:</span> {appliedFilters.year} |
                 <span className="font-medium ml-2">Month:</span> {monthNames[appliedFilters.month]}
                 <span className="font-medium ml-2">| View:</span> {appliedFilters.view_type === 'cumulative' ? 'Cumulative' : 'Monthly'}
               </p>
@@ -686,7 +822,7 @@ const PSDPanel = () => {
       )}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-18 gap-1">
+      {/* <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-18 gap-1">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded p-1 text-white shadow-lg">
           <p className="text-[5px] opacity-90">Main-D</p>
           <p className="text-[7px] font-bold truncate">Rs{formatNumber(totals.main_total_debit)}</p>
@@ -759,7 +895,7 @@ const PSDPanel = () => {
           <p className="text-[5px] opacity-90">Sec-E</p>
           <p className="text-[7px] font-bold truncate">Rs{formatNumber(totals.secretary_total_expenditure)}</p>
         </div>
-      </div>
+      </div> */}
 
       {/* Filters Display */}
       {(appliedFilters.year || appliedFilters.month) && (
@@ -778,8 +914,8 @@ const PSDPanel = () => {
               </span>
             )}
           </div>
-          <button 
-            onClick={clearFilters} 
+          <button
+            onClick={clearFilters}
             className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
           >
             <X size={14} /> Clear All
@@ -789,47 +925,45 @@ const PSDPanel = () => {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
-        <button 
-          onClick={() => setShowFilterModal(true)} 
+        <button
+          onClick={() => setShowFilterModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
         >
           <Filter size={16} />
           <span>Filter</span>
         </button>
-        <button 
-          onClick={handleExportPDF} 
-          disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
-                    animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-                    landMinistryData.length === 0 && mainSecretaryData.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            mainMinistryData.length > 0 || educationMinistryData.length > 0 || 
-            animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
-            landMinistryData.length > 0 || mainSecretaryData.length > 0
-              ? 'bg-red-600 text-white hover:bg-red-700' 
+        <button
+          onClick={handleExportPDF}
+          disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
+            animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
+            landMinistryData.length === 0 && mainSecretaryData.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${mainMinistryData.length > 0 || educationMinistryData.length > 0 ||
+              animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
+              landMinistryData.length > 0 || mainSecretaryData.length > 0
+              ? 'bg-red-600 text-white hover:bg-red-700'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+            }`}
         >
           <FileText size={16} />
           <span>Export PDF</span>
         </button>
-        <button 
-          onClick={handleExportCSV} 
-          disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 && 
-                    animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
-                    landMinistryData.length === 0 && mainSecretaryData.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            mainMinistryData.length > 0 || educationMinistryData.length > 0 || 
-            animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
-            landMinistryData.length > 0 || mainSecretaryData.length > 0
-              ? 'bg-green-600 text-white hover:bg-green-700' 
+        <button
+          onClick={handleExportCSV}
+          disabled={mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
+            animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
+            landMinistryData.length === 0 && mainSecretaryData.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${mainMinistryData.length > 0 || educationMinistryData.length > 0 ||
+              animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
+              landMinistryData.length > 0 || mainSecretaryData.length > 0
+              ? 'bg-green-600 text-white hover:bg-green-700'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+            }`}
         >
           <Download size={16} />
           <span>Export CSV</span>
         </button>
-        <button 
-          onClick={refreshData} 
+        <button
+          onClick={refreshData}
           className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
         >
           <RefreshCw size={16} />
@@ -846,39 +980,39 @@ const PSDPanel = () => {
       ) : (
         <>
           {renderTable(
-            mainMinistryData, 
-            'Main Ministry', 
-            <Building2 size={20} className="text-blue-600" />, 
+            mainMinistryData,
+            'Main Ministry',
+            <Building2 size={20} className="text-blue-600" />,
             304
           )}
           {renderTable(
-            educationMinistryData, 
-            'Education Ministry', 
-            <GraduationCap size={20} className="text-green-600" />, 
+            educationMinistryData,
+            'Education Ministry',
+            <GraduationCap size={20} className="text-green-600" />,
             318
           )}
           {renderTable(
-            animalMinistryData, 
-            'Animal Ministry', 
-            <PawPrint size={20} className="text-orange-600" />, 
+            animalMinistryData,
+            'Animal Ministry',
+            <PawPrint size={20} className="text-orange-600" />,
             311
           )}
           {renderTable(
-            agricultureMinistryData, 
-            'Agriculture Ministry', 
-            <Sprout size={20} className="text-emerald-600" />, 
+            agricultureMinistryData,
+            'Agriculture Ministry',
+            <Sprout size={20} className="text-emerald-600" />,
             314
           )}
           {renderTable(
-            landMinistryData, 
-            'Land Ministry', 
-            <Mountain size={20} className="text-violet-600" />, 
+            landMinistryData,
+            'Land Ministry',
+            <Mountain size={20} className="text-violet-600" />,
             308
           )}
           {renderTable(
-            mainSecretaryData, 
-            'Main Secretary Ministry', 
-            <Users size={20} className="text-red-600" />, 
+            mainSecretaryData,
+            'Main Secretary Ministry',
+            <Users size={20} className="text-red-600" />,
             320
           )}
         </>
@@ -890,8 +1024,8 @@ const PSDPanel = () => {
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Filter PSD Report</h3>
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
                 <X size={20} />
@@ -949,8 +1083,8 @@ const PSDPanel = () => {
                   <option value="monthly">Monthly (Month only)</option>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  {filters.view_type === 'cumulative' 
-                    ? 'Shows cumulative data from January to selected month' 
+                  {filters.view_type === 'cumulative'
+                    ? 'Shows cumulative data from January to selected month'
                     : 'Shows data for the selected month only'}
                 </p>
               </div>
@@ -960,8 +1094,8 @@ const PSDPanel = () => {
                   <strong>Note:</strong> This report shows PSD expenditure details for six ministries.
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
-                  <strong>Main:</strong> TRNO 304 | <strong>Education:</strong> TRNO 318 | 
-                  <strong>Animal:</strong> TRNO 311 | <strong>Agriculture:</strong> TRNO 314 | 
+                  <strong>Main:</strong> TRNO 304 | <strong>Education:</strong> TRNO 318 |
+                  <strong>Animal:</strong> TRNO 311 | <strong>Agriculture:</strong> TRNO 314 |
                   <strong>Land:</strong> TRNO 308 | <strong>Main Secretary:</strong> TRNO 320
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
@@ -971,14 +1105,14 @@ const PSDPanel = () => {
             </div>
 
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
-              <button 
-                onClick={applyFilters} 
+              <button
+                onClick={applyFilters}
                 disabled={!filters.year || !filters.month}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
