@@ -741,16 +741,16 @@ const CBGPanel = () => {
             0: { cellWidth: 16, halign: 'center' },
             1: { cellWidth: 16, halign: 'center' },
             2: { cellWidth: 16, halign: 'center' },
-            3: { cellWidth: 18, halign: 'center' },
+            3: { cellWidth: 16, halign: 'center' },
             4: { cellWidth: 16, halign: 'center' },
-            5: { cellWidth: 24, halign: 'left' },
-            6: { cellWidth: 20, halign: 'right' },
-            7: { cellWidth: 22, halign: 'right' },
-            8: { cellWidth: 22, halign: 'right' }
+            5: { cellWidth: 25, halign: 'left' },
+            6: { cellWidth: 25, halign: 'right' },
+            7: { cellWidth: 25, halign: 'right' },
+            8: { cellWidth: 25, halign: 'right' }
           },
           alternateRowStyles: { fillColor: [245, 245, 245] },
-          margin: { left: leftMargin, right: leftMargin },
-          tableWidth: 'auto'
+          margin: { left: 15, right: 15 },
+          tableWidth: '180'
         });
 
         // Update start position for next table with more space
