@@ -417,6 +417,35 @@ const Sidebar = () => {
           </Link>
         </div>
 
+          {/* main Journal Summary */}
+        <div>
+
+          <Link to="/main_journal" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">Main Journal (HW)</span>
+          </Link>
+        </div>
+
+
+         {/* main imprest balace  */}
+        <div>
+
+          <Link to="/imprestBalance" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">Imprest Balance</span>
+          </Link>
+        </div>
+
+        
+         {/* Allocation  balace  */}
+        <div>
+
+          <Link to="/allocation_balance" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <TrendingUp size={18} />
+            <span className="text-sm">Allocation Balance</span>
+          </Link>
+        </div>
+
 
 
 
