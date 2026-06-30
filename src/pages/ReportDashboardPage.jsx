@@ -1,8 +1,8 @@
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import FinancialDashboard from "../components/FinancialDashboardPanel";
+import ReportDashboard from "../components/ReportDashboard";
 
-function Home() {
+function ReportDashboardPage() {
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
@@ -11,12 +11,11 @@ function Home() {
         <Header />
 
         <main className="flex-1 overflow-y-auto p-6">
-         
-          <FinancialDashboard/>
+          <ReportDashboard/>
         </main>
       </div>
     </div>
   );
 }
 
-export default Home;
+export default ReportDashboardPage;
