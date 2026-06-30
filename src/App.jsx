@@ -25,6 +25,7 @@ import ImprestBalancePage from './pages/ImprestBalancePage';
 import MaintenancePage from './pages/MaintenancePage';
 import CBGPage from './pages/CBGPage';
 import PSDPage from './pages/PSDPage';
+import ReportDashboardPage from './pages/ReportDashboardPage';
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -89,6 +90,7 @@ function Layout() {
         <Route path="/allocation_balance" element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
         <Route path="/cbg" element={<ProtectedRoute><CBGPage /></ProtectedRoute>} />
         <Route path="/psd" element={<ProtectedRoute><PSDPage /></ProtectedRoute>} />
+        <Route path="/reports" element={<ProtectedRoute><ReportDashboardPage /></ProtectedRoute>} />
 
 
       </Routes>
