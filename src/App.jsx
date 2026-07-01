@@ -279,6 +279,7 @@ import CBGPage from './pages/CBGPage';
 import PSDPage from './pages/PSDPage';
 import ReportDashboardPage from './pages/ReportDashboardPage';
 import HeadUploadPage from './pages/HeadUploadPage';
+import UpkeepPage from "./pages/UpkeepPage";
 
 
 // Component to handle role-based redirect for home page
@@ -489,6 +490,14 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="admin">
                             <ReportDashboardPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                 <Route 
+                    path="/upkeep" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <UpkeepPage />
                         </RoleProtectedRoute>
                     } 
                 />

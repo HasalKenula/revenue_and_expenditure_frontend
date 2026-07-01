@@ -60,6 +60,7 @@ const ReportDashboard = () => {
         { id: 'allocation-balance', name: 'Allocation Balance Report', path: '/allocation_balance', icon: FileSpreadsheet },
         { id: 'other-debit', name: 'Other Dept Debits', path: '/odd', icon: FileText },
         { id: 'other-surcharge', name: 'Other Dept Surcharge', path: '/ods', icon: FileSpreadsheet },
+        { id: 'upkeep', name: 'Mainteneance', path: '/upkeep', icon: FileSpreadsheet },
       ]
     },
     {
