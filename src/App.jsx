@@ -1,5 +1,255 @@
-import { useState } from 'react'
-import { Link, BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+// import { useState } from 'react'
+// import { Link, BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+// import BudgetPage from "./pages/BudgetPage";
+// import Home from "./pages/Home";
+// import ImprestPage from './pages/ImprestPage';
+// import SupplementaryPage from './pages/SupplementaryPage';
+// import MonthlyFinancePage from './pages/MonthlyFinancePage';
+// import LoginPage from './pages/LoginPage';
+// import OpeningBalancePage from './pages/OpeningBalancePage';
+// import ImpressIssuePage from './pages/ImpressIssuePage';
+// import ImpressSettlementPage from './pages/ImpressSettlementPage';
+// import ProtectedRoute from "./components/ProtectedRoute"
+// import NetExpenditurePage from './pages/NetExpenditurePage';
+// import NetAllocationPage from './pages/NetAllocationPage';
+// import WOPPage from './pages/WOPPage';
+// import COEOWPage from './pages/COEOWPage';
+// import COEHWPage from './pages/COEHWPage';
+// import RCExpenditurePage from './pages/RCExpenditurePage';
+// import ODDPage from './pages/ODDPage';
+// import ODSPage from './pages/ODSPage';
+// import JournalSummaryPage from './pages/JournalSummaryPage';
+// import Register from './pages/Register';
+// import MainJournalPage from './pages/MainJournalPage';
+// import ImprestBalancePage from './pages/ImprestBalancePage';
+// import MaintenancePage from './pages/MaintenancePage';
+// import CBGPage from './pages/CBGPage';
+// import PSDPage from './pages/PSDPage';
+// import ReportDashboardPage from './pages/ReportDashboardPage';
+// import HeadUploadPage from './pages/HeadUploadPage';
+
+// // function App() {
+// //   const [count, setCount] = useState(0)
+// //   const [selectedDepartment, setSelectedDepartment] = useState(null);
+
+// //   return (
+// //     <BrowserRouter>
+// //       <Routes>
+// //         <Route path="/" element={<Home />} />
+// //         <Route path="/budget" element={<BudgetPage />} />
+// //         <Route path="/imprest" element={<ImprestPage />} />
+// //         <Route path="/supplementary" element={<SupplementaryPage />} />
+// //         <Route path="/monthly-finance" element={<MonthlyFinancePage />} />
+// //         <Route path="/login" element={<LoginPage />} />
+// //         <Route path="/opening-balance" element={<OpeningBalancePage />} />
+// //         <Route path="/impress-issue" element={<ImpressIssuePage />} />
+// //         <Route path="/impress-settlement" element={<ImpressSettlementPage />} />
+// //       </Routes>
+// //     </BrowserRouter>
+// //   )
+// // }
+
+// // export default App
+// // App.jsx
+
+// function Layout() {
+//   const location = useLocation();
+//   const showNavbar = ["/login", "/register"].includes(location.pathname);
+
+//   return (
+//     <>
+//       {showNavbar}
+
+
+
+//       <Routes>
+//         {/* public routes */}
+
+//         <Route path="/login" element={<LoginPage />} />
+//         <Route path="/register" element={<Register />} />
+
+//         {/* protected routes */}
+//         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+//         <Route path="/budget" element={<ProtectedRoute><BudgetPage /></ProtectedRoute>} />
+//         <Route path="/imprest" element={<ProtectedRoute><ImprestPage /></ProtectedRoute>} />
+//         <Route path="/supplementary" element={<ProtectedRoute><SupplementaryPage /></ProtectedRoute>} />
+//         <Route path="/monthly-finance" element={<ProtectedRoute><MonthlyFinancePage /></ProtectedRoute>} />
+//         <Route path="/opening-balance" element={<ProtectedRoute><OpeningBalancePage /></ProtectedRoute>} />
+//         <Route path="/impress-issue" element={<ProtectedRoute><ImpressIssuePage /></ProtectedRoute>} />
+//         <Route path="/impress-settlement" element={<ProtectedRoute><ImpressSettlementPage /></ProtectedRoute>} />
+//         <Route path="/net-expenditure" element={<ProtectedRoute><NetExpenditurePage /></ProtectedRoute>} />
+//         <Route path="/net-allocation" element={<ProtectedRoute><NetAllocationPage /></ProtectedRoute>} />
+//         <Route path="/wop" element={<ProtectedRoute><WOPPage /></ProtectedRoute>} />
+//         <Route path="/coeow" element={<ProtectedRoute><COEOWPage /></ProtectedRoute>} />
+//         <Route path="/coehw" element={<ProtectedRoute><COEHWPage /></ProtectedRoute>} />
+//         <Route path="/rc" element={<ProtectedRoute><RCExpenditurePage /></ProtectedRoute>} />
+//         <Route path="/odd" element={<ProtectedRoute><ODDPage /></ProtectedRoute>} />
+//         <Route path="/ods" element={<ProtectedRoute><ODSPage /></ProtectedRoute>} />
+//         <Route path="/journal" element={<ProtectedRoute><JournalSummaryPage /></ProtectedRoute>} />
+//         <Route path="/main_journal" element={<ProtectedRoute><MainJournalPage /></ProtectedRoute>} />
+//         <Route path="/imprestBalance" element={<ProtectedRoute><ImprestBalancePage /></ProtectedRoute>} />
+//         <Route path="/allocation_balance" element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
+//         <Route path="/cbg" element={<ProtectedRoute><CBGPage /></ProtectedRoute>} />
+//         <Route path="/psd" element={<ProtectedRoute><PSDPage /></ProtectedRoute>} />
+//         <Route path="/reports" element={<ProtectedRoute><ReportDashboardPage /></ProtectedRoute>} />
+//          <Route path="/head" element={<ProtectedRoute><HeadUploadPage /></ProtectedRoute>} />
+
+
+//       </Routes>
+
+
+
+
+//     </>
+//   );
+
+// }
+
+// function App() {
+
+
+//   return (
+
+//     <Router>
+//       <Layout />
+//     </Router>
+
+
+
+//   )
+// }
+
+// export default App
+
+
+
+
+
+// App.jsx - Cleaner Version
+// import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+// import BudgetPage from "./pages/BudgetPage";
+// import Home from "./pages/Home";
+// import ImprestPage from './pages/ImprestPage';
+// import SupplementaryPage from './pages/SupplementaryPage';
+// import MonthlyFinancePage from './pages/MonthlyFinancePage';
+// import LoginPage from './pages/LoginPage';
+// import OpeningBalancePage from './pages/OpeningBalancePage';
+// import ImpressIssuePage from './pages/ImpressIssuePage';
+// import ImpressSettlementPage from './pages/ImpressSettlementPage';
+// import ProtectedRoute from "./components/ProtectedRoute";
+// import RoleProtectedRoute from "./components/RoleProtectedRoute";
+// import Unauthorized from "./pages/Unauthorized";
+// import NetExpenditurePage from './pages/NetExpenditurePage';
+// import NetAllocationPage from './pages/NetAllocationPage';
+// import WOPPage from './pages/WOPPage';
+// import COEOWPage from './pages/COEOWPage';
+// import COEHWPage from './pages/COEHWPage';
+// import RCExpenditurePage from './pages/RCExpenditurePage';
+// import ODDPage from './pages/ODDPage';
+// import ODSPage from './pages/ODSPage';
+// import JournalSummaryPage from './pages/JournalSummaryPage';
+// import Register from './pages/Register';
+// import MainJournalPage from './pages/MainJournalPage';
+// import ImprestBalancePage from './pages/ImprestBalancePage';
+// import MaintenancePage from './pages/MaintenancePage';
+// import CBGPage from './pages/CBGPage';
+// import PSDPage from './pages/PSDPage';
+// import ReportDashboardPage from './pages/ReportDashboardPage';
+// import HeadUploadPage from './pages/HeadUploadPage';
+
+
+// // Admin only routes
+// const adminRoutes = [
+//   { path: "/", element: <Home /> },
+//   { path: "/budget", element: <BudgetPage /> },
+//   { path: "/imprest", element: <ImprestPage /> },
+//   { path: "/supplementary", element: <SupplementaryPage /> },
+//   { path: "/monthly-finance", element: <MonthlyFinancePage /> },
+//   { path: "/opening-balance", element: <OpeningBalancePage /> },
+//   { path: "/impress-issue", element: <ImpressIssuePage /> },
+//   { path: "/impress-settlement", element: <ImpressSettlementPage /> },
+//   { path: "/net-expenditure", element: <NetExpenditurePage /> },
+//   { path: "/net-allocation", element: <NetAllocationPage /> },
+//   { path: "/wop", element: <WOPPage /> },
+//   { path: "/coeow", element: <COEOWPage /> },
+//   { path: "/coehw", element: <COEHWPage /> },
+//   { path: "/rc", element: <RCExpenditurePage /> },
+//   { path: "/odd", element: <ODDPage /> },
+//   { path: "/ods", element: <ODSPage /> },
+//   { path: "/journal", element: <JournalSummaryPage /> },
+//   { path: "/main_journal", element: <MainJournalPage /> },
+//   { path: "/imprestBalance", element: <ImprestBalancePage /> },
+//   { path: "/allocation_balance", element: <MaintenancePage /> },
+//   { path: "/cbg", element: <CBGPage /> },
+//   { path: "/psd", element: <PSDPage /> },
+//   { path: "/reports", element: <ReportDashboardPage /> },
+// ];
+
+// // User only routes
+// const userRoutes = [
+//   { path: "/head", element: <HeadUploadPage /> },
+// ];
+
+// function Layout() {
+//   const location = useLocation();
+//   const showNavbar = ["/login", "/register", "/unauthorized"].includes(location.pathname);
+
+//   return (
+//     <>
+//       {!showNavbar}
+
+//       <Routes>
+//         {/* Public routes */}
+//         <Route path="/login" element={<LoginPage />} />
+//         <Route path="/register" element={<Register />} />
+//         <Route path="/unauthorized" element={<Unauthorized />} />
+
+//         {/* Admin only routes */}
+//         {adminRoutes.map((route) => (
+//           <Route 
+//             key={route.path} 
+//             path={route.path} 
+//             element={
+//               <RoleProtectedRoute requiredRoles="admin">
+//                 {route.element}
+//               </RoleProtectedRoute>
+//             } 
+//           />
+//         ))}
+
+//         {/* User only routes */}
+//         {userRoutes.map((route) => (
+//           <Route 
+//             key={route.path} 
+//             path={route.path} 
+//             element={
+//               <RoleProtectedRoute requiredRoles="user">
+//                 {route.element}
+//               </RoleProtectedRoute>
+//             } 
+//           />
+//         ))}
+//       </Routes>
+//     </>
+//   );
+// }
+
+// function App() {
+//   return (
+//     <Router>
+//       <Layout />
+//     </Router>
+//   );
+// }
+
+// export default App;
+
+
+
+
+
+// App.jsx
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import BudgetPage from "./pages/BudgetPage";
 import Home from "./pages/Home";
 import ImprestPage from './pages/ImprestPage';
@@ -9,7 +259,9 @@ import LoginPage from './pages/LoginPage';
 import OpeningBalancePage from './pages/OpeningBalancePage';
 import ImpressIssuePage from './pages/ImpressIssuePage';
 import ImpressSettlementPage from './pages/ImpressSettlementPage';
-import ProtectedRoute from "./components/ProtectedRoute"
+import ProtectedRoute from "./components/ProtectedRoute";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
+import Unauthorized from "./pages/Unauthorized";
 import NetExpenditurePage from './pages/NetExpenditurePage';
 import NetAllocationPage from './pages/NetAllocationPage';
 import WOPPage from './pages/WOPPage';
@@ -26,95 +278,241 @@ import MaintenancePage from './pages/MaintenancePage';
 import CBGPage from './pages/CBGPage';
 import PSDPage from './pages/PSDPage';
 import ReportDashboardPage from './pages/ReportDashboardPage';
+import HeadUploadPage from './pages/HeadUploadPage';
 
-// function App() {
-//   const [count, setCount] = useState(0)
-//   const [selectedDepartment, setSelectedDepartment] = useState(null);
 
-//   return (
-//     <BrowserRouter>
-//       <Routes>
-//         <Route path="/" element={<Home />} />
-//         <Route path="/budget" element={<BudgetPage />} />
-//         <Route path="/imprest" element={<ImprestPage />} />
-//         <Route path="/supplementary" element={<SupplementaryPage />} />
-//         <Route path="/monthly-finance" element={<MonthlyFinancePage />} />
-//         <Route path="/login" element={<LoginPage />} />
-//         <Route path="/opening-balance" element={<OpeningBalancePage />} />
-//         <Route path="/impress-issue" element={<ImpressIssuePage />} />
-//         <Route path="/impress-settlement" element={<ImpressSettlementPage />} />
-//       </Routes>
-//     </BrowserRouter>
-//   )
-// }
-
-// export default App
-// App.jsx
+// Component to handle role-based redirect for home page
+function HomeRedirect() {
+    const userRole = localStorage.getItem('userRole');
+    
+    if (userRole === 'user') {
+        return <Navigate to="/head" replace />;
+    }
+    
+    // For admin or any other role, show home page
+    return <Home />;
+}
 
 function Layout() {
-  const location = useLocation();
-  const showNavbar = ["/login", "/register"].includes(location.pathname);
+    const location = useLocation();
+    const showNavbar = ["/login", "/register", "/unauthorized"].includes(location.pathname);
 
-  return (
-    <>
-      {showNavbar}
+    return (
+        <>
+            {!showNavbar }
 
+            <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
 
+                {/* Admin only routes */}
+                <Route 
+                    path="/" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <Home />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/budget" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <BudgetPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/imprest" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <ImprestPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/supplementary" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <SupplementaryPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/monthly-finance" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <MonthlyFinancePage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/opening-balance" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <OpeningBalancePage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/impress-issue" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <ImpressIssuePage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/impress-settlement" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <ImpressSettlementPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/net-expenditure" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <NetExpenditurePage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/net-allocation" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <NetAllocationPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/wop" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <WOPPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/coeow" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <COEOWPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/coehw" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <COEHWPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/rc" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <RCExpenditurePage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/odd" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <ODDPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/ods" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <ODSPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/journal" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <JournalSummaryPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/main_journal" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <MainJournalPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/imprestBalance" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <ImprestBalancePage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/allocation_balance" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <MaintenancePage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/cbg" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <CBGPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/psd" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <PSDPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/reports" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <ReportDashboardPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
 
-      <Routes>
-        {/* public routes */}
-
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<Register />} />
-
-        {/* protected routes */}
-        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/budget" element={<ProtectedRoute><BudgetPage /></ProtectedRoute>} />
-        <Route path="/imprest" element={<ProtectedRoute><ImprestPage /></ProtectedRoute>} />
-        <Route path="/supplementary" element={<ProtectedRoute><SupplementaryPage /></ProtectedRoute>} />
-        <Route path="/monthly-finance" element={<ProtectedRoute><MonthlyFinancePage /></ProtectedRoute>} />
-        <Route path="/opening-balance" element={<ProtectedRoute><OpeningBalancePage /></ProtectedRoute>} />
-        <Route path="/impress-issue" element={<ProtectedRoute><ImpressIssuePage /></ProtectedRoute>} />
-        <Route path="/impress-settlement" element={<ProtectedRoute><ImpressSettlementPage /></ProtectedRoute>} />
-        <Route path="/net-expenditure" element={<ProtectedRoute><NetExpenditurePage /></ProtectedRoute>} />
-        <Route path="/net-allocation" element={<ProtectedRoute><NetAllocationPage /></ProtectedRoute>} />
-        <Route path="/wop" element={<ProtectedRoute><WOPPage /></ProtectedRoute>} />
-        <Route path="/coeow" element={<ProtectedRoute><COEOWPage /></ProtectedRoute>} />
-        <Route path="/coehw" element={<ProtectedRoute><COEHWPage /></ProtectedRoute>} />
-        <Route path="/rc" element={<ProtectedRoute><RCExpenditurePage /></ProtectedRoute>} />
-        <Route path="/odd" element={<ProtectedRoute><ODDPage /></ProtectedRoute>} />
-        <Route path="/ods" element={<ProtectedRoute><ODSPage /></ProtectedRoute>} />
-        <Route path="/journal" element={<ProtectedRoute><JournalSummaryPage /></ProtectedRoute>} />
-        <Route path="/main_journal" element={<ProtectedRoute><MainJournalPage /></ProtectedRoute>} />
-        <Route path="/imprestBalance" element={<ProtectedRoute><ImprestBalancePage /></ProtectedRoute>} />
-        <Route path="/allocation_balance" element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
-        <Route path="/cbg" element={<ProtectedRoute><CBGPage /></ProtectedRoute>} />
-        <Route path="/psd" element={<ProtectedRoute><PSDPage /></ProtectedRoute>} />
-        <Route path="/reports" element={<ProtectedRoute><ReportDashboardPage /></ProtectedRoute>} />
-
-
-      </Routes>
-
-
-
-
-    </>
-  );
-
+                {/* User only route - Only users with 'user' role can access */}
+                <Route 
+                    path="/head" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="user">
+                            <HeadUploadPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+            </Routes>
+        </>
+    );
 }
 
 function App() {
-
-
-  return (
-
-    <Router>
-      <Layout />
-    </Router>
-
-
-
-  )
+    return (
+        <Router>
+            <Layout />
+        </Router>
+    );
 }
 
-export default App
+export default App;
