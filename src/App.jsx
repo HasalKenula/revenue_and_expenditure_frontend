@@ -282,6 +282,7 @@ import HeadUploadPage from './pages/HeadUploadPage';
 import UpkeepPage from "./pages/UpkeepPage";
 import HeadInfoPage from "./pages/HeadInfoPage";
 import ItemCodePage from "./pages/ItemCodePage";
+import EstimatePage from "./pages/EstimatePage";
 
 
 // Component to handle role-based redirect for home page
@@ -518,6 +519,14 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="admin">
                             <ItemCodePage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                   <Route 
+                    path="/estimate" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <EstimatePage />
                         </RoleProtectedRoute>
                     } 
                 />
