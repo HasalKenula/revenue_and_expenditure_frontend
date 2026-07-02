@@ -281,6 +281,7 @@ import ReportDashboardPage from './pages/ReportDashboardPage';
 import HeadUploadPage from './pages/HeadUploadPage';
 import UpkeepPage from "./pages/UpkeepPage";
 import HeadInfoPage from "./pages/HeadInfoPage";
+import ItemCodePage from "./pages/ItemCodePage";
 
 
 // Component to handle role-based redirect for home page
@@ -508,6 +509,15 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="admin">
                             <HeadInfoPage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+
+                <Route 
+                    path="/itemcode" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <ItemCodePage />
                         </RoleProtectedRoute>
                     } 
                 />
