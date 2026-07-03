@@ -384,7 +384,7 @@ const ImpressSettlementPanel = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-5 text-white">
           <p className="text-sm opacity-90">Total Settlement Amount</p>
           <p className="text-2xl font-bold mt-1">Rs{formatNumber(totals?.total_amount || 0)}</p>
@@ -397,7 +397,7 @@ const ImpressSettlementPanel = () => {
           <p className="text-sm opacity-90">Average Amount</p>
           <p className="text-2xl font-bold mt-1">Rs{formatNumber(totals?.average_amount || 0)}</p>
         </div>
-      </div>
+      </div> */}
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
@@ -444,7 +444,7 @@ const ImpressSettlementPanel = () => {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-4 py-3 w-8"><input type="checkbox" checked={selectedRows.length === records.length && records.length > 0} onChange={handleSelectAll} className="rounded border-gray-300" /></th>
-                <th className="px-4 py-3 text-left">ID</th>
+                {/* <th className="px-4 py-3 text-left">ID</th> */}
                 <th className="px-4 py-3 text-left">Head Code</th>
                 <th className="px-4 py-3 text-left">Year</th>
                 <th className="px-4 py-3 text-left">Month</th>
@@ -466,7 +466,7 @@ const ImpressSettlementPanel = () => {
                     <td className="px-4 py-3">
                       <input type="checkbox" checked={selectedRows.includes(record.id)} onChange={() => handleSelectRow(record.id)} className="rounded border-gray-300" />
                     </td>
-                    <td className="px-4 py-3">{record.id}</td>
+                    {/* <td className="px-4 py-3">{record.id}</td> */}
                     <td className="px-4 py-3 font-medium text-gray-900">{displayNumber(record.head)}</td>
                     <td className="px-4 py-3">{record.year || '-'}</td>
                     <td className="px-4 py-3">{record.month ? monthsList.find(m => m.value === record.month)?.label : '-'}</td>

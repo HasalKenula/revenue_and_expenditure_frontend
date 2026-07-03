@@ -338,7 +338,7 @@ const SupplementaryPanel = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-5 text-white">
           <p className="text-sm opacity-90">Total FR66P</p>
           <p className="text-2xl font-bold mt-1">Rs{formatNumber(totals?.fr66p || 0)}</p>
@@ -355,7 +355,7 @@ const SupplementaryPanel = () => {
           <p className="text-sm opacity-90">Total Records</p>
           <p className="text-2xl font-bold mt-1">{totalRecords}</p>
         </div>
-      </div>
+      </div> */}
 
       {/* Action Buttons */}
       <div className="flex gap-3">
