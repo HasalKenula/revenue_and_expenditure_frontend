@@ -283,6 +283,7 @@ import UpkeepPage from "./pages/UpkeepPage";
 import HeadInfoPage from "./pages/HeadInfoPage";
 import ItemCodePage from "./pages/ItemCodePage";
 import EstimatePage from "./pages/EstimatePage";
+import TreasuryPage from "./pages/TreasuryPage";
 
 
 // Component to handle role-based redirect for home page
@@ -522,11 +523,19 @@ function Layout() {
                         </RoleProtectedRoute>
                     } 
                 />
-                   <Route 
+                <Route 
                     path="/estimate" 
                     element={
                         <RoleProtectedRoute requiredRoles="admin">
                             <EstimatePage />
+                        </RoleProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/treasury" 
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <TreasuryPage />
                         </RoleProtectedRoute>
                     } 
                 />

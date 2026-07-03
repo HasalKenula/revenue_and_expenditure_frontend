@@ -355,6 +355,14 @@ const Sidebar = () => {
           </Link>
         </div>
 
+         {/* Treasury code  */}
+        <div>
+          <Link to="/treasury" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <CheckCircle size={18} />
+            <span className="text-sm">Treasury Revenue</span>
+          </Link>
+        </div>
+
         {/* Supplementary */}
         <div>
           <Link to="/supplementary">
