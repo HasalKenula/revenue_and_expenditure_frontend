@@ -383,7 +383,7 @@ const PSDPanel = () => {
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(0, 0, 0);
-      doc.text('PSD Report', pageWidth / 2, 15, { align: 'center' });
+      doc.text('PSDG Report', pageWidth / 2, 15, { align: 'center' });
 
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
@@ -408,12 +408,12 @@ const PSDPanel = () => {
 
       // Prepare all tables data with different colors for each ministry
       const tables = [
-        { data: mainMinistryData, title: 'MAIN MINISTRY (TRNO: 304)', color: [41, 128, 185] },
-        { data: educationMinistryData, title: 'EDUCATION MINISTRY (TRNO: 318)', color: [41, 128, 185] },
-        { data: animalMinistryData, title: 'ANIMAL MINISTRY (TRNO: 311)', color: [41, 128, 185] },
-        { data: agricultureMinistryData, title: 'AGRICULTURE MINISTRY (TRNO: 314)', color: [41, 128, 185] },
-        { data: landMinistryData, title: 'LAND MINISTRY (TRNO: 308)', color: [41, 128, 185] },
-        { data: mainSecretaryData, title: 'MAIN SECRETARY MINISTRY (TRNO: 320)', color: [41, 128, 185] }
+        { data: mainMinistryData, title: 'CHIEF MINISTRY (Head: 304)', color: [41, 128, 185] },
+        { data: educationMinistryData, title: 'MINISTRY OF SPORTS (Head: 318)', color: [41, 128, 185] },
+        { data: animalMinistryData, title: 'MINISTRY OF FISHERIES (Head: 311)', color: [41, 128, 185] },
+        { data: agricultureMinistryData, title: 'MINISTRY OF AGRICULTURE (Head: 314)', color: [41, 128, 185] },
+        { data: landMinistryData, title: 'MINISTRY OF EDUCATION(Head: 308)', color: [41, 128, 185] },
+        { data: mainSecretaryData, title: 'CHIEF SECRETARIAT (Head: 320)', color: [41, 128, 185] }
       ];
 
       // Start Y position - 8mm gap after the line
@@ -508,7 +508,7 @@ const PSDPanel = () => {
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(0, 0, 0);
-      doc.text('PSD Summary', pageWidth / 2, 28, { align: 'center' });
+      doc.text('PSDG Summary', pageWidth / 2, 28, { align: 'center' });
 
       // Calculate summary table width to center it
       const summaryColumnWidths = [55, 30, 40, 45, 40];
@@ -516,32 +516,32 @@ const PSDPanel = () => {
       const summaryLeftMargin = (pageWidth - summaryTotalWidth) / 2;
 
       const summaryData = [
-        ['Main Ministry', '304',
+        ['CHIEF MINISTRY', '304',
           formatNumber(totals.main_total_debit),
           formatNumber(totals.main_total_other_debit),
           formatNumber(totals.main_total_expenditure)
         ],
-        ['Education Ministry', '318',
+        ['MINISTRY OF SPORTS', '318',
           formatNumber(totals.edu_total_debit),
           formatNumber(totals.edu_total_other_debit),
           formatNumber(totals.edu_total_expenditure)
         ],
-        ['Animal Ministry', '311',
+        ['MINISTRY OF FISHERIES', '311',
           formatNumber(totals.animal_total_debit),
           formatNumber(totals.animal_total_other_debit),
           formatNumber(totals.animal_total_expenditure)
         ],
-        ['Agriculture Ministry', '314',
+        ['MINISTRY OF AGRICULTURE', '314',
           formatNumber(totals.agri_total_debit),
           formatNumber(totals.agri_total_other_debit),
           formatNumber(totals.agri_total_expenditure)
         ],
-        ['Land Ministry', '308',
+        ['MINISTRY OF EDUCATION', '308',
           formatNumber(totals.land_total_debit),
           formatNumber(totals.land_total_other_debit),
           formatNumber(totals.land_total_expenditure)
         ],
-        ['Main Secretary Ministry', '320',
+        ['CHIEF SECRETARIAT', '320',
           formatNumber(totals.secretary_total_debit),
           formatNumber(totals.secretary_total_other_debit),
           formatNumber(totals.secretary_total_expenditure)
@@ -727,7 +727,7 @@ const PSDPanel = () => {
         <div className="flex items-center gap-2 mb-3">
           {icon}
           <h2 className="text-lg font-bold text-gray-800">{title}</h2>
-          <span className="text-sm text-gray-500">(TRNO: {trno})</span>
+          <span className="text-sm text-gray-500">(Head: {trno})</span>
         </div>
         <div className="overflow-x-auto border rounded-lg">
           <table className="w-full text-sm">
@@ -788,9 +788,9 @@ const PSDPanel = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">PSD Report</h1>
+            <h1 className="text-2xl font-bold text-gray-800">PSDG Report</h1>
             <p className="text-sm text-gray-500 mt-1">
-              Public Sector Development - Expenditure details by ministry, program, project, sub project and object
+               Provincial Specification Development Grant
             </p>
           </div>
           {appliedFilters.year && appliedFilters.month && (
@@ -981,37 +981,37 @@ const PSDPanel = () => {
         <>
           {renderTable(
             mainMinistryData,
-            'Main Ministry',
+            'CHIEF MINISTRY',
             <Building2 size={20} className="text-blue-600" />,
             304
           )}
           {renderTable(
             educationMinistryData,
-            'Education Ministry',
+            'MINISTRY OF SPORTS',
             <GraduationCap size={20} className="text-green-600" />,
             318
           )}
           {renderTable(
             animalMinistryData,
-            'Animal Ministry',
+            'MINISTRY OF FISHERIES',
             <PawPrint size={20} className="text-orange-600" />,
             311
           )}
           {renderTable(
             agricultureMinistryData,
-            'Agriculture Ministry',
+            'MINISTRY OF AGRICULTURE',
             <Sprout size={20} className="text-emerald-600" />,
             314
           )}
           {renderTable(
             landMinistryData,
-            'Land Ministry',
+            'MINISTRY OF EDUCATION',
             <Mountain size={20} className="text-violet-600" />,
             308
           )}
           {renderTable(
             mainSecretaryData,
-            'Main Secretary Ministry',
+            'CHIEF SECRETARIAT',
             <Users size={20} className="text-red-600" />,
             320
           )}
