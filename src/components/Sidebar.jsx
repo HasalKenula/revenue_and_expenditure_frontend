@@ -339,11 +339,29 @@ const Sidebar = () => {
             <span className="text-sm">Reports</span>
           </Link>
         </div>
+        {/* Head  */}
+        <div>
+          <Link to="/headinfo" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <CheckCircle size={18} />
+            <span className="text-sm">Head</span>
+          </Link>
+        </div>
 
+        {/* Estimate code  */}
+        <div>
+          <Link to="/estimate" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <CheckCircle size={18} />
+            <span className="text-sm">Estimate</span>
+          </Link>
+        </div>
 
-
-
-
+         {/* Treasury code  */}
+        <div>
+          <Link to="/treasury" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+            <CheckCircle size={18} />
+            <span className="text-sm">Treasury Revenue</span>
+          </Link>
+        </div>
 
         {/* Supplementary */}
         <div>
@@ -355,6 +373,10 @@ const Sidebar = () => {
           </Link>
         </div>
       </nav>
+
+
+      
+
 
       {/* Footer */}
       <div className="border-t border-gray-200 p-3 space-y-2">
