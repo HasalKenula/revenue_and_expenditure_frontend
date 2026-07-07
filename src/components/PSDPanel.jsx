@@ -404,7 +404,7 @@ const PSDPanel = () => {
       doc.line(15, 40, pageWidth - 15, 40);
 
       // Table headers
-      const tableHeaders = ['TR No', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Debit', 'Other Debit', 'Total Expenditure'];
+      const tableHeaders = ['Head', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Debit', 'Other Debit', 'Total Expenditure'];
 
       // Prepare all tables data with different colors for each ministry
       const tables = [
@@ -579,7 +579,7 @@ const PSDPanel = () => {
 
       // Use tableWidth: 'auto' and the calculated margin
       autoTable(doc, {
-        head: [['Ministry', 'TRNO', 'Total Debit (Rs)', 'Total Other Debit (Rs)', 'Total Expenditure (Rs)']],
+        head: [['Ministry', 'Head', 'Total Debit (Rs)', 'Total Other Debit (Rs)', 'Total Expenditure (Rs)']],
         body: summaryData,
         startY: 35,
         theme: 'striped',
@@ -1094,9 +1094,9 @@ const PSDPanel = () => {
                   <strong>Note:</strong> This report shows PSD expenditure details for six ministries.
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
-                  <strong>Main:</strong> TRNO 304 | <strong>Education:</strong> TRNO 318 |
-                  <strong>Animal:</strong> TRNO 311 | <strong>Agriculture:</strong> TRNO 314 |
-                  <strong>Land:</strong> TRNO 308 | <strong>Main Secretary:</strong> TRNO 320
+                  <strong>CHIEF MINISTRY:</strong> TRNO 304 | <strong>SPORTS:</strong> TRNO 318 |
+                  <strong>FISHERIES:</strong> TRNO 311 | <strong>AGRICULTURE:</strong> TRNO 314 |
+                  <strong>EDUCATION:</strong> TRNO 308 | <strong>CHIEF SECRETARIAT:</strong> TRNO 320
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
                   <strong>Debit = DR(1000) - CR(2000)</strong>
