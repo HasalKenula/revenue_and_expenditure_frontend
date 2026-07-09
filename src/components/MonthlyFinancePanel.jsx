@@ -529,7 +529,7 @@ const MonthlyFinancePanel = () => {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-2 py-3 w-8"><input type="checkbox" checked={selectedRows.length === records.length && records.length > 0} onChange={handleSelectAll} className="rounded border-gray-300" /></th>
-                <th className="px-2 py-3 text-left">ID</th>
+                {/* <th className="px-2 py-3 text-left">ID</th> */}
                 <th className="px-2 py-3 text-left">Subject</th>
                 <th className="px-2 py-3 text-left">TR No</th>
                 <th className="px-2 py-3 text-left">SN</th>
@@ -564,7 +564,7 @@ const MonthlyFinancePanel = () => {
                     <td className="px-2 py-2">
                       <input type="checkbox" checked={selectedRows.includes(record.id)} onChange={() => handleSelectRow(record.id)} className="rounded border-gray-300" />
                     </td>
-                    <td className="px-2 py-2">{record.id}</td>
+                    {/* <td className="px-2 py-2">{record.id}</td> */}
                     <td className="px-2 py-2 max-w-xs truncate">{record.subject || '-'}</td>
                     <td className="px-2 py-2">{displayNumber(record.trno)}</td>
                     <td className="px-2 py-2">{displayValue(record.sn)}</td>

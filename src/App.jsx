@@ -616,6 +616,7 @@ import TreasuryPage from "./pages/TreasuryPage";
 import NetRevenuePage from "./pages/NetRevenuePage";
 import UserProfile from "./pages/UserProfile";
 import QuarterRevenuePage from "./pages/QuarterRevenuePage";
+import RevenueMonthlyPage from "./pages/RevenueMonthlyPage";
 
 
 // Component to handle role-based redirect for home page
@@ -913,6 +914,15 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="revenue_manager">
                             <QuarterRevenuePage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/monthly_revenue"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueMonthlyPage />
                         </RoleProtectedRoute>
                     }
                 />
