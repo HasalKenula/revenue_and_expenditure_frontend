@@ -653,6 +653,15 @@ const Sidebar = () => {
             </div>
 
             
+             {/* mothly summery revenue - Both */}
+            <div>
+              <Link to="/monthly_summery_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <Grid size={18} />
+                <span className="text-sm">Mothly summery Revenue</span>
+              </Link>
+            </div>
+
+            
           </>
         )}
 
