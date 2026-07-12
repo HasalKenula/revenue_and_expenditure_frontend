@@ -622,6 +622,7 @@ import TaxRevenuePage from "./pages/TaxRevenuePage";
 import NonTaxRevenuePage from "./pages/NonTaxRevenuePage";
 import RevenueCollectionAccountPage from "./pages/RevenueCollectionAccountPage";
 import RevenueCrossEntryAccountPage from "./pages/RevenueCrossEntryAccountPage";
+import RevenueRefundAccountPage from "./pages/RevenueRefundAccountPage";
 
 
 // Component to handle role-based redirect for home page
@@ -977,6 +978,14 @@ function Layout() {
                     }
                 />
 
+                <Route
+                    path="/revenue_refundAccount"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueRefundAccountPage />
+                        </RoleProtectedRoute>
+                    }
+                />
 
             </Routes>
         </>
