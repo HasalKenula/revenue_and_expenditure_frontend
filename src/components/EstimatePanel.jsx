@@ -122,11 +122,11 @@ const EstimatePanel = () => {
         if (!params[key] && params[key] !== 0) delete params[key];
       });
 
-      const response = await axios.get(`${API_BASE_URL}/estimates`, { 
-        params, 
-        headers: getAuthHeaders() 
+      const response = await axios.get(`${API_BASE_URL}/estimates`, {
+        params,
+        headers: getAuthHeaders()
       });
-      
+
       if (response.data.success) {
         setRecords(response.data.data || []);
         setTotalRecords(response.data.pagination?.total || 0);
@@ -259,12 +259,12 @@ const EstimatePanel = () => {
           message += `, Skipped: ${response.data.skipped_count} records`;
         }
         alert(message);
-        
+
         if (response.data.errors && response.data.errors.length > 0) {
           setImportErrors(response.data.errors);
           console.log('Import errors:', response.data.errors);
         }
-        
+
         setShowImportModal(false);
         setSelectedFile(null);
         fetchRecords();
@@ -343,8 +343,8 @@ const EstimatePanel = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/estimates`, data, { 
-        headers: getAuthHeaders() 
+      const response = await axios.post(`${API_BASE_URL}/estimates`, data, {
+        headers: getAuthHeaders()
       });
 
       if (response.data.success) {
@@ -442,7 +442,7 @@ const EstimatePanel = () => {
         data: { ids: selectedRows },
         headers: getAuthHeaders()
       });
-      
+
       alert(response.data.message);
       setSelectedRows([]);
       fetchRecords();
@@ -471,7 +471,7 @@ const EstimatePanel = () => {
       const response = await axios.delete(`${API_BASE_URL}/estimates/${id}`, {
         headers: getAuthHeaders()
       });
-      
+
       alert(response.data.message);
       fetchRecords();
       fetchFilterOptions();
@@ -508,7 +508,14 @@ const EstimatePanel = () => {
     setEditingRecord({ ...record });
     setShowEditModal(true);
   };
-
+  // Format number with leading zeros (pad to 2 digits)
+  const padNumber = (value) => {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+    // Convert to string and pad with leading zeros to make it 2 digits
+    return String(value).padStart(2, '0');
+  };
   return (
     <div className="space-y-6">
       {/* Loading Overlay */}
@@ -549,40 +556,39 @@ const EstimatePanel = () => {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
-        <button 
-          onClick={() => setShowAddModal(true)} 
+        <button
+          onClick={() => setShowAddModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm transition-colors"
         >
           <Plus size={16} /><span>Add Estimate</span>
         </button>
-        <button 
-          onClick={() => setShowImportModal(true)} 
+        <button
+          onClick={() => setShowImportModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm transition-colors"
         >
           <Upload size={16} /><span>Import Excel</span>
         </button>
-        <button 
-          onClick={handleExport} 
+        <button
+          onClick={handleExport}
           className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm transition-colors"
         >
           <Download size={16} /><span>Export</span>
         </button>
-        <button 
-          onClick={handleDelete} 
-          disabled={selectedRows.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm transition-colors ${
-            selectedRows.length > 0 
-              ? 'bg-red-600 text-white hover:bg-red-700' 
+        <button
+          onClick={handleDelete}
+          disabled={selectedRows.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm transition-colors ${selectedRows.length > 0
+              ? 'bg-red-600 text-white hover:bg-red-700'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+            }`}
         >
           <Trash2 size={16} /><span>Delete ({selectedRows.length})</span>
         </button>
-        <button 
+        <button
           onClick={() => {
             setCurrentPage(1);
             fetchRecords();
-          }} 
+          }}
           className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm transition-colors"
         >
           <RefreshCw size={16} /><span>Refresh</span>
@@ -594,9 +600,9 @@ const EstimatePanel = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search by revenue code..." 
+            <input
+              type="text"
+              placeholder="Search by revenue code..."
               value={searchTerm}
               onChange={handleSearch}
               className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -702,11 +708,11 @@ const EstimatePanel = () => {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-4 py-3 w-8">
-                  <input 
-                    type="checkbox" 
-                    checked={selectedRows.length === records.length && records.length > 0} 
-                    onChange={handleSelectAll} 
-                    className="rounded border-gray-300 focus:ring-blue-500" 
+                  <input
+                    type="checkbox"
+                    checked={selectedRows.length === records.length && records.length > 0}
+                    onChange={handleSelectAll}
+                    className="rounded border-gray-300 focus:ring-blue-500"
                   />
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-gray-700">Revenue Code</th>
@@ -731,14 +737,17 @@ const EstimatePanel = () => {
                 records.map((record) => (
                   <tr key={record.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedRows.includes(record.id)} 
-                        onChange={() => handleSelectRow(record.id)} 
-                        className="rounded border-gray-300 focus:ring-blue-500" 
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.includes(record.id)}
+                        onChange={() => handleSelectRow(record.id)}
+                        className="rounded border-gray-300 focus:ring-blue-500"
                       />
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-900">{displayNumber(record.head)}-{displayNumber(record.program)}{displayNumber(record.project)}-{displayNumber(record.sub_project)}{displayNumber(record.object)}</td>
+                    {/* <td className="px-4 py-3 font-medium text-gray-900">{displayNumber(record.head)}-{displayNumber(record.project)}-{displayNumber(record.sub_project)}{displayNumber(record.object)}</td> */}
+                    <td className="px-4 py-3 font-medium text-gray-900">
+                      {displayNumber(record.head)}-{padNumber(record.project)}-{padNumber(record.object)}
+                    </td>
                     {/* <td className="px-4 py-3">{displayNumber(record.program)}</td>
                     <td className="px-4 py-3">{displayNumber(record.project)}</td>
                     <td className="px-4 py-3">{displayNumber(record.sub_project)}</td>
@@ -756,15 +765,15 @@ const EstimatePanel = () => {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center space-x-2">
-                        <button 
-                          onClick={() => handleEdit(record)} 
+                        <button
+                          onClick={() => handleEdit(record)}
                           className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition-colors"
                           title="Edit"
                         >
                           <Edit size={16} />
                         </button>
-                        <button 
-                          onClick={() => handleDeleteSingle(record.id)} 
+                        <button
+                          onClick={() => handleDeleteSingle(record.id)}
                           className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition-colors"
                           title="Delete"
                         >
@@ -784,12 +793,12 @@ const EstimatePanel = () => {
           <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Show</span>
-              <select 
-                value={entriesPerPage} 
-                onChange={(e) => { 
-                  setEntriesPerPage(Number(e.target.value)); 
-                  setCurrentPage(1); 
-                }} 
+              <select
+                value={entriesPerPage}
+                onChange={(e) => {
+                  setEntriesPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
                 className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500"
               >
                 <option value={10}>10</option>
@@ -803,17 +812,17 @@ const EstimatePanel = () => {
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <button 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-                disabled={currentPage === 1} 
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
                 className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition-colors"
               >
                 <ChevronLeft size={16} />
               </button>
               <span className="text-sm text-gray-600">Page {currentPage} of {lastPage}</span>
-              <button 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))} 
-                disabled={currentPage === lastPage} 
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
+                disabled={currentPage === lastPage}
                 className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition-colors"
               >
                 <ChevronRight size={16} />
@@ -829,12 +838,12 @@ const EstimatePanel = () => {
           <div className="bg-white rounded-xl w-full max-w-md p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Import Excel File</h3>
-              <button 
+              <button
                 onClick={() => {
                   setShowImportModal(false);
                   setSelectedFile(null);
                   setImportErrors([]);
-                }} 
+                }}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X size={20} />
@@ -855,16 +864,16 @@ const EstimatePanel = () => {
               <p className="text-gray-600">Column G (6) → Estimate</p>
               <p className="text-gray-600">Column H (7) → Re-Estimate</p>
             </div>
-            <input 
-              type="file" 
-              accept=".xlsx,.xls,.csv" 
+            <input
+              type="file"
+              accept=".xlsx,.xls,.csv"
               onChange={(e) => {
                 setSelectedFile(e.target.files[0]);
                 setImportErrors([]);
-              }} 
-              className="w-full border rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-blue-500" 
+              }}
+              className="w-full border rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-blue-500"
             />
-            
+
             {/* Import Errors */}
             {importErrors.length > 0 && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -884,21 +893,21 @@ const EstimatePanel = () => {
                 </div>
               </div>
             )}
-            
+
             <div className="flex justify-end space-x-3">
-              <button 
+              <button
                 onClick={() => {
                   setShowImportModal(false);
                   setSelectedFile(null);
                   setImportErrors([]);
-                }} 
+                }}
                 className="px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
-              <button 
-                onClick={handleImport} 
-                disabled={!selectedFile || uploading} 
+              <button
+                onClick={handleImport}
+                disabled={!selectedFile || uploading}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg disabled:opacity-50 hover:bg-green-700 transition-colors"
               >
                 {uploading ? 'Importing...' : 'Import'}
@@ -914,8 +923,8 @@ const EstimatePanel = () => {
           <div className="bg-white rounded-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Add Estimate</h3>
-              <button 
-                onClick={() => setShowAddModal(false)} 
+              <button
+                onClick={() => setShowAddModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X size={20} />
@@ -924,96 +933,96 @@ const EstimatePanel = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Head</label>
-                <input 
-                  type="number" 
-                  value={newRecord.head} 
-                  onChange={(e) => setNewRecord({...newRecord, head: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                  placeholder="Head code" 
+                <input
+                  type="number"
+                  value={newRecord.head}
+                  onChange={(e) => setNewRecord({ ...newRecord, head: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Head code"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Program</label>
-                <input 
-                  type="number" 
-                  value={newRecord.program} 
-                  onChange={(e) => setNewRecord({...newRecord, program: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                  placeholder="Program code" 
+                <input
+                  type="number"
+                  value={newRecord.program}
+                  onChange={(e) => setNewRecord({ ...newRecord, program: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Program code"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
-                <input 
-                  type="number" 
-                  value={newRecord.project} 
-                  onChange={(e) => setNewRecord({...newRecord, project: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                  placeholder="Project code" 
+                <input
+                  type="number"
+                  value={newRecord.project}
+                  onChange={(e) => setNewRecord({ ...newRecord, project: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Project code"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Sub Project</label>
-                <input 
-                  type="number" 
-                  value={newRecord.sub_project} 
-                  onChange={(e) => setNewRecord({...newRecord, sub_project: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                  placeholder="Sub project code" 
+                <input
+                  type="number"
+                  value={newRecord.sub_project}
+                  onChange={(e) => setNewRecord({ ...newRecord, sub_project: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Sub project code"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Object</label>
-                <input 
-                  type="number" 
-                  value={newRecord.object} 
-                  onChange={(e) => setNewRecord({...newRecord, object: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                  placeholder="Object code" 
+                <input
+                  type="number"
+                  value={newRecord.object}
+                  onChange={(e) => setNewRecord({ ...newRecord, object: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Object code"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Revenue Code Name</label>
-                <input 
-                  type="text" 
-                  value={newRecord.revenue_code_name} 
-                  onChange={(e) => setNewRecord({...newRecord, revenue_code_name: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                  placeholder="Revenue code name" 
+                <input
+                  type="text"
+                  value={newRecord.revenue_code_name}
+                  onChange={(e) => setNewRecord({ ...newRecord, revenue_code_name: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Revenue code name"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Estimate (Rs)</label>
-                <input 
-                  type="number" 
-                  step="0.01" 
-                  value={newRecord.estimate} 
-                  onChange={(e) => setNewRecord({...newRecord, estimate: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                  placeholder="0.00" 
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newRecord.estimate}
+                  onChange={(e) => setNewRecord({ ...newRecord, estimate: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="0.00"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Re-Estimate (Rs)</label>
-                <input 
-                  type="number" 
-                  step="0.01" 
-                  value={newRecord.re_estimate} 
-                  onChange={(e) => setNewRecord({...newRecord, re_estimate: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                  placeholder="0.00" 
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newRecord.re_estimate}
+                  onChange={(e) => setNewRecord({ ...newRecord, re_estimate: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="0.00"
                 />
               </div>
             </div>
             <div className="flex justify-end space-x-3 mt-6">
-              <button 
-                onClick={() => setShowAddModal(false)} 
+              <button
+                onClick={() => setShowAddModal(false)}
                 className="px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
-              <button 
-                onClick={handleAddRecord} 
+              <button
+                onClick={handleAddRecord}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Add Estimate
@@ -1029,11 +1038,11 @@ const EstimatePanel = () => {
           <div className="bg-white rounded-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Edit Estimate</h3>
-              <button 
-                onClick={() => { 
-                  setShowEditModal(false); 
-                  setEditingRecord(null); 
-                }} 
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditingRecord(null);
+                }}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X size={20} />
@@ -1042,91 +1051,91 @@ const EstimatePanel = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Head</label>
-                <input 
-                  type="number" 
-                  value={editingRecord.head || ''} 
-                  onChange={(e) => setEditingRecord({...editingRecord, head: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                <input
+                  type="number"
+                  value={editingRecord.head || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, head: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Program</label>
-                <input 
-                  type="number" 
-                  value={editingRecord.program || ''} 
-                  onChange={(e) => setEditingRecord({...editingRecord, program: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                <input
+                  type="number"
+                  value={editingRecord.program || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, program: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
-                <input 
-                  type="number" 
-                  value={editingRecord.project || ''} 
-                  onChange={(e) => setEditingRecord({...editingRecord, project: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                <input
+                  type="number"
+                  value={editingRecord.project || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, project: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Sub Project</label>
-                <input 
-                  type="number" 
-                  value={editingRecord.sub_project || ''} 
-                  onChange={(e) => setEditingRecord({...editingRecord, sub_project: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                <input
+                  type="number"
+                  value={editingRecord.sub_project || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, sub_project: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Object</label>
-                <input 
-                  type="number" 
-                  value={editingRecord.object || ''} 
-                  onChange={(e) => setEditingRecord({...editingRecord, object: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                <input
+                  type="number"
+                  value={editingRecord.object || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, object: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Revenue Code Name</label>
-                <input 
-                  type="text" 
-                  value={editingRecord.revenue_code_name || ''} 
-                  onChange={(e) => setEditingRecord({...editingRecord, revenue_code_name: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                <input
+                  type="text"
+                  value={editingRecord.revenue_code_name || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, revenue_code_name: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Estimate (Rs)</label>
-                <input 
-                  type="number" 
-                  step="0.01" 
-                  value={editingRecord.estimate || ''} 
-                  onChange={(e) => setEditingRecord({...editingRecord, estimate: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editingRecord.estimate || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, estimate: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Re-Estimate (Rs)</label>
-                <input 
-                  type="number" 
-                  step="0.01" 
-                  value={editingRecord.re_estimate || ''} 
-                  onChange={(e) => setEditingRecord({...editingRecord, re_estimate: e.target.value})} 
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editingRecord.re_estimate || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, re_estimate: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
             <div className="flex justify-end space-x-3 mt-6">
-              <button 
-                onClick={() => { 
-                  setShowEditModal(false); 
-                  setEditingRecord(null); 
-                }} 
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditingRecord(null);
+                }}
                 className="px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
-              <button 
-                onClick={handleUpdateRecord} 
+              <button
+                onClick={handleUpdateRecord}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Update

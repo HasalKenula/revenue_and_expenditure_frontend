@@ -665,16 +665,16 @@ const CBGPanel = () => {
       doc.line(15, 40, pageWidth - 15, 40);
 
       // Table headers
-      const tableHeaders = ['TR No', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Debit', 'Other Debit', 'Total Expenditure'];
+      const tableHeaders = ['Head', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Debit', 'Other Debit', 'Total Expenditure'];
 
       // Prepare all tables data
       const tables = [
-        { data: mainMinistryData, title: 'MAIN MINISTRY (TRNO: 304)', color: [41, 128, 185] },
-        { data: educationMinistryData, title: 'EDUCATION MINISTRY (TRNO: 318)', color: [41, 128, 185] },
-        { data: animalMinistryData, title: 'ANIMAL MINISTRY (TRNO: 311)', color: [41, 128, 185] },
-        { data: agricultureMinistryData, title: 'AGRICULTURE MINISTRY (TRNO: 314)', color: [41, 128, 185] },
-        { data: landMinistryData, title: 'LAND MINISTRY (TRNO: 308)', color: [41, 128, 185] },
-        { data: mainSecretaryData, title: 'MAIN SECRETARY MINISTRY (TRNO: 320)', color: [41, 128, 185] }
+        { data: mainMinistryData, title: 'CHIEF MINISTRY (HEAD: 304)', color: [41, 128, 185] },
+        { data: educationMinistryData, title: 'MINISTRY OF SPORTS (HEAD: 318)', color: [41, 128, 185] },
+        { data: animalMinistryData, title: 'MINISTRY OF FISHERIES (HEAD: 311)', color: [41, 128, 185] },
+        { data: agricultureMinistryData, title: 'MINISTRY OF AGRICULTURE (HEAD: 314)', color: [41, 128, 185] },
+        { data: landMinistryData, title: 'MINISTRY OF EDUCATION (HEAD: 308)', color: [41, 128, 185] },
+        { data: mainSecretaryData, title: 'CHIEF SECRETARIAT (HEAD: 320)', color: [41, 128, 185] }
       ];
 
       // Start Y position - 8mm gap after the line
@@ -776,32 +776,32 @@ const CBGPanel = () => {
       const summaryLeftMargin = (pageWidth - summaryTotalWidth) / 2;
 
       const summaryData = [
-        ['Main Ministry', '304',
+        ['CHIEF MINISTRY', '304',
           formatNumber(totals.main_total_debit),
           formatNumber(totals.main_total_other_debit),
           formatNumber(totals.main_total_expenditure)
         ],
-        ['Education Ministry', '318',
+        ['MINISTRY OF SPORTS', '318',
           formatNumber(totals.edu_total_debit),
           formatNumber(totals.edu_total_other_debit),
           formatNumber(totals.edu_total_expenditure)
         ],
-        ['Animal Ministry', '311',
+        ['MINISTRY OF FISHERIES', '311',
           formatNumber(totals.animal_total_debit),
           formatNumber(totals.animal_total_other_debit),
           formatNumber(totals.animal_total_expenditure)
         ],
-        ['Agriculture Ministry', '314',
+        ['MINISTRY OF AGRICULTURE', '314',
           formatNumber(totals.agri_total_debit),
           formatNumber(totals.agri_total_other_debit),
           formatNumber(totals.agri_total_expenditure)
         ],
-        ['Land Ministry', '308',
+        ['MINISTRY OF EDUCATION', '308',
           formatNumber(totals.land_total_debit),
           formatNumber(totals.land_total_other_debit),
           formatNumber(totals.land_total_expenditure)
         ],
-        ['Main Secretary Ministry', '320',
+        ['CHIEF SECRETARIAT', '320',
           formatNumber(totals.secretary_total_debit),
           formatNumber(totals.secretary_total_other_debit),
           formatNumber(totals.secretary_total_expenditure)
@@ -839,7 +839,7 @@ const CBGPanel = () => {
 
       // Use tableWidth: 'auto' and the calculated margin
       autoTable(doc, {
-        head: [['Ministry', 'TRNO', 'Total Debit (Rs)', 'Total Other Debit (Rs)', 'Total Expenditure (Rs)']],
+        head: [['Ministry', 'Head', 'Total Debit (Rs)', 'Total Other Debit (Rs)', 'Total Expenditure (Rs)']],
         body: summaryData,
         startY: 35,
         theme: 'striped',
@@ -988,13 +988,13 @@ const CBGPanel = () => {
         <div className="flex items-center gap-2 mb-3">
           {icon}
           <h2 className="text-lg font-bold text-gray-800">{title}</h2>
-          <span className="text-sm text-gray-500">(TRNO: {trno})</span>
+          <span className="text-sm text-gray-500">(HEAD: {trno})</span>
         </div>
         <div className="overflow-x-auto border rounded-lg">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-3 py-2 text-left font-semibold text-gray-700">TR No</th>
+                <th className="px-3 py-2 text-left font-semibold text-gray-700">Head</th>
                 <th className="px-3 py-2 text-left font-semibold text-gray-700">Program</th>
                 <th className="px-3 py-2 text-left font-semibold text-gray-700">Project</th>
                 <th className="px-3 py-2 text-left font-semibold text-gray-700">Sub Project</th>
@@ -1051,7 +1051,7 @@ const CBGPanel = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-800">CBG Report</h1>
             <p className="text-sm text-gray-500 mt-1">
-              Expenditure details
+             Criteria Base Grant
             </p>
           </div>
           {appliedFilters.year && appliedFilters.month && (
@@ -1242,37 +1242,37 @@ const CBGPanel = () => {
         <>
           {renderTable(
             mainMinistryData,
-            'Main Ministry',
+            'CHIEF MINISTRY',
             <Building2 size={20} className="text-blue-600" />,
             304
           )}
           {renderTable(
             educationMinistryData,
-            'Education Ministry',
+            'MINISTRY OF SPORTS',
             <GraduationCap size={20} className="text-green-600" />,
             318
           )}
           {renderTable(
             animalMinistryData,
-            'Animal Ministry',
+            'MINISTRY OF FISHERIES',
             <PawPrint size={20} className="text-orange-600" />,
             311
           )}
           {renderTable(
             agricultureMinistryData,
-            'Agriculture Ministry',
+            'MINISTRY OF AGRICULTURE',
             <Sprout size={20} className="text-emerald-600" />,
             314
           )}
           {renderTable(
             landMinistryData,
-            'Land Ministry',
+            'MINISTRY OF EDUCATION',
             <Mountain size={20} className="text-violet-600" />,
             308
           )}
           {renderTable(
             mainSecretaryData,
-            'Main Secretary Ministry',
+            'CHIEF SECRETARIAT',
             <Users size={20} className="text-red-600" />,
             320
           )}
@@ -1352,12 +1352,12 @@ const CBGPanel = () => {
 
               <div className="bg-blue-50 rounded-lg p-3">
                 <p className="text-xs text-blue-700">
-                  <strong>Note:</strong> This report shows expenditure details for six ministries.
+                  <strong>Note:</strong> This report shows CBG data.
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
-                  <strong>Main:</strong> TRNO 304 | <strong>Education:</strong> TRNO 318 |
-                  <strong>Animal:</strong> TRNO 311 | <strong>Agriculture:</strong> TRNO 314 |
-                  <strong>Land:</strong> TRNO 308 | <strong>Main Secretary:</strong> TRNO 320
+                  <strong>'CHIEF MINISTRY :</strong> TRNO 304 | <strong>SPORTS :</strong> TRNO 318 |
+                  <strong>FISHERIES :</strong> TRNO 311 | <strong>AGRICULTURE :</strong> TRNO 314 |
+                  <strong>EDUCATION:</strong> TRNO 308 | <strong>CHIEF SECRETARIAT:</strong> TRNO 320
                 </p>
               </div>
             </div>

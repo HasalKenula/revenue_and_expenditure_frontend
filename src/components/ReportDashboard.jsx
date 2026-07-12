@@ -73,7 +73,7 @@ const ReportDashboard = () => {
       textColor: 'text-green-600',
       description: 'View reports by department/ministry',
       reports: [
-        { id: 'psd-report', name: 'PSD Report', path: '/psd', icon: FileText },
+        { id: 'psdg-report', name: 'PSDG Report', path: '/psd', icon: FileText },
         { id: 'cbg-report', name: 'CBG Report', path: '/cbg', icon: FileSpreadsheet },
        
       ]

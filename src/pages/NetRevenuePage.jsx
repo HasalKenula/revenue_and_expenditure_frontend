@@ -1,19 +1,20 @@
+
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import COEOWPanel from "../components/COEOWPanel";
+import NetRevenuePanel from "../components/NetRevenuePanel";
 
-function HeadUploadPage() {
+function NetRevenuePage() {
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header /> 
+        <Header />
         <main className="flex-1 overflow-y-auto p-6">
-          <p>reeh</p>
+          <NetRevenuePanel />
         </main>
-      </div> 
+      </div>
     </div>
   );
 }
 
-export default HeadUploadPage;
+export default NetRevenuePage;

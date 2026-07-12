@@ -189,7 +189,7 @@ const UpkeepPanel = () => {
         const ssData = response.data.data.social_services || [];
         const lgData = response.data.data.local_government || [];
         const livestockData = response.data.data.livestock || [];
-        
+
         setEducationData(eduData);
         setWesternMedicineData(wmData);
         setIndigenousMedicineData(imData);
@@ -258,8 +258,8 @@ const UpkeepPanel = () => {
           livestock_total_balance: livestockTotals.balance
         });
 
-        const total = eduData.length + wmData.length + imData.length + riData.length + 
-                     agriData.length + pcData.length + ssData.length + lgData.length + livestockData.length;
+        const total = eduData.length + wmData.length + imData.length + riData.length +
+          agriData.length + pcData.length + ssData.length + lgData.length + livestockData.length;
         setTotalRecords(total);
         setLastPage(Math.ceil(total / entriesPerPage));
         setCurrentPage(1);
@@ -395,19 +395,19 @@ const UpkeepPanel = () => {
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const currentDate = new Date().toLocaleString();
+      const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
 
       // Header
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(0, 0, 0);
-      doc.text('Upkeep Report', pageWidth / 2, 20, { align: 'center' });
+      doc.text('Maintenance Report', pageWidth / 2, 15, { align: 'center' });
 
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(60, 60, 60);
-      doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 28, { align: 'center' });
+      doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 22, { align: 'center' });
 
-      const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
+      // Filter information
       let filterText = `Year: ${appliedFilters.year} | Month: ${monthText}`;
       if (appliedFilters.view_type === 'cumulative') {
         filterText += ` | View: Cumulative (Jan - ${monthText})`;
@@ -415,63 +415,91 @@ const UpkeepPanel = () => {
         filterText += ` | View: Monthly (${monthText})`;
       }
       doc.setFontSize(9);
-      doc.setTextColor(60, 60, 60);
-      doc.text(filterText, pageWidth / 2, 36, { align: 'center' });
+      doc.text(filterText, pageWidth / 2, 29, { align: 'center' });
 
+      // Draw line
       doc.setDrawColor(200, 200, 200);
       doc.line(15, 40, pageWidth - 15, 40);
 
-      const tableHeaders = ['TR No', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Allocation', 'Expenditure', 'Balance'];
+      // Table headers
+      const tableHeaders = ['Head', 'Program', 'Project', 'Sub Project', 'Object', 'Subject Name', 'Allocation', 'Expenditure', 'Balance'];
 
-      const tableConfigs = [
-        { data: educationData, title: 'EDUCATION (UPKEEP)', color: [41, 128, 185], trno: '310' },
-        { data: westernMedicineData, title: 'WESTERN MEDICINE', color: [39, 174, 96], trno: '305' },
-        { data: indigenousMedicineData, title: 'INDIGENOUS MEDICINE', color: [142, 68, 173], trno: '307' },
-        { data: roadsIrrigationData, title: 'ROADS & IRRIGATION', color: [211, 84, 0], trno: '308, 316' },
-        { data: agricultureData, title: 'AGRICULTURE', color: [46, 204, 113], trno: '315' },
-        { data: probationChildcareData, title: 'PROBATION & CHILDCARE', color: [231, 76, 60], trno: '319' },
-        { data: socialServicesData, title: 'SOCIAL SERVICES', color: [155, 89, 182], trno: '306' },
-        { data: localGovernmentData, title: 'LOCAL GOVERNMENT', color: [52, 152, 219], trno: '312' },
-        { data: livestockData, title: 'LIVESTOCK', color: [46, 204, 113], trno: '300-325' }
+      // Prepare all tables data with different colors for each category
+      const tables = [
+        { data: educationData, title: 'Education (Head: 310)', color: [41, 128, 185] },
+        { data: westernMedicineData, title: 'Western Medicine (Head: 305)', color: [41, 128, 185] },
+        { data: indigenousMedicineData, title: 'Indigenous Medicine (Head: 307)', color: [41, 128, 185] },
+        { data: roadsIrrigationData, title: 'Roads & Irrigation (Head: 308, 316)', color: [41, 128, 185] },
+        { data: agricultureData, title: 'Agriculture (Head: 315)', color: [41, 128, 185] },
+        { data: probationChildcareData, title: 'Probation & Childcare Social Services (Head: 319)', color: [41, 128, 185] },
+        { data: socialServicesData, title: 'Social Services (Head: 306)', color: [41, 128, 185] },
+        { data: localGovernmentData, title: 'Local Government (Head: 312)', color: [41, 128, 185] },
+        { data: livestockData, title: 'Livestock (Head: 300-325)', color: [41, 128, 185] }
       ];
 
-      let currentY = 48;
+      // Start Y position - 8mm gap after the line
+      let startY = 48;
 
-      tableConfigs.forEach((config, index) => {
-        if (config.data.length === 0) return;
+      // Process each table
+      tables.forEach((table, index) => {
+        if (table.data.length === 0) return;
 
-        const tableBody = config.data.map(record => [
-          record.trno || '-',
-          record.program || '-',
-          record.project || '-',
-          record.sub_project || '-',
-          record.object || '-',
-          record.subject_name || '-',
+        // Add new page if needed (except for first table)
+        if (index > 0 && startY > 200) {
+          doc.addPage();
+          startY = 25;
+        }
+
+        // Add space between tables (10mm gap)
+        if (index > 0) {
+          startY += 10;
+        }
+
+        // Table title
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(table.color[0], table.color[1], table.color[2]);
+        doc.text(table.title, pageWidth / 2, startY, { align: 'center' });
+
+        // Prepare table body - filter out Total row for the main table data
+        const dataRows = table.data.filter(record => record.subject_name !== 'Total');
+        const totalRow = table.data.find(record => record.subject_name === 'Total');
+
+        const tableBody = dataRows.map(record => [
+          record.trno,
+          record.program,
+          record.project,
+          record.sub_project,
+          record.object,
+          record.subject_name,
           formatNumber(record.allocation),
           formatNumber(record.expenditure),
           formatNumber(record.balance)
         ]);
 
-        // Check if we need a new page
-        if (currentY > 200) {
-          doc.addPage();
-          currentY = 20;
+        // Add total row if exists
+        if (totalRow) {
+          tableBody.push([
+            'TOTAL',
+            '',
+            '',
+            '',
+            '',
+            '',
+            formatNumber(totalRow.allocation),
+            formatNumber(totalRow.expenditure),
+            formatNumber(totalRow.balance)
+          ]);
         }
 
-        currentY += 5;
-
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(config.color[0], config.color[1], config.color[2]);
-        doc.text(config.title, pageWidth / 2, currentY, { align: 'center' });
-
+        // Generate table
         autoTable(doc, {
           head: [tableHeaders],
           body: tableBody,
-          startY: currentY + 4,
+          startY: startY + 5,
           theme: 'striped',
           headStyles: {
-            fillColor: config.color,
+            fillColor: table.color,
             textColor: [255, 255, 255],
             fontSize: 7,
             fontStyle: 'bold',
@@ -479,60 +507,211 @@ const UpkeepPanel = () => {
             cellPadding: 2
           },
           bodyStyles: {
-            fontSize: 7,
-            cellPadding: 2,
-            textColor: [0, 0, 0]
+            fontSize: 6,
+            cellPadding: 2
           },
           columnStyles: {
             0: { cellWidth: 16, halign: 'center' },
             1: { cellWidth: 16, halign: 'center' },
             2: { cellWidth: 16, halign: 'center' },
-            3: { cellWidth: 20, halign: 'center' },
+            3: { cellWidth: 16, halign: 'center' },
             4: { cellWidth: 16, halign: 'center' },
-            5: { cellWidth: 28, halign: 'left' },
-            6: { cellWidth: 22, halign: 'right' },
-            7: { cellWidth: 24, halign: 'right' },
-            8: { cellWidth: 24, halign: 'right' }
+            5: { cellWidth: 25, halign: 'left' },
+            6: { cellWidth: 25, halign: 'right' },
+            7: { cellWidth: 25, halign: 'right' },
+            8: { cellWidth: 25, halign: 'right' }
           },
           alternateRowStyles: { fillColor: [245, 245, 245] },
-          margin: { top: currentY + 4, left: 10, right: 10, bottom: 8 },
-          tableWidth: 'auto',
-          didParseCell: function(data) {
-            if (data.row.index === 0) return;
-            if (data.row.index === config.data.length - 1) {
+          margin: { left: 15, right: 15 },
+          tableWidth: '180',
+          didParseCell: function (data) {
+            // Make total row bold
+            if (data.row.index === tableBody.length - 1 && totalRow) {
               data.cell.styles.fontStyle = 'bold';
               data.cell.styles.fillColor = [220, 220, 220];
               data.cell.styles.textColor = [0, 0, 0];
-              data.cell.styles.lineWidth = 0.5;
-              data.cell.styles.lineColor = [100, 100, 100];
-            }
-            if (data.column.index === 8) {
-              data.cell.styles.fontStyle = 'bold';
-              data.cell.styles.textColor = data.row.index === config.data.length - 1 ? [0, 0, 0] : config.color;
             }
           }
         });
 
-        currentY = doc.lastAutoTable?.finalY || 150;
-        currentY += 8;
+        // Update start position for next table with more space
+        startY = doc.lastAutoTable.finalY + 12;
+      });
 
-        // Add page numbers
-        const pageCount = doc.internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-          doc.setPage(i);
-          doc.setDrawColor(200, 200, 200);
-          doc.line(12, pageHeight - 12, pageWidth - 12, pageHeight - 12);
-          doc.setFontSize(8);
-          doc.setTextColor(128, 128, 128);
-          doc.text(
-            `Page ${i} of ${pageCount}`,
-            pageWidth / 2,
-            pageHeight - 5,
-            { align: 'center' }
-          );
+      // Add Summary Page
+      doc.addPage();
+
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(41, 128, 185);
+      doc.text('SUMMARY', pageWidth / 2, 20, { align: 'center' });
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text('Maintenance Summary', pageWidth / 2, 28, { align: 'center' });
+
+      // Prepare summary data
+      const summaryData = [
+        ['Education', '310',
+          formatNumber(totals.edu_total_allocation),
+          formatNumber(totals.edu_total_expenditure),
+          formatNumber(totals.edu_total_balance)
+        ],
+        ['Western Medicine', '305',
+          formatNumber(totals.wm_total_allocation),
+          formatNumber(totals.wm_total_expenditure),
+          formatNumber(totals.wm_total_balance)
+        ],
+        ['Indigenous Medicine', '307',
+          formatNumber(totals.im_total_allocation),
+          formatNumber(totals.im_total_expenditure),
+          formatNumber(totals.im_total_balance)
+        ],
+        ['Roads & Irrigation', '308, 316',
+          formatNumber(totals.ri_total_allocation),
+          formatNumber(totals.ri_total_expenditure),
+          formatNumber(totals.ri_total_balance)
+        ],
+        ['Agriculture', '315',
+          formatNumber(totals.agri_total_allocation),
+          formatNumber(totals.agri_total_expenditure),
+          formatNumber(totals.agri_total_balance)
+        ],
+        ['Probation & Childcare', '319',
+          formatNumber(totals.pc_total_allocation),
+          formatNumber(totals.pc_total_expenditure),
+          formatNumber(totals.pc_total_balance)
+        ],
+        ['Social Services', '306',
+          formatNumber(totals.ss_total_allocation),
+          formatNumber(totals.ss_total_expenditure),
+          formatNumber(totals.ss_total_balance)
+        ],
+        ['Local Government', '312',
+          formatNumber(totals.lg_total_allocation),
+          formatNumber(totals.lg_total_expenditure),
+          formatNumber(totals.lg_total_balance)
+        ],
+        ['Livestock', '300-325',
+          formatNumber(totals.livestock_total_allocation),
+          formatNumber(totals.livestock_total_expenditure),
+          formatNumber(totals.livestock_total_balance)
+        ]
+      ];
+
+      // Calculate grand totals
+      const grandTotalAllocation = parseFloat(totals.edu_total_allocation) +
+        parseFloat(totals.wm_total_allocation) +
+        parseFloat(totals.im_total_allocation) +
+        parseFloat(totals.ri_total_allocation) +
+        parseFloat(totals.agri_total_allocation) +
+        parseFloat(totals.pc_total_allocation) +
+        parseFloat(totals.ss_total_allocation) +
+        parseFloat(totals.lg_total_allocation) +
+        parseFloat(totals.livestock_total_allocation);
+
+      const grandTotalExpenditure = parseFloat(totals.edu_total_expenditure) +
+        parseFloat(totals.wm_total_expenditure) +
+        parseFloat(totals.im_total_expenditure) +
+        parseFloat(totals.ri_total_expenditure) +
+        parseFloat(totals.agri_total_expenditure) +
+        parseFloat(totals.pc_total_expenditure) +
+        parseFloat(totals.ss_total_expenditure) +
+        parseFloat(totals.lg_total_expenditure) +
+        parseFloat(totals.livestock_total_expenditure);
+
+      const grandTotalBalance = parseFloat(totals.edu_total_balance) +
+        parseFloat(totals.wm_total_balance) +
+        parseFloat(totals.im_total_balance) +
+        parseFloat(totals.ri_total_balance) +
+        parseFloat(totals.agri_total_balance) +
+        parseFloat(totals.pc_total_balance) +
+        parseFloat(totals.ss_total_balance) +
+        parseFloat(totals.lg_total_balance) +
+        parseFloat(totals.livestock_total_balance);
+
+      summaryData.push([
+        'GRAND TOTAL',
+        '',
+        formatNumber(grandTotalAllocation),
+        formatNumber(grandTotalExpenditure),
+        formatNumber(grandTotalBalance)
+      ]);
+
+      // Generate summary table
+      autoTable(doc, {
+        head: [['Category', 'Head', 'Total Allocation (Rs)', 'Total Expenditure (Rs)', 'Total Balance (Rs)']],
+        body: summaryData,
+        startY: 35,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: [255, 255, 255],
+          fontSize: 8,
+          fontStyle: 'bold',
+          halign: 'center',
+          cellPadding: 2.5
+        },
+        bodyStyles: {
+          fontSize: 7.5,
+          cellPadding: 2.5
+        },
+        columnStyles: {
+          0: { cellWidth: 40, halign: 'left' },
+          1: { cellWidth: 20, halign: 'center' },
+          2: { cellWidth: 40, halign: 'right' },
+          3: { cellWidth: 40, halign: 'right' },
+          4: { cellWidth: 40, halign: 'right' }
+        },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: {
+          left: 15,
+          right: 15,
+          top: 35,
+          bottom: 20
+        },
+        tableWidth: 180,
+        didParseCell: function (data) {
+          // Make grand total row bold
+          if (data.row.index === summaryData.length - 1) {
+            data.cell.styles.fontStyle = 'bold';
+            data.cell.styles.fillColor = [245, 245, 245];
+            data.cell.styles.textColor = [0, 0, 0];
+          }
+          // Highlight negative balances in red
+          if (data.column.index === 4 && data.row.index < summaryData.length - 1) {
+            const value = parseFloat(data.cell.raw);
+            if (value < 0) {
+              data.cell.styles.textColor = [255, 0, 0];
+            }
+          }
         }
       });
 
+      // Add page numbers to all pages
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(128, 128, 128);
+
+        // Draw a line above the page number
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.2);
+        doc.line(20, pageHeight - 12, pageWidth - 20, pageHeight - 12);
+
+        // Add page number
+        doc.text(
+          `Page ${i} of ${totalPages}`,
+          pageWidth / 2,
+          pageHeight - 5,
+          { align: 'center' }
+        );
+      }
+
+      // Save PDF
       const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
       const fileName = `upkeep_report_${viewText}_${appliedFilters.year}_${monthText}.pdf`;
       doc.save(fileName);
@@ -626,13 +805,13 @@ const UpkeepPanel = () => {
         <div className="flex items-center gap-2 mb-3">
           {icon}
           <h2 className="text-lg font-bold text-gray-800">{title}</h2>
-          <span className="text-sm text-gray-500">(TRNO: {trno})</span>
+          <span className="text-sm text-gray-500">(Head: {trno})</span>
         </div>
         <div className="overflow-x-auto border rounded-lg">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-3 py-2 text-left font-semibold text-gray-700">TR No</th>
+                <th className="px-3 py-2 text-left font-semibold text-gray-700">Head</th>
                 <th className="px-3 py-2 text-left font-semibold text-gray-700">Program</th>
                 <th className="px-3 py-2 text-left font-semibold text-gray-700">Project</th>
                 <th className="px-3 py-2 text-left font-semibold text-gray-700">Sub Project</th>
@@ -646,25 +825,25 @@ const UpkeepPanel = () => {
             <tbody>
               {dataRows.map((record, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-gray-700">{record.trno || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.program || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.project || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.sub_project || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.object || '-'}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.subject_name || '-'}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.trno}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.program}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.project}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.sub_project}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.object}</td>
+                  <td className="px-3 py-2 text-gray-700">{record.subject_name}</td>
                   <td className="px-3 py-2 text-right text-gray-900">Rs{formatNumber(record.allocation)}</td>
-                  <td className="px-3 py-2 text-right text-green-600">Rs{formatNumber(record.expenditure)}</td>
-                  <td className={`px-3 py-2 text-right font-medium ${parseFloat(record.balance) >= 0 ? 'text-purple-600' : 'text-red-600'}`}>
+                  <td className="px-3 py-2 text-right text-gray-600">Rs{formatNumber(record.expenditure)}</td>
+                  <td className={`px-3 py-2 text-right font-medium ${parseFloat(record.balance) >= 0 ? 'text-gray-600' : 'text-gray-600'}`}>
                     Rs{formatNumber(record.balance)}
                   </td>
                 </tr>
               ))}
               {totalRow && (
                 <tr className="bg-gray-100 font-bold border-t-2 border-gray-300">
-                  <td colSpan="6" className="px-3 py-2 text-right text-blue-700">TOTAL:</td>
+                  <td colSpan="6" className="px-3 py-2 text-right text-gray-700">TOTAL:</td>
                   <td className="px-3 py-2 text-right text-gray-900">Rs{formatNumber(totalRow.allocation)}</td>
-                  <td className="px-3 py-2 text-right text-green-700">Rs{formatNumber(totalRow.expenditure)}</td>
-                  <td className="px-3 py-2 text-right text-purple-700">Rs{formatNumber(totalRow.balance)}</td>
+                  <td className="px-3 py-2 text-right text-gray-700">Rs{formatNumber(totalRow.expenditure)}</td>
+                  <td className="px-3 py-2 text-right text-gray-700">Rs{formatNumber(totalRow.balance)}</td>
                 </tr>
               )}
             </tbody>
@@ -689,7 +868,7 @@ const UpkeepPanel = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Upkeep Report</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Maintenance</h1>
             <p className="text-sm text-gray-500 mt-1">
               Allocation, expenditure and balance summary by program, project, sub project and object
             </p>
@@ -697,7 +876,7 @@ const UpkeepPanel = () => {
           {appliedFilters.year && appliedFilters.month && (
             <div className="bg-blue-50 rounded-lg px-3 py-2">
               <p className="text-sm text-blue-700">
-                <span className="font-medium">Year:</span> {appliedFilters.year} | 
+                <span className="font-medium">Year:</span> {appliedFilters.year} |
                 <span className="font-medium ml-2">Month:</span> {monthNames[appliedFilters.month]}
                 <span className="font-medium ml-2">| View:</span> {appliedFilters.view_type === 'cumulative' ? 'Cumulative' : 'Monthly'}
               </p>
@@ -723,8 +902,8 @@ const UpkeepPanel = () => {
       )}
 
       {/* Summary Cards - 9 categories */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-9 gap-2">
-        {/* Education */}
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-9 gap-2">
+       
         <div className="space-y-1">
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-1.5 text-white shadow">
             <p className="text-[7px] opacity-90">Edu - Allocation</p>
@@ -740,7 +919,7 @@ const UpkeepPanel = () => {
           </div>
         </div>
 
-        {/* Western Medicine */}
+       
         <div className="space-y-1">
           <div className="bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg p-1.5 text-white shadow">
             <p className="text-[7px] opacity-90">WM - Allocation</p>
@@ -756,7 +935,7 @@ const UpkeepPanel = () => {
           </div>
         </div>
 
-        {/* Indigenous Medicine */}
+       
         <div className="space-y-1">
           <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg p-1.5 text-white shadow">
             <p className="text-[7px] opacity-90">IM - Allocation</p>
@@ -772,7 +951,7 @@ const UpkeepPanel = () => {
           </div>
         </div>
 
-        {/* Roads & Irrigation */}
+      
         <div className="space-y-1">
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-1.5 text-white shadow">
             <p className="text-[7px] opacity-90">RI - Allocation</p>
@@ -788,7 +967,7 @@ const UpkeepPanel = () => {
           </div>
         </div>
 
-        {/* Agriculture */}
+      
         <div className="space-y-1">
           <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-lg p-1.5 text-white shadow">
             <p className="text-[7px] opacity-90">Agri - Allocation</p>
@@ -804,7 +983,7 @@ const UpkeepPanel = () => {
           </div>
         </div>
 
-        {/* Probation & Childcare */}
+       
         <div className="space-y-1">
           <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-1.5 text-white shadow">
             <p className="text-[7px] opacity-90">PC - Allocation</p>
@@ -820,7 +999,7 @@ const UpkeepPanel = () => {
           </div>
         </div>
 
-        {/* Social Services */}
+       
         <div className="space-y-1">
           <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-1.5 text-white shadow">
             <p className="text-[7px] opacity-90">SS - Allocation</p>
@@ -836,7 +1015,7 @@ const UpkeepPanel = () => {
           </div>
         </div>
 
-        {/* Local Government */}
+      
         <div className="space-y-1">
           <div className="bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg p-1.5 text-white shadow">
             <p className="text-[7px] opacity-90">LG - Allocation</p>
@@ -852,7 +1031,7 @@ const UpkeepPanel = () => {
           </div>
         </div>
 
-        {/* Livestock */}
+       
         <div className="space-y-1">
           <div className="bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-lg p-1.5 text-white shadow">
             <p className="text-[7px] opacity-90">LS - Allocation</p>
@@ -867,9 +1046,8 @@ const UpkeepPanel = () => {
             <p className="text-[10px] font-bold">Rs{formatNumber(totals.livestock_total_balance)}</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      {/* Filters Display */}
       {(appliedFilters.year || appliedFilters.month) && (
         <div className="bg-blue-50 rounded-lg p-3 flex flex-wrap items-center justify-between">
           <div className="flex flex-wrap items-center gap-2">
@@ -886,8 +1064,8 @@ const UpkeepPanel = () => {
               </span>
             )}
           </div>
-          <button 
-            onClick={clearFilters} 
+          <button
+            onClick={clearFilters}
             className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
           >
             <X size={14} /> Clear All
@@ -897,29 +1075,29 @@ const UpkeepPanel = () => {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
-        <button 
-          onClick={() => setShowFilterModal(true)} 
+        <button
+          onClick={() => setShowFilterModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
         >
           <Filter size={16} />
           <span>Filter</span>
         </button>
-        <button 
-          onClick={handleExportPDF} 
+        <button
+          onClick={handleExportPDF}
           className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm shadow-sm"
         >
           <FileText size={16} />
           <span>Export PDF</span>
         </button>
-        <button 
-          onClick={handleExportCSV} 
+        <button
+          onClick={handleExportCSV}
           className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm shadow-sm"
         >
           <Download size={16} />
           <span>Export CSV</span>
         </button>
-        <button 
-          onClick={refreshData} 
+        <button
+          onClick={refreshData}
           className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
         >
           <RefreshCw size={16} />
@@ -936,57 +1114,57 @@ const UpkeepPanel = () => {
       ) : (
         <>
           {renderTable(
-            educationData, 
-            'Education (Upkeep)', 
-            <BookOpen size={20} className="text-blue-600" />, 
+            educationData,
+            'Education',
+            <BookOpen size={20} className="text-blue-600" />,
             '310'
           )}
           {renderTable(
-            westernMedicineData, 
-            'Western Medicine', 
-            <Heart size={20} className="text-teal-600" />, 
+            westernMedicineData,
+            'Western Medicine',
+            <Heart size={20} className="text-teal-600" />,
             '305'
           )}
           {renderTable(
-            indigenousMedicineData, 
-            'Indigenous Medicine', 
-            <Leaf size={20} className="text-indigo-600" />, 
+            indigenousMedicineData,
+            'Indigenous Medicine',
+            <Leaf size={20} className="text-indigo-600" />,
             '307'
           )}
           {renderTable(
-            roadsIrrigationData, 
-            'Roads & Irrigation', 
-            <Road size={20} className="text-orange-600" />, 
+            roadsIrrigationData,
+            'Roads & Irrigation',
+            <Road size={20} className="text-orange-600" />,
             '308, 316'
           )}
           {renderTable(
-            agricultureData, 
-            'Agriculture', 
-            <Sprout size={20} className="text-green-600" />, 
+            agricultureData,
+            'Agriculture',
+            <Sprout size={20} className="text-green-600" />,
             '315'
           )}
           {renderTable(
-            probationChildcareData, 
-            'Probation & Childcare', 
-            <Users size={20} className="text-red-600" />, 
+            probationChildcareData,
+            'Probation & Childcare Social Services',
+            <Users size={20} className="text-red-600" />,
             '319'
           )}
           {renderTable(
-            socialServicesData, 
-            'Social Services', 
-            <HeartHandshake size={20} className="text-purple-600" />, 
+            socialServicesData,
+            'Local Government',
+            <HeartHandshake size={20} className="text-purple-600" />,
             '306'
           )}
           {renderTable(
-            localGovernmentData, 
-            'Local Government', 
-            <Building size={20} className="text-blue-500" />, 
+            localGovernmentData,
+            'Livestock',
+            <Building size={20} className="text-blue-500" />,
             '312'
           )}
           {renderTable(
-            livestockData, 
-            'Livestock', 
-            <PawPrint size={20} className="text-emerald-600" />, 
+            livestockData,
+            'Others',
+            <PawPrint size={20} className="text-emerald-600" />,
             '300-325'
           )}
         </>
@@ -998,8 +1176,8 @@ const UpkeepPanel = () => {
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Filter Upkeep Report</h3>
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
                 <X size={20} />
@@ -1057,15 +1235,15 @@ const UpkeepPanel = () => {
                   <option value="monthly">Monthly (Month only)</option>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  {filters.view_type === 'cumulative' 
-                    ? 'Shows cumulative expenditure from January to selected month' 
+                  {filters.view_type === 'cumulative'
+                    ? 'Shows cumulative expenditure from January to selected month'
                     : 'Shows expenditure for the selected month only'}
                 </p>
               </div>
 
               <div className="bg-blue-50 rounded-lg p-3">
                 <p className="text-xs text-blue-700">
-                  <strong>Note:</strong> This report shows allocation, expenditure and balance for all upkeep categories.
+                  <strong>Note:</strong> This report shows allocation, expenditure and balance for all mantenance categories.
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
                   <strong>Allocation:</strong> From Budget table | <strong>Expenditure:</strong> DR(1000) - CR(2000)
@@ -1074,14 +1252,14 @@ const UpkeepPanel = () => {
             </div>
 
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
-              <button 
-                onClick={applyFilters} 
+              <button
+                onClick={applyFilters}
                 disabled={!filters.year || !filters.month}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
