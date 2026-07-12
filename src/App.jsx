@@ -623,6 +623,7 @@ import NonTaxRevenuePage from "./pages/NonTaxRevenuePage";
 import RevenueCollectionAccountPage from "./pages/RevenueCollectionAccountPage";
 import RevenueCrossEntryAccountPage from "./pages/RevenueCrossEntryAccountPage";
 import RevenueRefundAccountPage from "./pages/RevenueRefundAccountPage";
+import RevenueCrossEntryByTrnoPage from "./pages/RevenueCrossEntryByTrnoPage";
 
 
 // Component to handle role-based redirect for home page
@@ -983,6 +984,15 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="revenue_manager">
                             <RevenueRefundAccountPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue_crossByHead"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueCrossEntryByTrnoPage />
                         </RoleProtectedRoute>
                     }
                 />

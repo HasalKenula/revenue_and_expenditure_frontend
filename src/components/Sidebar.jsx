@@ -702,6 +702,15 @@ const Sidebar = () => {
               </Link>
             </div>
 
+            
+               {/*  RevenueCrossEntryByTrnoPage */}
+            <div>
+              <Link to="/revenue_crossByHead" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <PieChart size={18} />
+                <span className="text-sm">Revenue Cross EntryBy Head</span>
+              </Link>
+            </div>
+
           </>
         )}
 
