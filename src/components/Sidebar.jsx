@@ -677,6 +677,14 @@ const Sidebar = () => {
               </Link>
             </div>
 
+             {/*  revenue_collection */}
+            <div>
+              <Link to="/revenue_collection" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <PieChart size={18} />
+                <span className="text-sm">Revenue Collection</span>
+              </Link>
+            </div>
+
             
           </>
         )}
@@ -745,6 +753,8 @@ const Sidebar = () => {
                 <span className="text-sm">Reports</span>
               </Link>
             </div>
+           
+            
 
           </>
         )}
