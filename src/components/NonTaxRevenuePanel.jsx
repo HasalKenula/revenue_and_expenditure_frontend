@@ -10,8 +10,7 @@ import {
   FileText,
   TrendingUp,
   TrendingDown,
-  DollarSign,
-  PieChart
+  DollarSign
 } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -68,14 +67,7 @@ const monthNames = {
   12: 'December'
 };
 
-const quarterLabels = {
-  1: 'Q1 (Jan - Mar)',
-  2: 'Q2 (Apr - Jun)',
-  3: 'Q3 (Jul - Sep)',
-  4: 'Q4 (Oct - Dec)'
-};
-
-const QuarterRevenuePanel = () => {
+const NonTaxRevenuePanel = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
@@ -85,31 +77,26 @@ const QuarterRevenuePanel = () => {
   const [lastPage, setLastPage] = useState(1);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [totals, setTotals] = useState({
-    estimate: 0,
-    re_estimate: 0,
-    months: {},
-    refund_months: {},
-    total_quarter_revenue: 0,
-    quarter_refund: 0,
-    net_quarter_revenue: 0
+    x_entry_total: 0,
+    collection_total: 0,
+    refund_total: 0,
+    net_revenue: 0
   });
-  const [monthColumns, setMonthColumns] = useState([]);
-  const [monthNamesData, setMonthNamesData] = useState({});
-  const [quarterLabel, setQuarterLabel] = useState('');
+  const [selectedMonthName, setSelectedMonthName] = useState('');
 
   const [filters, setFilters] = useState({
     year: '',
-    quarter: ''
+    month: ''
   });
 
   const [appliedFilters, setAppliedFilters] = useState({
     year: '',
-    quarter: ''
+    month: ''
   });
 
   const [filterOptions, setFilterOptions] = useState({
     years: [],
-    quarters: [1, 2, 3, 4]
+    months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   });
 
   // Format number with commas
@@ -153,10 +140,10 @@ const QuarterRevenuePanel = () => {
 
   // Fetch records
   const fetchRecords = async () => {
-    if (!appliedFilters.year || !appliedFilters.quarter) {
+    if (!appliedFilters.year || !appliedFilters.month) {
       setRecords([]);
-      setTotals({ estimate: 0, re_estimate: 0, months: {}, refund_months: {}, total_quarter_revenue: 0, quarter_refund: 0, net_quarter_revenue: 0 });
-      setMonthColumns([]);
+      setTotals({ x_entry_total: 0, collection_total: 0, refund_total: 0, net_revenue: 0 });
+      setSelectedMonthName('');
       return;
     }
 
@@ -164,18 +151,16 @@ const QuarterRevenuePanel = () => {
     try {
       const params = {
         year: appliedFilters.year,
-        quarter: appliedFilters.quarter
+        month: appliedFilters.month
       };
 
-      const response = await apiClient.get('/quarter-revenue/data', { params });
+      const response = await apiClient.get('/non-tax-revenue/data', { params });
 
       if (response.data.success) {
         const data = response.data.data;
         setRecords(data.records || []);
-        setTotals(data.totals || { estimate: 0, re_estimate: 0, months: {}, refund_months: {}, total_quarter_revenue: 0, quarter_refund: 0, net_quarter_revenue: 0 });
-        setMonthColumns(data.months || []);
-        setMonthNamesData(data.month_names || {});
-        setQuarterLabel(data.quarter_label || '');
+        setTotals(data.totals || { x_entry_total: 0, collection_total: 0, refund_total: 0, net_revenue: 0 });
+        setSelectedMonthName(data.month_name || '');
 
         const total = data.records?.length || 0;
         setTotalRecords(total);
@@ -195,7 +180,7 @@ const QuarterRevenuePanel = () => {
   // Fetch filter options
   const fetchFilterOptions = async () => {
     try {
-      const response = await apiClient.get('/quarter-revenue/filter-options');
+      const response = await apiClient.get('/non-tax-revenue/filter-options');
 
       if (response.data.success) {
         setFilterOptions(response.data.data);
@@ -210,7 +195,7 @@ const QuarterRevenuePanel = () => {
 
   // Auto-fetch when filters change
   useEffect(() => {
-    if (appliedFilters.year && appliedFilters.quarter) {
+    if (appliedFilters.year && appliedFilters.month) {
       fetchRecords();
     }
   }, [appliedFilters]);
@@ -226,8 +211,8 @@ const QuarterRevenuePanel = () => {
   };
 
   const applyFilters = () => {
-    if (!filters.year || !filters.quarter) {
-      alert('Please select both Year and Quarter');
+    if (!filters.year || !filters.month) {
+      alert('Please select both Year and Month');
       return;
     }
     setAppliedFilters({ ...filters });
@@ -235,17 +220,17 @@ const QuarterRevenuePanel = () => {
   };
 
   const clearFilters = () => {
-    setFilters({ year: '', quarter: '' });
-    setAppliedFilters({ year: '', quarter: '' });
+    setFilters({ year: '', month: '' });
+    setAppliedFilters({ year: '', month: '' });
     setRecords([]);
-    setTotals({ estimate: 0, re_estimate: 0, months: {}, refund_months: {}, total_quarter_revenue: 0, quarter_refund: 0, net_quarter_revenue: 0 });
-    setMonthColumns([]);
+    setTotals({ x_entry_total: 0, collection_total: 0, refund_total: 0, net_revenue: 0 });
+    setSelectedMonthName('');
     setCurrentPage(1);
     setTotalRecords(0);
     setLastPage(1);
   };
 
-  // Generate PDF Report - A3 Landscape
+  // Generate PDF Report
   const handleExportPDF = () => {
     if (records.length === 0) {
       alert('No data to export');
@@ -268,15 +253,14 @@ const QuarterRevenuePanel = () => {
       // Add Header
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
-      doc.text('Revenue Quarter Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+      doc.text('Non Tax Revenue Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
       
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
       
       // Add filter information
-      const quarterLabelText = quarterLabels[appliedFilters.quarter] || `Q${appliedFilters.quarter}`;
-      let filterText = `Year: ${appliedFilters.year} | Quarter: ${quarterLabelText}`;
+      let filterText = `Year: ${appliedFilters.year} | Month: ${selectedMonthName} (Cumulative)`;
       
       doc.setFontSize(9);
       doc.text(filterText, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
@@ -285,99 +269,44 @@ const QuarterRevenuePanel = () => {
       const tableHeaders = [
         'Revenue Code',
         'Revenue Category',
-        'Original Estimate',
-        'Revised Estimate'
+        'Total X Entry (Rs)',
+        'Total Collection (Rs)',
+        'Total Refund (Rs)',
+        'Net Revenue (Rs)'
       ];
-
-      // Add month headers
-      monthColumns.forEach(m => {
-        tableHeaders.push(monthNamesData[m] || `Month ${m}`);
-      });
-
-      tableHeaders.push('Total Quarter Revenue');
-      tableHeaders.push('Quarter Refund');
-      tableHeaders.push('Net Quarter Revenue');
 
       // Prepare table data
       const tableBody = records.map(record => {
-        const row = [
+        return [
           formatCombinedCode(record),
           record.revenue_code_name || '',
-          formatNumber(record.estimate || 0),
-          formatNumber(record.re_estimate || 0)
+          formatNumber(record.x_entry_total || 0),
+          formatNumber(record.collection_total || 0),
+          formatNumber(record.refund_total || 0),
+          formatNumber(record.net_revenue || 0)
         ];
-
-        monthColumns.forEach(m => {
-          row.push(formatNumber(record.months?.[m] || 0));
-        });
-
-        row.push(formatNumber(record.total_quarter_revenue || 0));
-        row.push(formatNumber(record.quarter_refund || 0));
-        row.push(formatNumber(record.net_quarter_revenue || 0));
-
-        return row;
       });
 
       // Add totals row
-      const totalRow = ['TOTAL', '', formatNumber(totals.estimate || 0), formatNumber(totals.re_estimate || 0)];
-      monthColumns.forEach(m => {
-        totalRow.push(formatNumber(totals.months?.[m] || 0));
-      });
-      totalRow.push(formatNumber(totals.total_quarter_revenue || 0));
-      totalRow.push(formatNumber(totals.quarter_refund || 0));
-      totalRow.push(formatNumber(totals.net_quarter_revenue || 0));
+      const totalRow = [
+        'TOTAL',
+        '',
+        formatNumber(totals.x_entry_total || 0),
+        formatNumber(totals.collection_total || 0),
+        formatNumber(totals.refund_total || 0),
+        formatNumber(totals.net_revenue || 0)
+      ];
       tableBody.push(totalRow);
 
-      // Calculate dynamic column widths based on number of months
-      const totalMonths = monthColumns.length;
-      const fixedColumns = 4;
-      const usableWidth = 400;
-      
-      let monthWidth = 0;
-      let fixedWidth = 0;
-      
-      if (totalMonths <= 3) {
-        monthWidth = 25;
-        fixedWidth = 25;
-      } else if (totalMonths <= 6) {
-        monthWidth = 28;
-        fixedWidth = 30;
-      } else if (totalMonths <= 9) {
-        monthWidth = 22;
-        fixedWidth = 25;
-      } else {
-        monthWidth = 18;
-        fixedWidth = 22;
-      }
-      
-      const totalFixedWidth = fixedWidth * fixedColumns;
-      const totalMonthWidth = monthWidth * totalMonths;
-      const totalExtraWidth = 22 * 3;
-      const totalUsedWidth = totalFixedWidth + totalMonthWidth + totalExtraWidth;
-      
-      if (totalUsedWidth > usableWidth) {
-        const scale = usableWidth / totalUsedWidth;
-        fixedWidth = fixedWidth * scale;
-        monthWidth = monthWidth * scale;
-      }
-
-      // Build column styles dynamically
-      const columnStyles = {};
-      
-      columnStyles[0] = { cellWidth: 25, halign: 'left' };
-      columnStyles[1] = { cellWidth: 40 * 1, halign: 'left' };
-      columnStyles[2] = { cellWidth: 25 * 1, halign: 'right' };
-      columnStyles[3] = { cellWidth: 25 * 1, halign: 'right' };
-      
-      for (let i = 0; i < totalMonths; i++) {
-        const colIndex = i + 4;
-        columnStyles[colIndex] = { cellWidth: monthWidth, halign: 'right' };
-      }
-      
-      const extraStartIndex = 4 + totalMonths;
-      columnStyles[extraStartIndex] = { cellWidth: 25, halign: 'right' };
-      columnStyles[extraStartIndex + 1] = { cellWidth: 25, halign: 'right' };
-      columnStyles[extraStartIndex + 2] = { cellWidth: 25, halign: 'right' };
+      // Column styles
+      const columnStyles = {
+        0: { cellWidth: 30, halign: 'left' },
+        1: { cellWidth: 80, halign: 'left' },
+        2: { cellWidth: 35, halign: 'right' },
+        3: { cellWidth: 35, halign: 'right' },
+        4: { cellWidth: 35, halign: 'right' },
+        5: { cellWidth: 35, halign: 'right' }
+      };
 
       // Generate table
       autoTable(doc, {
@@ -388,25 +317,25 @@ const QuarterRevenuePanel = () => {
         headStyles: {
           fillColor: [41, 128, 185],
           textColor: [255, 255, 255],
-          fontSize: 8,
+          fontSize: 10,
           fontStyle: 'bold',
           halign: 'center',
-          cellPadding: 2
+          cellPadding: 3
         },
         bodyStyles: {
-          fontSize: 7,
-          cellPadding: 2
+          fontSize: 9,
+          cellPadding: 3
         },
         columnStyles: columnStyles,
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { top: 35, left: 16, right: 16 },
-        tableWidth:265,
+        margin: { top: 35, left: 23.5, right: 23.5 },
+        tableWidth: 250,
         rowStyles: {
           [tableBody.length - 1]: {
             fontStyle: 'bold',
             fillColor: [220, 235, 245],
             textColor: [0, 0, 0],
-            fontSize: 8
+            fontSize: 10
           }
         },
         didDrawPage: function(data) {
@@ -429,7 +358,7 @@ const QuarterRevenuePanel = () => {
       }
 
       // Save PDF
-      doc.save(`quarter_revenue_report_${appliedFilters.year}_Q${appliedFilters.quarter}.pdf`);
+      doc.save(`non_tax_revenue_report_${appliedFilters.year}_${selectedMonthName}.pdf`);
       alert('PDF exported successfully!');
       
     } catch (error) {
@@ -451,17 +380,17 @@ const QuarterRevenuePanel = () => {
     try {
       const params = {
         year: appliedFilters.year,
-        quarter: appliedFilters.quarter
+        month: appliedFilters.month
       };
 
-      const response = await apiClient.get('/quarter-revenue/export-csv', { params });
+      const response = await apiClient.get('/non-tax-revenue/export-csv', { params });
 
       if (response.status === 200) {
         const blob = new Blob([response.data], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `quarter_revenue_${appliedFilters.year}_Q${appliedFilters.quarter}.csv`;
+        a.download = `non_tax_revenue_${appliedFilters.year}_${selectedMonthName}.csv`;
         a.click();
         window.URL.revokeObjectURL(url);
         alert('CSV exported successfully!');
@@ -476,7 +405,7 @@ const QuarterRevenuePanel = () => {
 
   const refreshData = () => {
     fetchFilterOptions();
-    if (appliedFilters.year && appliedFilters.quarter) {
+    if (appliedFilters.year && appliedFilters.month) {
       fetchRecords();
     }
   };
@@ -487,10 +416,10 @@ const QuarterRevenuePanel = () => {
     currentPage * entriesPerPage
   );
 
-  // Get quarter display text
-  const getQuarterDisplay = (quarter) => {
-    if (!quarter) return '';
-    return quarterLabels[quarter] || `Q${quarter}`;
+  // Get month display text
+  const getMonthDisplay = (month) => {
+    if (!month) return '';
+    return monthNames[month] || `Month ${month}`;
   };
 
   return (
@@ -509,15 +438,15 @@ const QuarterRevenuePanel = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Revenue Quarter Report</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Non Tax Revenue Report</h1>
             <p className="text-sm text-gray-500 mt-1">
-              View revenue data grouped by quarters with monthly breakdown
+              View cumulative non tax revenue data (Head between 2000 and 3000)
             </p>
           </div>
-          {appliedFilters.year && appliedFilters.quarter && (
+          {appliedFilters.year && appliedFilters.month && (
             <div className="bg-blue-50 rounded-lg px-3 py-2">
               <p className="text-sm text-blue-700">
-                <span className="font-medium">Selected:</span> {getQuarterDisplay(appliedFilters.quarter)} {appliedFilters.year}
+                <span className="font-medium">Selected:</span> {getMonthDisplay(appliedFilters.month)} {appliedFilters.year}
               </p>
             </div>
           )}
@@ -525,33 +454,29 @@ const QuarterRevenuePanel = () => {
       </div>
 
       {/* Summary Cards */}
-      {appliedFilters.year && appliedFilters.quarter && records.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+      {appliedFilters.year && appliedFilters.month && records.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Total Estimate</p>
-            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.estimate || 0)}</p>
+            <p className="text-sm opacity-90">Total X Entry</p>
+            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.x_entry_total || 0)}</p>
           </div>
           <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Total Re-Estimate</p>
-            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.re_estimate || 0)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Total Quarter Revenue</p>
-            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.total_quarter_revenue || 0)}</p>
+            <p className="text-sm opacity-90">Total Collection</p>
+            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.collection_total || 0)}</p>
           </div>
           <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Quarter Refund</p>
-            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.quarter_refund || 0)}</p>
+            <p className="text-sm opacity-90">Total Refund</p>
+            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.refund_total || 0)}</p>
           </div>
           <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Net Quarter Revenue</p>
-            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.net_quarter_revenue || 0)}</p>
+            <p className="text-sm opacity-90">Net Revenue</p>
+            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.net_revenue || 0)}</p>
           </div>
         </div>
       )}
 
       {/* Active Filters Display */}
-      {(appliedFilters.year || appliedFilters.quarter) && (
+      {(appliedFilters.year || appliedFilters.month) && (
         <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium text-blue-700">Applied Filters:</span>
@@ -560,10 +485,10 @@ const QuarterRevenuePanel = () => {
                 Year: {appliedFilters.year}
               </span>
             )}
-            {appliedFilters.quarter && (
+            {appliedFilters.month && (
               <span className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-md text-sm">
                 <Calendar size={12} className="mr-1" />
-                {getQuarterDisplay(appliedFilters.quarter)}
+                Month: {getMonthDisplay(appliedFilters.month)} (Cumulative)
               </span>
             )}
           </div>
@@ -595,7 +520,7 @@ const QuarterRevenuePanel = () => {
           }`}
         >
           <FileText size={16} />
-          <span>Export PDF (A3)</span>
+          <span>Export PDF</span>
         </button>
         <button 
           onClick={handleExportCSV} 
@@ -621,52 +546,44 @@ const QuarterRevenuePanel = () => {
       {/* Records Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[180px]">
+                <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[200px]">
                   Revenue Code
                 </th>
-                <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[100px]">
+                <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[150px]">
                   Revenue Category
                 </th>
-                <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[80px]">
-                  Original Estimate
+                <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px] bg-blue-50">
+                  Total X Entry (Rs)
                 </th>
-                <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[80px]">
-                  Revised Estimate
+                <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px] bg-green-50">
+                  Total Collection (Rs)
                 </th>
-                {monthColumns.map((month) => (
-                  <th key={month} className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[70px]">
-                    {monthNamesData[month] || `Month ${month}`}
-                  </th>
-                ))}
-                <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[90px] bg-purple-50">
-                  Total Quarter Revenue
+                <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px] bg-red-50">
+                  Total Refund (Rs)
                 </th>
-                <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[90px] bg-red-50">
-                  Quarter Refund
-                </th>
-                <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[90px] bg-indigo-50">
-                  Net Quarter Revenue
+                <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px] bg-indigo-50">
+                  Net Revenue (Rs)
                 </th>
               </tr>
             </thead>
             <tbody>
-              {!appliedFilters.year || !appliedFilters.quarter ? (
+              {!appliedFilters.year || !appliedFilters.month ? (
                 <tr>
-                  <td colSpan={7 + monthColumns.length} className="text-center py-12 text-gray-500">
+                  <td colSpan="6" className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <Filter size={40} className="text-gray-300" />
-                      <p>Please select Year and Quarter to view data</p>
+                      <p>Please select Year and Month to view data</p>
                     </div>
                   </td>
                 </tr>
               ) : paginatedRecords.length === 0 ? (
                 <tr>
-                  <td colSpan={7 + monthColumns.length} className="text-center py-12 text-gray-500">
+                  <td colSpan="6" className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center gap-2">
-                      <p>No records found for the selected filters.</p>
+                      <p>No records found for the selected filters (Head between 2000 and 3000).</p>
                       <button 
                         onClick={clearFilters} 
                         className="text-blue-600 hover:text-blue-800 text-sm"
@@ -679,31 +596,23 @@ const QuarterRevenuePanel = () => {
               ) : (
                 paginatedRecords.map((record, index) => (
                   <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                    <td className="px-2 py-2 font-medium text-gray-900 text-xs">
+                    <td className="px-4 py-3 font-medium text-gray-900">
                       {formatCombinedCode(record)}
                     </td>
-                    <td className="px-2 py-2 text-gray-600 text-xs">
+                    <td className="px-4 py-3 text-gray-600">
                       {record.revenue_code_name || '-'}
                     </td>
-                    <td className="px-2 py-2 text-right text-blue-600 font-medium text-xs">
-                      {formatNumber(record.estimate || 0)}
+                    <td className="px-4 py-3 text-right text-blue-600 font-medium">
+                      {formatNumber(record.x_entry_total || 0)}
                     </td>
-                    <td className="px-2 py-2 text-right text-green-600 font-medium text-xs">
-                      {formatNumber(record.re_estimate || 0)}
+                    <td className="px-4 py-3 text-right text-green-600 font-medium">
+                      {formatNumber(record.collection_total || 0)}
                     </td>
-                    {monthColumns.map((month) => (
-                      <td key={month} className="px-2 py-2 text-right text-gray-700 font-medium text-xs">
-                        {formatNumber(record.months?.[month] || 0)}
-                      </td>
-                    ))}
-                    <td className="px-2 py-2 text-right text-purple-600 font-bold text-xs bg-purple-50">
-                      {formatNumber(record.total_quarter_revenue || 0)}
+                    <td className="px-4 py-3 text-right text-red-600 font-medium">
+                      {formatNumber(record.refund_total || 0)}
                     </td>
-                    <td className="px-2 py-2 text-right text-red-600 font-bold text-xs bg-red-50">
-                      {formatNumber(record.quarter_refund || 0)}
-                    </td>
-                    <td className="px-2 py-2 text-right text-indigo-600 font-bold text-xs bg-indigo-50">
-                      {formatNumber(record.net_quarter_revenue || 0)}
+                    <td className="px-4 py-3 text-right text-indigo-600 font-bold bg-indigo-50">
+                      {formatNumber(record.net_revenue || 0)}
                     </td>
                   </tr>
                 ))
@@ -712,27 +621,19 @@ const QuarterRevenuePanel = () => {
             {paginatedRecords.length > 0 && (
               <tfoot className="bg-gray-50 border-t border-gray-200">
                 <tr className="font-semibold">
-                  <td className="px-2 py-2 text-right text-gray-700">TOTAL</td>
-                  <td className="px-2 py-2"></td>
-                  <td className="px-2 py-2 text-right text-blue-700">
-                    {formatNumber(totals.estimate || 0)}
+                  <td className="px-4 py-3 text-right text-gray-700">TOTAL</td>
+                  <td className="px-4 py-3"></td>
+                  <td className="px-4 py-3 text-right text-blue-700">
+                    {formatNumber(totals.x_entry_total || 0)}
                   </td>
-                  <td className="px-2 py-2 text-right text-green-700">
-                    {formatNumber(totals.re_estimate || 0)}
+                  <td className="px-4 py-3 text-right text-green-700">
+                    {formatNumber(totals.collection_total || 0)}
                   </td>
-                  {monthColumns.map((month) => (
-                    <td key={month} className="px-2 py-2 text-right text-gray-700">
-                      {formatNumber(totals.months?.[month] || 0)}
-                    </td>
-                  ))}
-                  <td className="px-2 py-2 text-right text-purple-700 bg-purple-50">
-                    {formatNumber(totals.total_quarter_revenue || 0)}
+                  <td className="px-4 py-3 text-right text-red-700">
+                    {formatNumber(totals.refund_total || 0)}
                   </td>
-                  <td className="px-2 py-2 text-right text-red-700 bg-red-50">
-                    {formatNumber(totals.quarter_refund || 0)}
-                  </td>
-                  <td className="px-2 py-2 text-right text-indigo-700 bg-indigo-50">
-                    {formatNumber(totals.net_quarter_revenue || 0)}
+                  <td className="px-4 py-3 text-right text-indigo-700 bg-indigo-50">
+                    {formatNumber(totals.net_revenue || 0)}
                   </td>
                 </tr>
               </tfoot>
@@ -791,7 +692,7 @@ const QuarterRevenuePanel = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Filter Quarter Revenue Report</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Filter Non Tax Revenue Report</h3>
               <button 
                 onClick={() => setShowFilterModal(false)} 
                 className="text-gray-400 hover:text-gray-600 transition"
@@ -820,35 +721,41 @@ const QuarterRevenuePanel = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Quarter <span className="text-red-500">*</span>
+                  Month <span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="quarter"
-                  value={filters.quarter}
+                  name="month"
+                  value={filters.month}
                   onChange={handleFilterChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Select Quarter</option>
-                  {filterOptions.quarters.map(quarter => (
-                    <option key={quarter} value={quarter}>
-                      {quarterLabels[quarter]}
+                  <option value="">Select Month</option>
+                  {filterOptions.months.map(month => (
+                    <option key={month} value={month}>
+                      {monthNames[month]}
                     </option>
                   ))}
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  Shows revenue data for the selected quarter with monthly breakdown
+                  Shows cumulative data from January to selected month
                 </p>
               </div>
 
               <div className="bg-blue-50 rounded-lg p-3">
                 <p className="text-xs text-blue-700">
-                  <strong>Total Quarter Revenue:</strong> Sum of months in quarter (dr_cr_code=4000, dr_cr=CR)
+                  <strong>Filter:</strong> Head between 2000 and 3000
+                </p>
+                <p className="text-xs text-blue-700 mt-1">
+                  <strong>X Entry:</strong> monthly_fincances (dr_cr_code=4000, dr_cr=CR) - Cumulative
+                </p>
+                <p className="text-xs text-blue-700 mt-1">
+                  <strong>Collection:</strong> treasury (dr_cr_code=4000, dr_cr=CR) - Cumulative
                 </p>
                 <p className="text-xs text-red-700 mt-1">
-                  <strong>Quarter Refund:</strong> Sum of months in quarter (dr_cr_code=5000, dr_cr=DR)
+                  <strong>Refund:</strong> treasury + monthly_fincances (dr_cr_code=5000, dr_cr=DR) - Cumulative
                 </p>
                 <p className="text-xs text-indigo-700 mt-1">
-                  <strong>Net Quarter Revenue:</strong> Total Quarter Revenue - Quarter Refund
+                  <strong>Net Revenue:</strong> X Entry + Collection - Refund
                 </p>
               </div>
             </div>
@@ -862,7 +769,7 @@ const QuarterRevenuePanel = () => {
               </button>
               <button 
                 onClick={applyFilters} 
-                disabled={!filters.year || !filters.quarter}
+                disabled={!filters.year || !filters.month}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Apply Filters
@@ -875,4 +782,4 @@ const QuarterRevenuePanel = () => {
   );
 };
 
-export default QuarterRevenuePanel;
+export default NonTaxRevenuePanel;

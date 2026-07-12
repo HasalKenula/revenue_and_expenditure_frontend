@@ -227,7 +227,7 @@ const MonthlySummaryPanel = () => {
       const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
-        format: 'a3'
+        format: 'a4'
       });
 
       // Get current date
@@ -288,7 +288,7 @@ const MonthlySummaryPanel = () => {
 
       // Column widths
       const columnStyles = {
-        0: { cellWidth: 40, halign: 'left' },
+        0: { cellWidth: 50, halign: 'left' },
         1: { cellWidth: 40, halign: 'right' },
         2: { cellWidth: 40, halign: 'right' },
         3: { cellWidth: 40, halign: 'right' },
@@ -316,7 +316,8 @@ const MonthlySummaryPanel = () => {
         },
         columnStyles: columnStyles,
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { top: 35, left: 10, right: 10 },
+        margin: { top: 35, left: 23.5, right: 23.5 },
+        tableWidth:297,
         rowStyles: {
           [tableBody.length - 1]: {
             fontStyle: 'bold',

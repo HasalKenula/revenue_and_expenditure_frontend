@@ -126,8 +126,8 @@ const TaxRevenuePanel = () => {
     const project = padNumber(record.project);
     const subProject = padNumber(record.sub_project);
     const object = padNumber(record.object);
-    
-    return `${head}-${program}-${project}-${subProject}${object}`;
+
+    return `${head}-${project}-${object}`;
   };
 
   // Check authentication on mount
@@ -231,6 +231,135 @@ const TaxRevenuePanel = () => {
   };
 
   // Generate PDF Report
+  // const handleExportPDF = () => {
+  //   if (records.length === 0) {
+  //     alert('No data to export');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   try {
+  //     // Create PDF in landscape orientation (A3)
+  //     const doc = new jsPDF({
+  //       orientation: 'landscape',
+  //       unit: 'mm',
+  //       format: 'a3'
+  //     });
+
+  //     // Get current date
+  //     const currentDate = new Date().toLocaleString();
+
+  //     // Add Header
+  //     doc.setFontSize(16);
+  //     doc.setFont('helvetica', 'bold');
+  //     doc.text('Tax Revenue Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+
+  //     doc.setFontSize(10);
+  //     doc.setFont('helvetica', 'normal');
+  //     doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
+
+  //     // Add filter information
+  //     let filterText = `Year: ${appliedFilters.year} | Month: ${selectedMonthName} (Cumulative)`;
+
+  //     doc.setFontSize(9);
+  //     doc.text(filterText, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
+
+  //     // Prepare table headers
+  //     const tableHeaders = [
+  //       'Revenue Code',
+  //       'Revenue Category',
+  //       'Total X Entry (Rs)',
+  //       'Total Collection (Rs)',
+  //       'Total Refund (Rs)',
+  //       'Net Revenue (Rs)'
+  //     ];
+
+  //     // Prepare table data
+  //     const tableBody = records.map(record => {
+  //       return [
+  //         formatCombinedCode(record),
+  //         record.revenue_code_name || '',
+  //         formatNumber(record.x_entry_total || 0),
+  //         formatNumber(record.collection_total || 0),
+  //         formatNumber(record.refund_total || 0),
+  //         formatNumber(record.net_revenue || 0)
+  //       ];
+  //     });
+
+  //     // Add totals row
+  //     const totalRow = [
+  //       'TOTAL',
+  //       '',
+  //       formatNumber(totals.x_entry_total || 0),
+  //       formatNumber(totals.collection_total || 0),
+  //       formatNumber(totals.refund_total || 0),
+  //       formatNumber(totals.net_revenue || 0)
+  //     ];
+  //     tableBody.push(totalRow);
+
+  //     // Column styles
+  //     const columnStyles = {
+  //       0: { cellWidth: 20, halign: 'left' },
+  //       1: { cellWidth: 40, halign: 'left' },
+  //       2: { cellWidth: 30, halign: 'right' },
+  //       3: { cellWidth: 30, halign: 'right' },
+  //       4: { cellWidth: 30, halign: 'right' },
+  //       5: { cellWidth: 30, halign: 'right' }
+  //     };
+
+  //     // Generate table
+  //     autoTable(doc, {
+  //       head: [tableHeaders],
+  //       body: tableBody,
+  //       startY: 35,
+  //       theme: 'striped',
+  //       headStyles: {
+  //         fillColor: [41, 128, 185],
+  //         textColor: [255, 255, 255],
+  //         fontSize: 10,
+  //         fontStyle: 'bold',
+  //         halign: 'center',
+  //         cellPadding: 3
+  //       },
+  //       bodyStyles: {
+  //         fontSize: 9,
+  //         cellPadding: 3
+  //       },
+  //       columnStyles: columnStyles,
+  //       alternateRowStyles: { fillColor: [245, 245, 245] },
+  //       margin: { top: 35, left: 15, right: 15 },
+  //       tableWidth: '180',
+
+  //     });
+
+  //     // Add footer to all pages
+  //     const pageCount = doc.internal.getNumberOfPages();
+  //     for (let i = 1; i <= pageCount; i++) {
+  //       doc.setPage(i);
+  //       doc.setFontSize(8);
+  //       doc.setTextColor(128, 128, 128);
+  //       doc.text(
+  //         `Page ${i} of ${pageCount}`,
+  //         doc.internal.pageSize.getWidth() / 2,
+  //         doc.internal.pageSize.getHeight() - 10,
+  //         { align: 'center' }
+  //       );
+  //     }
+
+  //     // Save PDF
+  //     doc.save(`tax_revenue_report_${appliedFilters.year}_${selectedMonthName}.pdf`);
+  //     alert('PDF exported successfully!');
+
+  //   } catch (error) {
+  //     console.error('Error generating PDF:', error);
+  //     alert('Failed to generate PDF: ' + error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
   const handleExportPDF = () => {
     if (records.length === 0) {
       alert('No data to export');
@@ -238,13 +367,13 @@ const TaxRevenuePanel = () => {
     }
 
     setLoading(true);
-    
+
     try {
       // Create PDF in landscape orientation (A3)
       const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
-        format: 'a3'
+        format: 'a4'
       });
 
       // Get current date
@@ -254,14 +383,14 @@ const TaxRevenuePanel = () => {
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.text('Tax Revenue Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-      
+
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
-      
+
       // Add filter information
       let filterText = `Year: ${appliedFilters.year} | Month: ${selectedMonthName} (Cumulative)`;
-      
+
       doc.setFontSize(9);
       doc.text(filterText, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
 
@@ -298,17 +427,22 @@ const TaxRevenuePanel = () => {
       ];
       tableBody.push(totalRow);
 
-      // Column styles
+      // Column styles with better width distribution
       const columnStyles = {
-        0: { cellWidth: 45, halign: 'left' },
-        1: { cellWidth: 35, halign: 'left' },
-        2: { cellWidth: 30, halign: 'right' },
-        3: { cellWidth: 30, halign: 'right' },
-        4: { cellWidth: 30, halign: 'right' },
-        5: { cellWidth: 30, halign: 'right' }
+        0: { cellWidth: 30, halign: 'left' },
+        1: { cellWidth: 80, halign: 'left' },
+        2: { cellWidth: 35, halign: 'right' },
+        3: { cellWidth: 35, halign: 'right' },
+        4: { cellWidth: 35, halign: 'right' },
+        5: { cellWidth: 35, halign: 'right' }
       };
 
-      // Generate table
+      // Calculate table width
+      const totalWidth = Object.values(columnStyles).reduce((sum, style) => sum + style.cellWidth, 0);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const marginLeft = (pageWidth - totalWidth) / 2;
+
+      // Generate table with centered alignment
       autoTable(doc, {
         head: [tableHeaders],
         body: tableBody,
@@ -328,7 +462,9 @@ const TaxRevenuePanel = () => {
         },
         columnStyles: columnStyles,
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { top: 35, left: 10, right: 10 },
+        margin: { top: 35, left: 23.5, right: 23.5 },
+        tableWidth: 250,
+        // Row style for total row
         rowStyles: {
           [tableBody.length - 1]: {
             fontStyle: 'bold',
@@ -337,7 +473,7 @@ const TaxRevenuePanel = () => {
             fontSize: 10
           }
         },
-        didDrawPage: function(data) {
+        didDrawPage: function (data) {
           // Footer is added after table generation
         }
       });
@@ -359,7 +495,7 @@ const TaxRevenuePanel = () => {
       // Save PDF
       doc.save(`tax_revenue_report_${appliedFilters.year}_${selectedMonthName}.pdf`);
       alert('PDF exported successfully!');
-      
+
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to generate PDF: ' + error.message);
@@ -491,8 +627,8 @@ const TaxRevenuePanel = () => {
               </span>
             )}
           </div>
-          <button 
-            onClick={clearFilters} 
+          <button
+            onClick={clearFilters}
             className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
           >
             <X size={14} /> Clear All
@@ -502,39 +638,37 @@ const TaxRevenuePanel = () => {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
-        <button 
-          onClick={() => setShowFilterModal(true)} 
+        <button
+          onClick={() => setShowFilterModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
         >
           <Filter size={16} />
           <span>Filter</span>
         </button>
-        <button 
-          onClick={handleExportPDF} 
-          disabled={records.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            records.length > 0 
-              ? 'bg-red-600 text-white hover:bg-red-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+        <button
+          onClick={handleExportPDF}
+          disabled={records.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+            ? 'bg-red-600 text-white hover:bg-red-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
           <FileText size={16} />
           <span>Export PDF</span>
         </button>
-        <button 
-          onClick={handleExportCSV} 
-          disabled={records.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            records.length > 0 
-              ? 'bg-green-600 text-white hover:bg-green-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+        <button
+          onClick={handleExportCSV}
+          disabled={records.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+            ? 'bg-green-600 text-white hover:bg-green-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
           <Download size={16} />
           <span>Export CSV</span>
         </button>
-        <button 
-          onClick={refreshData} 
+        <button
+          onClick={refreshData}
           className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
         >
           <RefreshCw size={16} />
@@ -583,8 +717,8 @@ const TaxRevenuePanel = () => {
                   <td colSpan="6" className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <p>No records found for the selected filters (Head between 1000 and 2000).</p>
-                      <button 
-                        onClick={clearFilters} 
+                      <button
+                        onClick={clearFilters}
                         className="text-blue-600 hover:text-blue-800 text-sm"
                       >
                         Clear filters and try again
@@ -645,12 +779,12 @@ const TaxRevenuePanel = () => {
           <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3 bg-white">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Show</span>
-              <select 
-                value={entriesPerPage} 
-                onChange={(e) => { 
-                  setEntriesPerPage(Number(e.target.value)); 
-                  setCurrentPage(1); 
-                }} 
+              <select
+                value={entriesPerPage}
+                onChange={(e) => {
+                  setEntriesPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
                 className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value={10}>10</option>
@@ -664,9 +798,9 @@ const TaxRevenuePanel = () => {
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <button 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-                disabled={currentPage === 1} 
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
                 className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
               >
                 <ChevronLeft size={16} />
@@ -674,9 +808,9 @@ const TaxRevenuePanel = () => {
               <span className="text-sm text-gray-600">
                 Page {currentPage} of {lastPage || 1}
               </span>
-              <button 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))} 
-                disabled={currentPage === lastPage || lastPage === 0} 
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
+                disabled={currentPage === lastPage || lastPage === 0}
                 className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
               >
                 <ChevronRight size={16} />
@@ -692,8 +826,8 @@ const TaxRevenuePanel = () => {
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Filter Tax Revenue Report</h3>
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
                 <X size={20} />
@@ -760,14 +894,14 @@ const TaxRevenuePanel = () => {
             </div>
 
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
-              <button 
-                onClick={applyFilters} 
+              <button
+                onClick={applyFilters}
                 disabled={!filters.year || !filters.month}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >

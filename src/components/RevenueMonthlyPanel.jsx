@@ -128,7 +128,7 @@ const RevenueMonthlyPanel = () => {
     const subProject = padNumber(record.sub_project);
     const object = padNumber(record.object);
     
-    return `${head}-${program}-${project}-${subProject}${object}`;
+    return `${head}-${project}-${object}`;
   };
 
   // Check authentication on mount
@@ -245,7 +245,7 @@ const RevenueMonthlyPanel = () => {
       const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
-        format: 'a3'
+        format: 'a4'
       });
 
       // Get current date
@@ -304,13 +304,13 @@ const RevenueMonthlyPanel = () => {
 
       // Column widths
       const columnStyles = {
-        0: { cellWidth: 45, halign: 'left' },
-        1: { cellWidth: 30, halign: 'left' },
-        2: { cellWidth: 25, halign: 'right' },
-        3: { cellWidth: 25, halign: 'right' },
-        4: { cellWidth: 25, halign: 'right' },
-        5: { cellWidth: 25, halign: 'right' },
-        6: { cellWidth: 25, halign: 'right' }
+        0: { cellWidth: 30, halign: 'left' },
+        1: { cellWidth: 70, halign: 'left' },
+        2: { cellWidth: 30, halign: 'right' },
+        3: { cellWidth: 30, halign: 'right' },
+        4: { cellWidth: 30, halign: 'right' },
+        5: { cellWidth: 30, halign: 'right' },
+        6: { cellWidth: 30, halign: 'right' }
       };
 
       // Generate table
@@ -333,7 +333,8 @@ const RevenueMonthlyPanel = () => {
         },
         columnStyles: columnStyles,
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { top: 35, left: 10, right: 10 },
+        margin: { top: 35, left: 23.5, right: 23.5 },
+        tableWidth:250,
         rowStyles: {
           [tableBody.length - 1]: {
             fontStyle: 'bold',
