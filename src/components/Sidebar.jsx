@@ -621,20 +621,87 @@ const Sidebar = () => {
             </div>
 
             {/* Head Info - Both */}
-            <div>
+            {/* <div>
               <Link to="/headinfo" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <BookOpen size={18} />
                 <span className="text-sm">Head Info</span>
               </Link>
-            </div>
+            </div> */}
 
             {/* Item Code - Both */}
-            <div>
+            {/* <div>
               <Link to="/itemcode" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <Grid size={18} />
                 <span className="text-sm">Item Code</span>
               </Link>
+            </div> */}
+
+            {/* quater revenue - Both */}
+            <div>
+              <Link to="/quarter_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <Grid size={18} />
+                <span className="text-sm">Quarter Revenue</span>
+              </Link>
             </div>
+
+            {/* mothly revenue - Both */}
+            <div>
+              <Link to="/monthly_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <Grid size={18} />
+                <span className="text-sm">Mothly Revenue</span>
+              </Link>
+            </div>
+
+
+            {/* mothly summery revenue - Both */}
+            <div>
+              <Link to="/monthly_summery_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <Grid size={18} />
+                <span className="text-sm">Mothly summery Revenue</span>
+              </Link>
+            </div>
+
+            {/* tax revenue - Both */}
+            <div>
+              <Link to="/tax_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <Grid size={18} />
+                <span className="text-sm">Tax Revenue</span>
+              </Link>
+            </div>
+
+            {/* non tax revenue - Both */}
+            <div>
+              <Link to="/non_tax_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <Grid size={18} />
+                <span className="text-sm">Non Tax Revenue</span>
+              </Link>
+            </div>
+
+            {/*  revenue_collection */}
+            <div>
+              <Link to="/revenue_collection" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <PieChart size={18} />
+                <span className="text-sm">Revenue Collection</span>
+              </Link>
+            </div>
+
+            {/*  revenue_crossEntry */}
+            <div>
+              <Link to="/revenue_crossEntry" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <PieChart size={18} />
+                <span className="text-sm">Revenue CrossEntry</span>
+              </Link>
+            </div>
+
+
+            {/*  revenue_refundAccount */}
+            <div>
+              <Link to="/revenue_refundAccount" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <PieChart size={18} />
+                <span className="text-sm">Revenue Refund</span>
+              </Link>
+            </div>
+
           </>
         )}
 
@@ -702,6 +769,8 @@ const Sidebar = () => {
                 <span className="text-sm">Reports</span>
               </Link>
             </div>
+
+
 
           </>
         )}

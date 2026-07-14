@@ -615,6 +615,14 @@ import EstimatePage from "./pages/EstimatePage";
 import TreasuryPage from "./pages/TreasuryPage";
 import NetRevenuePage from "./pages/NetRevenuePage";
 import UserProfile from "./pages/UserProfile";
+import QuarterRevenuePage from "./pages/QuarterRevenuePage";
+import RevenueMonthlyPage from "./pages/RevenueMonthlyPage";
+import MonthlySummaryPage from "./pages/MonthlySummaryPage";
+import TaxRevenuePage from "./pages/TaxRevenuePage";
+import NonTaxRevenuePage from "./pages/NonTaxRevenuePage";
+import RevenueCollectionAccountPage from "./pages/RevenueCollectionAccountPage";
+import RevenueCrossEntryAccountPage from "./pages/RevenueCrossEntryAccountPage";
+import RevenueRefundAccountPage from "./pages/RevenueRefundAccountPage";
 
 
 // Component to handle role-based redirect for home page
@@ -906,6 +914,79 @@ function Layout() {
                         </RoleProtectedRoute>
                     }
                 />
+
+                <Route
+                    path="/quarter_revenue"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <QuarterRevenuePage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/monthly_revenue"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueMonthlyPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/monthly_summery_revenue"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <MonthlySummaryPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/tax_revenue"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <TaxRevenuePage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/non_tax_revenue"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <NonTaxRevenuePage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue_collection"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueCollectionAccountPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue_crossEntry"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueCrossEntryAccountPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue_refundAccount"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueRefundAccountPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
             </Routes>
         </>
     );
