@@ -594,15 +594,6 @@ const Sidebar = () => {
               Revenue Management
             </div>
 
-            {/* Net Revenue - Only Revenue Manager */}
-            <div>
-              <Link to="/net_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <DollarSign size={18} />
-                <span className="text-sm">Net Revenue</span>
-              </Link>
-            </div>
-
-
 
             {/* Treasury Revenue - Only Revenue Manager */}
             <div>
@@ -636,88 +627,16 @@ const Sidebar = () => {
               </Link>
             </div> */}
 
-            {/* quater revenue - Both */}
-            <div>
-              <Link to="/quarter_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <Grid size={18} />
-                <span className="text-sm">Quarter Revenue</span>
-              </Link>
-            </div>
-
-            {/* mothly revenue - Both */}
-            <div>
-              <Link to="/monthly_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <Grid size={18} />
-                <span className="text-sm">Mothly Revenue</span>
-              </Link>
-            </div>
 
 
-            {/* mothly summery revenue - Both */}
+            {/*  revenue_reports */}
             <div>
-              <Link to="/monthly_summery_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <Grid size={18} />
-                <span className="text-sm">Mothly summery Revenue</span>
-              </Link>
-            </div>
-
-            {/* tax revenue - Both */}
-            <div>
-              <Link to="/tax_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <Grid size={18} />
-                <span className="text-sm">Tax Revenue</span>
-              </Link>
-            </div>
-
-            {/* non tax revenue - Both */}
-            <div>
-              <Link to="/non_tax_revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <Grid size={18} />
-                <span className="text-sm">Non Tax Revenue</span>
-              </Link>
-            </div>
-
-            {/*  revenue_collection */}
-            <div>
-              <Link to="/revenue_collection" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+              <Link to="/revenue_reports" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <PieChart size={18} />
-                <span className="text-sm">Revenue Collection</span>
+                <span className="text-sm">Revenue Reports</span>
               </Link>
             </div>
 
-            {/*  revenue_crossEntry */}
-            <div>
-              <Link to="/revenue_crossEntry" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <PieChart size={18} />
-                <span className="text-sm">Revenue CrossEntry</span>
-              </Link>
-            </div>
-
-
-            {/*  revenue_refundAccount */}
-            <div>
-              <Link to="/revenue_refundAccount" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <PieChart size={18} />
-                <span className="text-sm">Revenue Refund</span>
-              </Link>
-            </div>
-
-
-            {/*  RevenueCrossEntryByTrnoPage */}
-            <div>
-              <Link to="/revenue_crossByHead" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <PieChart size={18} />
-                <span className="text-sm">Revenue Cross EntryBy Head</span>
-              </Link>
-            </div>
-
-            {/*  revenue_refundByHead */}
-            <div>
-              <Link to="/revenue_refundByHead" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <PieChart size={18} />
-                <span className="text-sm">Revenue Refund EntryBy Head</span>
-              </Link>
-            </div>
 
           </>
         )}

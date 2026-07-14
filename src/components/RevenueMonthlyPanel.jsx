@@ -318,7 +318,7 @@ const RevenueMonthlyPanel = () => {
         head: [tableHeaders],
         body: tableBody,
         startY: 35,
-        theme: 'striped',
+        theme: 'grid',
         headStyles: {
           fillColor: [41, 128, 185],
           textColor: [255, 255, 255],
