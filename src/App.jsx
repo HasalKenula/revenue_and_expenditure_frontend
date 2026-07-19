@@ -628,6 +628,7 @@ import RevenueRefundByTrnoPage from "./pages/RevenueRefundByTrnoPage";
 import RevenueReportsPage from "./pages/RevenueReportsPage";
 import { Toaster } from "react-hot-toast";
 import StampDutyMonthlyPage from "./pages/StampDutyMonthlyPage";
+import StampDutySummaryPage from "./pages/StampDutySummaryPage";
 
 
 // Component to handle role-based redirect for home page
@@ -885,6 +886,15 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
                             <StampDutyMonthlyPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/stamp-summary"
+                    element={
+                        <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
+                            <StampDutySummaryPage />
                         </RoleProtectedRoute>
                     }
                 />
