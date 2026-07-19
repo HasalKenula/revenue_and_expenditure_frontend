@@ -630,6 +630,7 @@ import { Toaster } from "react-hot-toast";
 import StampDutyMonthlyPage from "./pages/StampDutyMonthlyPage";
 import StampDutySummaryPage from "./pages/StampDutySummaryPage";
 import LocalGovTransferMonthlyPage from "./pages/LocalGovTransferMonthlyPage";
+import LocalGovTransferSummaryPage from "./pages/LocalGovTransferSummaryPage";
 
 
 // Component to handle role-based redirect for home page
@@ -906,6 +907,15 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
                             <LocalGovTransferMonthlyPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                 <Route
+                    path="/transfer-summary"
+                    element={
+                        <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
+                            <LocalGovTransferSummaryPage />
                         </RoleProtectedRoute>
                     }
                 />
