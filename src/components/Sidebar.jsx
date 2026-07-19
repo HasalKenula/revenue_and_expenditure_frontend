@@ -706,6 +706,14 @@ const Sidebar = () => {
               </Link>
             </div>
 
+            {/* stamps mooth */}
+            <div>
+              <Link to="/stamp-month" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <PieChart size={18} />
+                <span className="text-sm">stamps mooth</span>
+              </Link>
+            </div>
+
 
 
           </>

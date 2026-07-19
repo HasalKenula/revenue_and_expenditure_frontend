@@ -627,6 +627,7 @@ import RevenueCrossEntryByTrnoPage from "./pages/RevenueCrossEntryByTrnoPage";
 import RevenueRefundByTrnoPage from "./pages/RevenueRefundByTrnoPage";
 import RevenueReportsPage from "./pages/RevenueReportsPage";
 import { Toaster } from "react-hot-toast";
+import StampDutyMonthlyPage from "./pages/StampDutyMonthlyPage";
 
 
 // Component to handle role-based redirect for home page
@@ -878,6 +879,16 @@ function Layout() {
                         </RoleProtectedRoute>
                     }
                 />
+
+                <Route
+                    path="/stamp-month"
+                    element={
+                        <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
+                            <StampDutyMonthlyPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
                 <Route
                     path="/headinfo"
                     element={
@@ -1008,7 +1019,7 @@ function Layout() {
                         </RoleProtectedRoute>
                     }
                 />
-                
+
                 <Route
                     path="/revenue_reports"
                     element={
