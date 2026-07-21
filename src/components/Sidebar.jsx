@@ -706,43 +706,7 @@ const Sidebar = () => {
               </Link>
             </div>
 
-            {/* stamps mooth */}
-            <div>
-              <Link to="/stamp-month" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <PieChart size={18} />
-                <span className="text-sm">stamps mooth</span>
-              </Link>
-            </div>
-
-
-            {/* stamp-summary */}
-            <div>
-              <Link to="/stamp-summary" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <PieChart size={18} />
-                <span className="text-sm">stamp summary</span>
-              </Link>
-            </div>
-
-
-            {/* transfer-monthly */}
-            <div>
-              <Link to="/transfer-monthly" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <PieChart size={18} />
-                <span className="text-sm">transfer monthly</span>
-              </Link>
-            </div>
-
-
-            {/* transfer-summary */}
-            <div>
-              <Link to="/transfer-summary" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <PieChart size={18} />
-                <span className="text-sm">transfer summary</span>
-              </Link>
-            </div>
-
-
-
+           
           </>
         )}
 
