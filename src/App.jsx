@@ -627,6 +627,13 @@ import RevenueCrossEntryByTrnoPage from "./pages/RevenueCrossEntryByTrnoPage";
 import RevenueRefundByTrnoPage from "./pages/RevenueRefundByTrnoPage";
 import RevenueReportsPage from "./pages/RevenueReportsPage";
 import { Toaster } from "react-hot-toast";
+import StampDutyMonthlyPage from "./pages/StampDutyMonthlyPage";
+import StampDutySummaryPage from "./pages/StampDutySummaryPage";
+import LocalGovTransferMonthlyPage from "./pages/LocalGovTransferMonthlyPage";
+import LocalGovTransferSummaryPage from "./pages/LocalGovTransferSummaryPage";
+import UserFinanceUploadPage from "./pages/UserFinanceUploadPage";
+import ExpenditureManagerApprovalPage from "./pages/ExpenditureManagerApprovalPage";
+
 
 
 // Component to handle role-based redirect for home page
@@ -670,12 +677,30 @@ function Layout() {
                     }
                 />
 
+                <Route
+                    path="/user_upload"
+                    element={
+                        <RoleProtectedRoute requiredRoles="user">
+                            <UserFinanceUploadPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
 
                 <Route
                     path="/budget"
                     element={
                         <RoleProtectedRoute requiredRoles="expenditure_manager">
                             <BudgetPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/approve"
+                    element={
+                        <RoleProtectedRoute requiredRoles="expenditure_manager">
+                            <ExpenditureManagerApprovalPage />
                         </RoleProtectedRoute>
                     }
                 />
@@ -878,6 +903,44 @@ function Layout() {
                         </RoleProtectedRoute>
                     }
                 />
+
+                <Route
+                    path="/stamp-month"
+                    element={
+                        <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
+                            <StampDutyMonthlyPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/stamp-summary"
+                    element={
+                        <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
+                            <StampDutySummaryPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+
+                <Route
+                    path="/transfer-monthly"
+                    element={
+                        <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
+                            <LocalGovTransferMonthlyPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/transfer-summary"
+                    element={
+                        <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
+                            <LocalGovTransferSummaryPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
                 <Route
                     path="/headinfo"
                     element={
@@ -1008,7 +1071,7 @@ function Layout() {
                         </RoleProtectedRoute>
                     }
                 />
-                
+
                 <Route
                     path="/revenue_reports"
                     element={
