@@ -16,6 +16,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -447,7 +448,7 @@ const TaxRevenuePanel = () => {
         head: [tableHeaders],
         body: tableBody,
         startY: 35,
-        theme: 'striped',
+        theme: 'grid',
         headStyles: {
           fillColor: [41, 128, 185],
           textColor: [255, 255, 255],
@@ -494,11 +495,11 @@ const TaxRevenuePanel = () => {
 
       // Save PDF
       doc.save(`tax_revenue_report_${appliedFilters.year}_${selectedMonthName}.pdf`);
-      alert('PDF exported successfully!');
+      toast.success("PDF exported successfully!");
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error("Failed to generate PDF");
     } finally {
       setLoading(false);
     }

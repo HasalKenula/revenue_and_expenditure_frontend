@@ -329,17 +329,108 @@ const EstimatePanel = () => {
   };
 
   // Create new record
+  // const handleAddRecord = async () => {
+  //   const data = {};
+  //   Object.keys(newRecord).forEach(key => {
+  //     if (newRecord[key] !== '' && newRecord[key] !== null) {
+  //       if (['estimate', 're_estimate'].includes(key)) {
+  //         data[key] = parseFloat(newRecord[key]);
+  //       } else {
+  //         data[key] = parseInt(newRecord[key]);
+  //       }
+  //     }
+  //   });
+
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.post(`${API_BASE_URL}/estimates`, data, {
+  //       headers: getAuthHeaders()
+  //     });
+
+  //     if (response.data.success) {
+  //       alert('Estimate added successfully!');
+  //       setNewRecord({
+  //         head: '',
+  //         program: '',
+  //         project: '',
+  //         sub_project: '',
+  //         object: '',
+  //         revenue_code_name: '',
+  //         estimate: '',
+  //         re_estimate: ''
+  //       });
+  //       setShowAddModal(false);
+  //       fetchRecords();
+  //       fetchFilterOptions();
+  //       fetchSummary();
+  //     }
+  //   } catch (error) {
+  //     console.error('Error adding record:', error);
+  //     if (error.response?.status === 401) {
+  //       alert('Session expired. Please login again.');
+  //       localStorage.removeItem('token');
+  //       navigate('/login');
+  //     } else if (error.response?.status === 422) {
+  //       const errors = error.response.data.errors;
+  //       const errorMessages = Object.values(errors).flat().join('\n');
+  //       alert(`Validation Error:\n${errorMessages}`);
+  //     } else {
+  //       alert(error.response?.data?.message || 'Failed to add estimate');
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  // Add record - FIXED
+  // Add record - FIXED to handle zero values
   const handleAddRecord = async () => {
     const data = {};
+
+    // Log the raw data for debugging
+    console.log('Raw newRecord:', newRecord);
+
     Object.keys(newRecord).forEach(key => {
-      if (newRecord[key] !== '' && newRecord[key] !== null) {
+      // Check if value is not empty string, not null, and not undefined
+      // Important: 0 is a valid value, so we need to check for '' specifically
+      if (newRecord[key] !== '' && newRecord[key] !== null && newRecord[key] !== undefined) {
         if (['estimate', 're_estimate'].includes(key)) {
-          data[key] = parseFloat(newRecord[key]);
+          // For estimate fields - convert to float, 0 is valid
+          const numValue = parseFloat(newRecord[key]);
+          data[key] = isNaN(numValue) ? 0 : numValue;
+        } else if (key === 'revenue_code_name') {
+          // Keep as string
+          data[key] = newRecord[key];
         } else {
-          data[key] = parseInt(newRecord[key]);
+          // For numeric fields (head, program, project, sub_project, object)
+          // If value is 0 or any number, convert to integer
+          if (newRecord[key] === '' || newRecord[key] === null || newRecord[key] === undefined) {
+            // Skip if empty
+            return;
+          }
+          const intValue = parseInt(newRecord[key]);
+          // Only add if it's a valid number (including 0)
+          if (!isNaN(intValue)) {
+            data[key] = intValue;
+          }
+        }
+      } else if (newRecord[key] === 0 || newRecord[key] === '0') {
+        // Handle case where value is '0' or 0 explicitly
+        if (['estimate', 're_estimate'].includes(key)) {
+          data[key] = 0;
+        } else if (key !== 'revenue_code_name') {
+          data[key] = 0;
         }
       }
     });
+
+    // Log the data being sent
+    console.log('Data being sent:', data);
+
+    // Check if we have any data to send
+    if (Object.keys(data).length === 0) {
+      alert('Please fill in at least one field');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -381,23 +472,110 @@ const EstimatePanel = () => {
       setLoading(false);
     }
   };
-
   // Update record
+  // const handleUpdateRecord = async () => {
+  //   if (!editingRecord) return;
+
+  //   const data = {};
+  //   Object.keys(editingRecord).forEach(key => {
+  //     if (key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
+  //       if (editingRecord[key] !== '' && editingRecord[key] !== null) {
+  //         if (['estimate', 're_estimate'].includes(key)) {
+  //           data[key] = parseFloat(editingRecord[key]);
+  //         } else {
+  //           data[key] = parseInt(editingRecord[key]);
+  //         }
+  //       }
+  //     }
+  //   });
+
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.put(`${API_BASE_URL}/estimates/${editingRecord.id}`, data, {
+  //       headers: getAuthHeaders()
+  //     });
+
+  //     if (response.data.success) {
+  //       alert('Estimate updated successfully!');
+  //       setShowEditModal(false);
+  //       setEditingRecord(null);
+  //       fetchRecords();
+  //       fetchFilterOptions();
+  //       fetchSummary();
+  //     }
+  //   } catch (error) {
+  //     console.error('Error updating record:', error);
+  //     if (error.response?.status === 401) {
+  //       alert('Session expired. Please login again.');
+  //       localStorage.removeItem('token');
+  //       navigate('/login');
+  //     } else if (error.response?.status === 422) {
+  //       const errors = error.response.data.errors;
+  //       const errorMessages = Object.values(errors).flat().join('\n');
+  //       alert(`Validation Error:\n${errorMessages}`);
+  //     } else {
+  //       alert(error.response?.data?.message || 'Failed to update estimate');
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Update record - FIXED
+  // Update record - FIXED to handle zero values
   const handleUpdateRecord = async () => {
     if (!editingRecord) return;
 
     const data = {};
+
+    // Log the editing record for debugging
+    console.log('Editing Record:', editingRecord);
+
     Object.keys(editingRecord).forEach(key => {
-      if (key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
-        if (editingRecord[key] !== '' && editingRecord[key] !== null) {
-          if (['estimate', 're_estimate'].includes(key)) {
-            data[key] = parseFloat(editingRecord[key]);
-          } else {
-            data[key] = parseInt(editingRecord[key]);
+      // Skip internal fields
+      if (key === 'id' || key === 'created_at' || key === 'updated_at') {
+        return;
+      }
+
+      const value = editingRecord[key];
+
+      // Check if value is not empty string, not null, not undefined
+      // But allow 0 as a valid value
+      if (value !== '' && value !== null && value !== undefined) {
+        if (['estimate', 're_estimate'].includes(key)) {
+          // For estimate fields - convert to float
+          const numValue = parseFloat(value);
+          if (!isNaN(numValue)) {
+            data[key] = numValue;
           }
+        } else if (key === 'revenue_code_name') {
+          // Keep as string
+          data[key] = value;
+        } else {
+          // For numeric fields
+          const intValue = parseInt(value);
+          if (!isNaN(intValue)) {
+            data[key] = intValue;
+          }
+        }
+      } else if (value === 0 || value === '0') {
+        // Explicitly handle 0 values
+        if (['estimate', 're_estimate'].includes(key)) {
+          data[key] = 0;
+        } else if (key !== 'revenue_code_name') {
+          data[key] = 0;
         }
       }
     });
+
+    // Log the data being sent
+    console.log('Update data being sent:', data);
+
+    // Check if we have data to update
+    if (Object.keys(data).length === 0) {
+      alert('No changes to update');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -578,8 +756,8 @@ const EstimatePanel = () => {
           onClick={handleDelete}
           disabled={selectedRows.length === 0}
           className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm transition-colors ${selectedRows.length > 0
-              ? 'bg-red-600 text-white hover:bg-red-700'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            ? 'bg-red-600 text-white hover:bg-red-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
         >
           <Trash2 size={16} /><span>Delete ({selectedRows.length})</span>
@@ -918,7 +1096,7 @@ const EstimatePanel = () => {
       )}
 
       {/* Add Modal */}
-      {showAddModal && (
+      {/* {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
@@ -1030,10 +1208,184 @@ const EstimatePanel = () => {
             </div>
           </div>
         </div>
+      )} */}
+      {/* Add Modal - FIXED for zero values */}
+      {/* Add Modal - with no spinners */}
+      {/* Add Modal - Complete scroll prevention */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Add Estimate</h3>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Head</label>
+                <input
+                  type="number"
+                  value={newRecord.head !== '' && newRecord.head !== null && newRecord.head !== undefined ? newRecord.head : ''}
+                  onChange={(e) => setNewRecord({ ...newRecord, head: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  placeholder="Head code"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Program</label>
+                <input
+                  type="number"
+                  value={newRecord.program !== '' && newRecord.program !== null && newRecord.program !== undefined ? newRecord.program : ''}
+                  onChange={(e) => setNewRecord({ ...newRecord, program: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  placeholder="Program code"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
+                <input
+                  type="number"
+                  value={newRecord.project !== '' && newRecord.project !== null && newRecord.project !== undefined ? newRecord.project : ''}
+                  onChange={(e) => setNewRecord({ ...newRecord, project: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  placeholder="Project code"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sub Project</label>
+                <input
+                  type="number"
+                  value={newRecord.sub_project !== '' && newRecord.sub_project !== null && newRecord.sub_project !== undefined ? newRecord.sub_project : ''}
+                  onChange={(e) => setNewRecord({ ...newRecord, sub_project: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  placeholder="Sub project code"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Object</label>
+                <input
+                  type="number"
+                  value={newRecord.object !== '' && newRecord.object !== null && newRecord.object !== undefined ? newRecord.object : ''}
+                  onChange={(e) => setNewRecord({ ...newRecord, object: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  placeholder="Object code"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Revenue Code Name</label>
+                <input
+                  type="text"
+                  value={newRecord.revenue_code_name || ''}
+                  onChange={(e) => setNewRecord({ ...newRecord, revenue_code_name: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Revenue code name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Estimate (Rs)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={newRecord.estimate !== '' && newRecord.estimate !== null && newRecord.estimate !== undefined ? newRecord.estimate : ''}
+                  onChange={(e) => {
+                    // Prevent negative values
+                    const value = parseFloat(e.target.value);
+                    if (value < 0) {
+                      e.target.value = '0';
+                      setNewRecord({ ...newRecord, estimate: '0' });
+                    } else {
+                      setNewRecord({ ...newRecord, estimate: e.target.value });
+                    }
+                  }}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Re-Estimate (Rs)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={newRecord.re_estimate !== '' && newRecord.re_estimate !== null && newRecord.re_estimate !== undefined ? newRecord.re_estimate : ''}
+                  onChange={(e) => {
+                    // Prevent negative values
+                    const value = parseFloat(e.target.value);
+                    if (value < 0) {
+                      e.target.value = '0';
+                      setNewRecord({ ...newRecord, re_estimate: '0' });
+                    } else {
+                      setNewRecord({ ...newRecord, re_estimate: e.target.value });
+                    }
+                  }}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddRecord}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Add Estimate
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Edit Modal */}
-      {showEditModal && editingRecord && (
+      {/* {showEditModal && editingRecord && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
@@ -1121,6 +1473,176 @@ const EstimatePanel = () => {
                   value={editingRecord.re_estimate || ''}
                   onChange={(e) => setEditingRecord({ ...editingRecord, re_estimate: e.target.value })}
                   className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditingRecord(null);
+                }}
+                className="px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateRecord}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      )} */}
+      {/* Edit Modal - FIXED */}
+      {/* Edit Modal - with no spinners */}
+      {/* Edit Modal - Complete scroll prevention */}
+      {showEditModal && editingRecord && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Edit Estimate</h3>
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditingRecord(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Head</label>
+                <input
+                  type="number"
+                  value={editingRecord.head !== null && editingRecord.head !== undefined ? editingRecord.head : ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, head: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Program</label>
+                <input
+                  type="number"
+                  value={editingRecord.program !== null && editingRecord.program !== undefined ? editingRecord.program : ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, program: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
+                <input
+                  type="number"
+                  value={editingRecord.project !== null && editingRecord.project !== undefined ? editingRecord.project : ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, project: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sub Project</label>
+                <input
+                  type="number"
+                  value={editingRecord.sub_project !== null && editingRecord.sub_project !== undefined ? editingRecord.sub_project : ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, sub_project: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Object</label>
+                <input
+                  type="number"
+                  value={editingRecord.object !== null && editingRecord.object !== undefined ? editingRecord.object : ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, object: e.target.value })}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Revenue Code Name</label>
+                <input
+                  type="text"
+                  value={editingRecord.revenue_code_name || ''}
+                  onChange={(e) => setEditingRecord({ ...editingRecord, revenue_code_name: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Estimate (Rs)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editingRecord.estimate !== null && editingRecord.estimate !== undefined ? editingRecord.estimate : ''}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    if (value < 0) {
+                      e.target.value = '0';
+                      setEditingRecord({ ...editingRecord, estimate: '0' });
+                    } else {
+                      setEditingRecord({ ...editingRecord, estimate: e.target.value });
+                    }
+                  }}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Re-Estimate (Rs)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editingRecord.re_estimate !== null && editingRecord.re_estimate !== undefined ? editingRecord.re_estimate : ''}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    if (value < 0) {
+                      e.target.value = '0';
+                      setEditingRecord({ ...editingRecord, re_estimate: '0' });
+                    } else {
+                      setEditingRecord({ ...editingRecord, re_estimate: e.target.value });
+                    }
+                  }}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    e.target.blur();
+                  }}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
               </div>
             </div>

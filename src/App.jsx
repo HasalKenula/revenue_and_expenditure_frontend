@@ -623,6 +623,10 @@ import NonTaxRevenuePage from "./pages/NonTaxRevenuePage";
 import RevenueCollectionAccountPage from "./pages/RevenueCollectionAccountPage";
 import RevenueCrossEntryAccountPage from "./pages/RevenueCrossEntryAccountPage";
 import RevenueRefundAccountPage from "./pages/RevenueRefundAccountPage";
+import RevenueCrossEntryByTrnoPage from "./pages/RevenueCrossEntryByTrnoPage";
+import RevenueRefundByTrnoPage from "./pages/RevenueRefundByTrnoPage";
+import RevenueReportsPage from "./pages/RevenueReportsPage";
+import { Toaster } from "react-hot-toast";
 
 
 // Component to handle role-based redirect for home page
@@ -987,6 +991,33 @@ function Layout() {
                     }
                 />
 
+                <Route
+                    path="/revenue_crossByHead"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueCrossEntryByTrnoPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue_refundByHead"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueRefundByTrnoPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+                
+                <Route
+                    path="/revenue_reports"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueReportsPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
             </Routes>
         </>
     );
@@ -995,6 +1026,7 @@ function Layout() {
 function App() {
     return (
         <Router>
+            <Toaster position="top-right" />
             <Layout />
         </Router>
     );

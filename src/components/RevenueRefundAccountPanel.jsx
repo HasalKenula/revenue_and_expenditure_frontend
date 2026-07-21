@@ -306,7 +306,7 @@ const RevenueRefundAccountPanel = () => {
                 head: [table1Headers],
                 body: table1Body,
                 startY: 35,
-                theme: 'striped',
+                theme: 'grid',
                 headStyles: {
                     fillColor: [41, 128, 185],
                     textColor: [255, 255, 255],
@@ -416,7 +416,7 @@ const RevenueRefundAccountPanel = () => {
                 head: [table2Headers],
                 body: table2Body,
                 startY: 35,
-                theme: 'striped',
+                theme: 'grid',
                 headStyles: {
                     fillColor: [41, 128, 185],
                     textColor: [255, 255, 255],

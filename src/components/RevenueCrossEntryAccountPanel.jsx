@@ -568,7 +568,7 @@ const RevenueCrossEntryAccountPanel = () => {
                 head: [table1Headers],
                 body: table1Body,
                 startY: 35,
-                theme: 'striped',
+                theme: 'grid',
                 headStyles: {
                     fillColor: [41, 128, 185],
                     textColor: [255, 255, 255],
@@ -687,7 +687,7 @@ const RevenueCrossEntryAccountPanel = () => {
                 head: [table1Headers],
                 body: table2Body,
                 startY: 15,
-                theme: 'striped',
+                theme: 'grid',
                 headStyles: {
                     fillColor: [41, 128, 185],
                     textColor: [255, 255, 255],
@@ -820,7 +820,7 @@ const RevenueCrossEntryAccountPanel = () => {
                 head: [table3Headers],
                 body: table3Body,
                 startY: 35,
-                theme: 'striped',
+                theme: 'grid',
                 headStyles: {
                     fillColor: [41, 128, 185],
                     textColor: [255, 255, 255],
@@ -943,7 +943,7 @@ const RevenueCrossEntryAccountPanel = () => {
                 head: [table3Headers],
                 body: table4Body,
                 startY: 15,
-                theme: 'striped',
+                theme: 'grid',
                 headStyles: {
                     fillColor: [41, 128, 185],
                     textColor: [255, 255, 255],

@@ -9,7 +9,8 @@ import {
     Calendar,
     FileText,
     TrendingUp,
-    DollarSign
+    DollarSign,
+    Hash
 } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -66,7 +67,7 @@ const monthNames = {
     12: 'December'
 };
 
-const RevenueCollectionAccountPanel = () => {
+const RevenueCrossEntryByTrnoPanel = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [records, setRecords] = useState([]);
@@ -79,6 +80,7 @@ const RevenueCollectionAccountPanel = () => {
         months: {},
         total: 0
     });
+    const [trnoSubtotals, setTrnoSubtotals] = useState({});
 
     const [filters, setFilters] = useState({
         year: ''
@@ -136,6 +138,7 @@ const RevenueCollectionAccountPanel = () => {
         if (!appliedFilters.year) {
             setRecords([]);
             setTotals({ months: {}, total: 0 });
+            setTrnoSubtotals({});
             return;
         }
 
@@ -145,12 +148,13 @@ const RevenueCollectionAccountPanel = () => {
                 year: appliedFilters.year
             };
 
-            const response = await apiClient.get('/revenue-collection-account/data', { params });
+            const response = await apiClient.get('/revenue-cross-entry-by-trno/data', { params });
 
             if (response.data.success) {
                 const data = response.data.data;
                 setRecords(data.records || []);
                 setTotals(data.totals || { months: {}, total: 0 });
+                setTrnoSubtotals(data.trno_subtotals || {});
 
                 const total = data.records?.length || 0;
                 setTotalRecords(total);
@@ -170,7 +174,7 @@ const RevenueCollectionAccountPanel = () => {
     // Fetch filter options
     const fetchFilterOptions = async () => {
         try {
-            const response = await apiClient.get('/revenue-collection-account/filter-options');
+            const response = await apiClient.get('/revenue-cross-entry-by-trno/filter-options');
 
             if (response.data.success) {
                 setFilterOptions(response.data.data);
@@ -214,164 +218,11 @@ const RevenueCollectionAccountPanel = () => {
         setAppliedFilters({ year: '' });
         setRecords([]);
         setTotals({ months: {}, total: 0 });
+        setTrnoSubtotals({});
         setCurrentPage(1);
         setTotalRecords(0);
         setLastPage(1);
     };
-
-    // Generate PDF Report - A4 Landscape
-    //   const handleExportPDF = () => {
-    //     if (records.length === 0) {
-    //       alert('No data to export');
-    //       return;
-    //     }
-
-    //     setLoading(true);
-
-    //     try {
-    //       // Create PDF in landscape orientation (A4)
-    //       const doc = new jsPDF({
-    //         orientation: 'landscape',
-    //         unit: 'mm',
-    //         format: 'a4'
-    //       });
-
-    //       const pageWidth = 297;
-    //       const pageHeight = 210;
-
-    //       // Get current date
-    //       const currentDate = new Date().toLocaleString();
-
-    //       // Add Header
-    //       doc.setFontSize(16);
-    //       doc.setFont('helvetica', 'bold');
-    //       doc.text('Revenue Collection Account Report', pageWidth / 2, 15, { align: 'center' });
-
-    //       doc.setFontSize(10);
-    //       doc.setFont('helvetica', 'normal');
-    //       doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 22, { align: 'center' });
-
-    //       // Add filter information
-    //       let filterText = `Year: ${appliedFilters.year}`;
-
-    //       doc.setFontSize(9);
-    //       doc.text(filterText, pageWidth / 2, 29, { align: 'center' });
-
-    //       // Prepare table headers
-    //       const tableHeaders = [
-    //         'Revenue Code',
-    //         'Revenue Category',
-    //         'Head-Program-Project-SubProject-Object'
-    //       ];
-
-    //       // Add month headers
-    //       for (let i = 1; i <= 12; i++) {
-    //         tableHeaders.push(monthNames[i].substring(0, 3));
-    //       }
-
-    //       tableHeaders.push('Total');
-
-    //       // Prepare table data
-    //       const tableBody = records.map(record => {
-    //         const row = [
-    //           record.revenue_code_name || '',
-    //           '',
-    //           formatCombinedCode(record)
-    //         ];
-
-    //         for (let i = 1; i <= 12; i++) {
-    //           row.push(formatNumber(record.months?.[i] || 0));
-    //         }
-
-    //         row.push(formatNumber(record.total || 0));
-
-    //         return row;
-    //       });
-
-    //       // Add totals row
-    //       const totalRow = ['TOTAL', '', ''];
-    //       for (let i = 1; i <= 12; i++) {
-    //         totalRow.push(formatNumber(totals.months?.[i] || 0));
-    //       }
-    //       totalRow.push(formatNumber(totals.total || 0));
-    //       tableBody.push(totalRow);
-
-    //       // Column styles for A4 Landscape
-    //       const columnStyles = {
-    //         0: { cellWidth: 30, halign: 'left' },
-    //         1: { cellWidth: 30, halign: 'left' },
-    //         2: { cellWidth: 40, halign: 'left' }
-    //       };
-
-    //       // Month columns (3-14) with equal width
-    //       const monthWidth = (pageWidth - 30 - 30 - 40 - 30 - 30) / 12;
-    //       for (let i = 3; i < 15; i++) {
-    //         columnStyles[i] = { cellWidth: monthWidth, halign: 'right' };
-    //       }
-
-    //       // Total column
-    //       columnStyles[15] = { cellWidth: 30, halign: 'right' };
-
-    //       // Generate table
-    //       autoTable(doc, {
-    //         head: [tableHeaders],
-    //         body: tableBody,
-    //         startY: 35,
-    //         theme: 'striped',
-    //         headStyles: {
-    //           fillColor: [41, 128, 185],
-    //           textColor: [255, 255, 255],
-    //           fontSize: 7,
-    //           fontStyle: 'bold',
-    //           halign: 'center',
-    //           cellPadding: 1.5
-    //         },
-    //         bodyStyles: {
-    //           fontSize: 6,
-    //           cellPadding: 1.5
-    //         },
-    //         columnStyles: columnStyles,
-    //         alternateRowStyles: { fillColor: [245, 245, 245] },
-    //         margin: { top: 35, left: 15, right: 15 },
-    //         tableWidth: 'auto',
-    //         rowStyles: {
-    //           [tableBody.length - 1]: {
-    //             fontStyle: 'bold',
-    //             fillColor: [220, 235, 245],
-    //             textColor: [0, 0, 0],
-    //             fontSize: 7
-    //           }
-    //         },
-    //         didDrawPage: function(data) {
-    //           // Footer is added after table generation
-    //         }
-    //       });
-
-    //       // Add footer to all pages
-    //       const pageCount = doc.internal.getNumberOfPages();
-    //       for (let i = 1; i <= pageCount; i++) {
-    //         doc.setPage(i);
-    //         doc.setFontSize(8);
-    //         doc.setTextColor(128, 128, 128);
-    //         doc.text(
-    //           `Page ${i} of ${pageCount}`,
-    //           pageWidth / 2,
-    //           pageHeight - 10,
-    //           { align: 'center' }
-    //         );
-    //       }
-
-    //       // Save PDF
-    //       doc.save(`revenue_collection_account_${appliedFilters.year}.pdf`);
-    //       alert('PDF exported successfully!');
-
-    //     } catch (error) {
-    //       console.error('Error generating PDF:', error);
-    //       alert('Failed to generate PDF: ' + error.message);
-    //     } finally {
-    //       setLoading(false);
-    //     }
-    //   };
 
     // Generate PDF Report - A4 Landscape with Two Tables
     const handleExportPDF = () => {
@@ -396,24 +247,26 @@ const RevenueCollectionAccountPanel = () => {
             // Get current date
             const currentDate = new Date().toLocaleString();
 
+            // ============ PAGE 1: TABLE 1 (Jan-Jul) ============
+
+            // Set text color to black for header
+            doc.setTextColor(0, 0, 0);
+
             // Add Header
             doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
-            doc.text('Revenue Collection Account Report', pageWidth / 2, 15, { align: 'center' });
+            doc.text('Revenue Cross Entry Report(Categorized by Head)', pageWidth / 2, 15, { align: 'center' });
 
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 22, { align: 'center' });
 
-            // Add filter information
-            let filterText = `Year: ${appliedFilters.year}`;
-
             doc.setFontSize(9);
-            doc.text(filterText, pageWidth / 2, 29, { align: 'center' });
+            doc.text(`Year: ${appliedFilters.year} (Jan - Jul)`, pageWidth / 2, 29, { align: 'center' });
 
-            // ============ TABLE 1: January to July ============
-            // Prepare table headers for Table 1
+            // Table 1 Headers
             const table1Headers = [
+                'Head',
                 'Revenue Code Name',
                 'Revenue Code',
                 'Jan',
@@ -425,39 +278,58 @@ const RevenueCollectionAccountPanel = () => {
                 'Jul'
             ];
 
-            // Prepare table data for Table 1
-            const table1Body = records.map(record => {
+            // Table 1 Body
+            const table1Body = [];
+            let prevTrno = null;
+            let trnoSubtotalRow = null;
+
+            records.forEach((record, index) => {
                 const row = [
+                    record.trno || '',
                     record.revenue_code_name || '',
                     formatCombinedCode(record)
                 ];
-
-                // Months 1-7 (January to July)
                 for (let i = 1; i <= 7; i++) {
                     row.push(formatNumber(record.months?.[i] || 0));
                 }
+                table1Body.push(row);
 
-                return row;
+                // Check if next record has different TRNO or is last
+                const isLastOfTrno = index === records.length - 1 || records[index + 1].trno !== record.trno;
+
+                // Add TRNO Subtotal after last row of each TRNO
+                if (isLastOfTrno && trnoSubtotals[record.trno]) {
+                    const subtotalRow = [
+                        'SUBTOTAL',
+                        '',
+                        ''
+                    ];
+                    for (let i = 1; i <= 7; i++) {
+                        subtotalRow.push(formatNumber(trnoSubtotals[record.trno]?.months?.[i] || 0));
+                    }
+                    table1Body.push(subtotalRow);
+                }
             });
 
-            // Add totals row for Table 1
-            const table1TotalRow = ['TOTAL', ''];
+            // Add Overall Totals row for Table 1
+            const table1TotalRow = ['GRAND TOTAL', '', ''];
             for (let i = 1; i <= 7; i++) {
                 table1TotalRow.push(formatNumber(totals.months?.[i] || 0));
             }
             table1Body.push(table1TotalRow);
 
-            // Column styles for Table 1
+            // Table 1 Column Styles
             const table1ColumnStyles = {
-                0: { cellWidth: 40, halign: 'left' },
-                1: { cellWidth: 45, halign: 'left' },
-                2: { cellWidth: 25, halign: 'right' },
+                0: { cellWidth: 20, halign: 'center' },
+                1: { cellWidth: 60, halign: 'left' },
+                2: { cellWidth: 25, halign: 'left' },
                 3: { cellWidth: 25, halign: 'right' },
                 4: { cellWidth: 25, halign: 'right' },
                 5: { cellWidth: 25, halign: 'right' },
                 6: { cellWidth: 25, halign: 'right' },
                 7: { cellWidth: 25, halign: 'right' },
-                8: { cellWidth: 25, halign: 'right' }
+                8: { cellWidth: 25, halign: 'right' },
+                9: { cellWidth: 25, halign: 'right' }
             };
 
             // Generate Table 1
@@ -469,25 +341,27 @@ const RevenueCollectionAccountPanel = () => {
                 headStyles: {
                     fillColor: [41, 128, 185],
                     textColor: [255, 255, 255],
-                    fontSize: 8,
+                    fontSize: 7,
                     fontStyle: 'bold',
                     halign: 'center',
-                    cellPadding: 2
+                    cellPadding: 1.5
                 },
                 bodyStyles: {
-                    fontSize: 7,
-                    cellPadding: 2
+                    fontSize: 6,
+                    cellPadding: 1.5,
+                    textColor: [0, 0, 0]
                 },
                 columnStyles: table1ColumnStyles,
                 alternateRowStyles: { fillColor: [245, 245, 245] },
-                margin: { top: 35, left: 15, right: 15 },
-                tableWidth: 'auto',
-                rowStyles: {
-                    [table1Body.length - 1]: {
-                        fontStyle: 'bold',
-                        fillColor: [220, 235, 245],
-                        textColor: [0, 0, 0],
-                        fontSize: 8
+                margin: { top: 35, left: 3.5, right: 3.5 },
+                tableWidth: 260,
+                didParseCell: function (data) {
+                    // Check if this is a subtotal or total row
+                    const rowData = table1Body[data.row.index];
+                    if (rowData && (rowData[0] === 'SUBTOTAL' || rowData[0] === 'GRAND TOTAL')) {
+                        data.cell.styles.fontStyle = 'bold';
+                        data.cell.styles.textColor = [0, 0, 0];
+                        data.cell.styles.fontSize = 7;
                     }
                 },
                 didDrawPage: function (data) {
@@ -495,12 +369,39 @@ const RevenueCollectionAccountPanel = () => {
                 }
             });
 
-            // Get the Y position after Table 1
-            const finalY = doc.lastAutoTable.finalY + 50;
+            // Add footer to Page 1
+            const pageCount = 2;
+            doc.setPage(1);
+            doc.setFontSize(8);
+            doc.setTextColor(128, 128, 128);
+            doc.text(
+                `Page 1 of ${pageCount}`,
+                pageWidth / 2,
+                pageHeight - 10,
+                { align: 'center' }
+            );
 
-            // ============ TABLE 2: August to December + Total ============
-            // Prepare table headers for Table 2
+            // ============ PAGE 2: TABLE 2 (Aug-Dec with Total) ============
+            doc.addPage();
+
+            // Set text color to black for header
+            doc.setTextColor(0, 0, 0);
+
+            // Add Header for Page 2
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Revenue Cross Entry Report(Categorized by Head)', pageWidth / 2, 15, { align: 'center' });
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 22, { align: 'center' });
+
+            doc.setFontSize(9);
+            doc.text(`Year: ${appliedFilters.year} (Aug - Dec)`, pageWidth / 2, 29, { align: 'center' });
+
+            // Table 2 Headers
             const table2Headers = [
+                'Head',
                 'Revenue Code Name',
                 'Revenue Code',
                 'Aug',
@@ -511,72 +412,91 @@ const RevenueCollectionAccountPanel = () => {
                 'Total'
             ];
 
-            // Prepare table data for Table 2
-            const table2Body = records.map(record => {
+            // Table 2 Body
+            const table2Body = [];
+            let prevTrno2 = null;
+
+            records.forEach((record, index) => {
                 const row = [
+                    record.trno || '',
                     record.revenue_code_name || '',
                     formatCombinedCode(record)
                 ];
-
-                // Months 8-12 (August to December)
                 for (let i = 8; i <= 12; i++) {
                     row.push(formatNumber(record.months?.[i] || 0));
                 }
-
-                // Add Total column
                 row.push(formatNumber(record.total || 0));
+                table2Body.push(row);
 
-                return row;
+                // Check if next record has different TRNO or is last
+                const isLastOfTrno2 = index === records.length - 1 || records[index + 1].trno !== record.trno;
+
+                // Add TRNO Subtotal after last row of each TRNO
+                if (isLastOfTrno2 && trnoSubtotals[record.trno]) {
+                    const subtotalRow = [
+                        'SUBTOTAL',
+                        '',
+                        ''
+                    ];
+                    for (let i = 8; i <= 12; i++) {
+                        subtotalRow.push(formatNumber(trnoSubtotals[record.trno]?.months?.[i] || 0));
+                    }
+                    subtotalRow.push(formatNumber(trnoSubtotals[record.trno]?.total || 0));
+                    table2Body.push(subtotalRow);
+                }
             });
 
-            // Add totals row for Table 2
-            const table2TotalRow = ['TOTAL', ''];
+            // Add Overall Totals row for Table 2
+            const table2TotalRow = ['GRAND TOTAL', '', ''];
             for (let i = 8; i <= 12; i++) {
                 table2TotalRow.push(formatNumber(totals.months?.[i] || 0));
             }
             table2TotalRow.push(formatNumber(totals.total || 0));
             table2Body.push(table2TotalRow);
 
-            // Column styles for Table 2
+            // Table 2 Column Styles
             const table2ColumnStyles = {
-                0: { cellWidth: 40, halign: 'left' },
-                1: { cellWidth: 45, halign: 'left' },
-                2: { cellWidth: 25, halign: 'right' },
+                0: { cellWidth: 20, halign: 'center' },
+                1: { cellWidth: 60, halign: 'left' },
+                2: { cellWidth: 25, halign: 'left' },
                 3: { cellWidth: 25, halign: 'right' },
                 4: { cellWidth: 25, halign: 'right' },
                 5: { cellWidth: 25, halign: 'right' },
                 6: { cellWidth: 25, halign: 'right' },
-                7: { cellWidth: 30, halign: 'right' }
+                7: { cellWidth: 25, halign: 'right' },
+                8: { cellWidth: 25, halign: 'right' }
             };
 
             // Generate Table 2
             autoTable(doc, {
                 head: [table2Headers],
                 body: table2Body,
-                startY: finalY,
+                startY: 35,
                 theme: 'grid',
                 headStyles: {
                     fillColor: [41, 128, 185],
                     textColor: [255, 255, 255],
-                    fontSize: 8,
+                    fontSize: 7,
                     fontStyle: 'bold',
                     halign: 'center',
-                    cellPadding: 2
+                    cellPadding: 1.5
                 },
                 bodyStyles: {
-                    fontSize: 7,
-                    cellPadding: 2
+                    fontSize: 6,
+                    cellPadding: 1.5,
+                    textColor: [0, 0, 0]
                 },
                 columnStyles: table2ColumnStyles,
                 alternateRowStyles: { fillColor: [245, 245, 245] },
-                margin: { top: 15, left: 15, right: 15 },
-                tableWidth: 'auto',
-                rowStyles: {
-                    [table2Body.length - 1]: {
-                        fontStyle: 'bold',
-                        fillColor: [220, 235, 245],
-                        textColor: [0, 0, 0],
-                        fontSize: 8
+                margin: { top: 35, left: 21, right: 21 },
+                tableWidth: 255,
+                didParseCell: function (data) {
+                    // Check if this is a subtotal or total row
+                    const rowData = table2Body[data.row.index];
+                    if (rowData && (rowData[0] === 'SUBTOTAL' || rowData[0] === 'GRAND TOTAL')) {
+                        data.cell.styles.fontStyle = 'bold';
+                        data.cell.styles.textColor = [0, 0, 0];
+                        data.cell.styles.fontSize = 7;
                     }
                 },
                 didDrawPage: function (data) {
@@ -584,22 +504,19 @@ const RevenueCollectionAccountPanel = () => {
                 }
             });
 
-            // Add footer to all pages
-            const pageCount = doc.internal.getNumberOfPages();
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setTextColor(128, 128, 128);
-                doc.text(
-                    `Page ${i} of ${pageCount}`,
-                    pageWidth / 2,
-                    pageHeight - 10,
-                    { align: 'center' }
-                );
-            }
+            // Add footer to Page 2
+            doc.setPage(2);
+            doc.setFontSize(8);
+            doc.setTextColor(128, 128, 128);
+            doc.text(
+                `Page 2 of ${pageCount}`,
+                pageWidth / 2,
+                pageHeight - 10,
+                { align: 'center' }
+            );
 
             // Save PDF
-            doc.save(`revenue_collection_account_${appliedFilters.year}.pdf`);
+            doc.save(`revenue_cross_entry_by_trno_${appliedFilters.year}.pdf`);
             alert('PDF exported successfully!');
 
         } catch (error) {
@@ -623,14 +540,14 @@ const RevenueCollectionAccountPanel = () => {
                 year: appliedFilters.year
             };
 
-            const response = await apiClient.get('/revenue-collection-account/export-csv', { params });
+            const response = await apiClient.get('/revenue-cross-entry-by-trno/export-csv', { params });
 
             if (response.status === 200) {
                 const blob = new Blob([response.data], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `revenue_collection_account_${appliedFilters.year}.csv`;
+                a.download = `revenue_cross_entry_by_trno_${appliedFilters.year}.csv`;
                 a.click();
                 window.URL.revokeObjectURL(url);
                 alert('CSV exported successfully!');
@@ -672,9 +589,9 @@ const RevenueCollectionAccountPanel = () => {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <div className="flex justify-between items-start">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-800">Revenue Collection Account Report</h1>
+                        <h1 className="text-2xl font-bold text-gray-800">Revenue Cross Entry (Categorized by Head) Report</h1>
                         <p className="text-sm text-gray-500 mt-1">
-                            View revenue collection by month with classification
+                            View revenue cross entry grouped by Head with all revenue code combinations
                         </p>
                     </div>
                     {appliedFilters.year && (
@@ -772,19 +689,21 @@ const RevenueCollectionAccountPanel = () => {
                     <table className="w-full text-xs">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[100px]">
+                                <th className="px-2 py-2 text-center font-semibold text-gray-700 min-w-[70px]">
+                                    Head
+                                </th>
+                                <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[250px]">
                                     Revenue Code Name
                                 </th>
-
                                 <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[150px]">
                                     Revenue Code
                                 </th>
                                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((month) => (
-                                    <th key={month} className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[60px]">
+                                    <th key={month} className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[55px]">
                                         {monthNames[month].substring(0, 3)}
                                     </th>
                                 ))}
-                                <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[70px] bg-blue-50">
+                                <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[65px] bg-blue-50">
                                     Total
                                 </th>
                             </tr>
@@ -814,32 +733,59 @@ const RevenueCollectionAccountPanel = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                paginatedRecords.map((record, index) => (
-                                    <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                                        <td className="px-2 py-2 font-medium text-gray-900">
-                                            {record.revenue_code_name || '-'}
-                                        </td>
+                                paginatedRecords.map((record, index) => {
+                                    const isNewTrno = index === 0 || paginatedRecords[index - 1].trno !== record.trno;
+                                    const isLastOfTrno = index === paginatedRecords.length - 1 || paginatedRecords[index + 1].trno !== record.trno;
 
-                                        <td className="px-2 py-2 text-gray-700 font-medium">
-                                            {formatCombinedCode(record)}
-                                        </td>
-                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((month) => (
-                                            <td key={month} className="px-2 py-2 text-right text-gray-700">
-                                                {formatNumber(record.months?.[month] || 0)}
-                                            </td>
-                                        ))}
-                                        <td className="px-2 py-2 text-right text-blue-600 font-bold bg-blue-50">
-                                            {formatNumber(record.total || 0)}
-                                        </td>
-                                    </tr>
-                                ))
+                                    return (
+                                        <React.Fragment key={index}>
+                                            <tr className={`border-b border-gray-100 hover:bg-gray-50 transition ${isLastOfTrno ? 'border-b-2 border-gray-300' : ''}`}>
+                                                <td className="px-2 py-2 text-center font-medium text-gray-900">
+                                                    {isNewTrno ? record.trno || '-' : ''}
+                                                </td>
+                                                <td className="px-2 py-2 text-gray-600">
+                                                    {record.revenue_code_name || '-'}
+                                                </td>
+                                                <td className="px-2 py-2 text-gray-700 font-medium">
+                                                    {formatCombinedCode(record)}
+                                                </td>
+                                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((month) => (
+                                                    <td key={month} className="px-2 py-2 text-right text-gray-700">
+                                                        {formatNumber(record.months?.[month] || 0)}
+                                                    </td>
+                                                ))}
+                                                <td className="px-2 py-2 text-right text-blue-600 font-bold bg-blue-50">
+                                                    {formatNumber(record.total || 0)}
+                                                </td>
+                                            </tr>
+                                            {/* Show TRNO Subtotal after last row of each TRNO */}
+                                            {isLastOfTrno && trnoSubtotals[record.trno] && (
+                                                <tr className="bg-gray-100 font-semibold">
+                                                    <td className="px-2 py-2 text-center text-gray-700 text-xs">
+                                                        SUBTOTAL
+                                                    </td>
+                                                    <td className="px-2 py-2"></td>
+                                                    <td className="px-2 py-2"></td>
+                                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((month) => (
+                                                        <td key={month} className="px-2 py-2 text-right text-gray-700 text-xs">
+                                                            {formatNumber(trnoSubtotals[record.trno]?.months?.[month] || 0)}
+                                                        </td>
+                                                    ))}
+                                                    <td className="px-2 py-2 text-right text-blue-700 font-bold bg-blue-100 text-xs">
+                                                        {formatNumber(trnoSubtotals[record.trno]?.total || 0)}
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
+                                    );
+                                })
                             )}
                         </tbody>
                         {paginatedRecords.length > 0 && (
                             <tfoot className="bg-gray-50 border-t border-gray-200">
                                 <tr className="font-semibold">
-                                    <td className="px-2 py-2 text-right text-gray-700" colSpan="2">
-                                        TOTAL
+                                    <td className="px-2 py-2 text-right text-gray-700" colSpan="3">
+                                        GRAND TOTAL
                                     </td>
                                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((month) => (
                                         <td key={month} className="px-2 py-2 text-right text-gray-700">
@@ -906,7 +852,7 @@ const RevenueCollectionAccountPanel = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold text-gray-800">Filter Revenue Collection Account</h3>
+                            <h3 className="text-lg font-semibold text-gray-800">Filter Revenue Cross Entry by TRNO</h3>
                             <button
                                 onClick={() => setShowFilterModal(false)}
                                 className="text-gray-400 hover:text-gray-600 transition"
@@ -932,19 +878,19 @@ const RevenueCollectionAccountPanel = () => {
                                     ))}
                                 </select>
                                 <p className="text-xs text-gray-500 mt-1">
-                                    Shows revenue collection data for all 12 months
+                                    Shows all revenue code combinations grouped by TRNO for all 12 months
                                 </p>
                             </div>
 
                             <div className="bg-blue-50 rounded-lg p-3">
                                 <p className="text-xs text-blue-700">
-                                    <strong>Data Source:</strong> Treasury table (dr_cr_code=4000, dr_cr=CR)
+                                    <strong>Data Source:</strong> Monthly Fincances table (dr_cr_code=4000, dr_cr=CR)
                                 </p>
                                 <p className="text-xs text-blue-700 mt-1">
-                                    <strong>Grouped by:</strong> Head, Program, Project, Sub Project, Object
+                                    <strong>Grouped by:</strong> TRNO with all revenue code combinations
                                 </p>
                                 <p className="text-xs text-blue-700 mt-1">
-                                    <strong>Total:</strong> Sum of all 12 months
+                                    <strong>Total:</strong> Sum of all 12 months for each combination
                                 </p>
                             </div>
                         </div>
@@ -971,4 +917,4 @@ const RevenueCollectionAccountPanel = () => {
     );
 };
 
-export default RevenueCollectionAccountPanel;
+export default RevenueCrossEntryByTrnoPanel;
