@@ -631,6 +631,9 @@ import StampDutyMonthlyPage from "./pages/StampDutyMonthlyPage";
 import StampDutySummaryPage from "./pages/StampDutySummaryPage";
 import LocalGovTransferMonthlyPage from "./pages/LocalGovTransferMonthlyPage";
 import LocalGovTransferSummaryPage from "./pages/LocalGovTransferSummaryPage";
+import UserFinanceUploadPage from "./pages/UserFinanceUploadPage";
+import ExpenditureManagerApprovalPage from "./pages/ExpenditureManagerApprovalPage";
+
 
 
 // Component to handle role-based redirect for home page
@@ -674,12 +677,30 @@ function Layout() {
                     }
                 />
 
+                <Route
+                    path="/user_upload"
+                    element={
+                        <RoleProtectedRoute requiredRoles="user">
+                            <UserFinanceUploadPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
 
                 <Route
                     path="/budget"
                     element={
                         <RoleProtectedRoute requiredRoles="expenditure_manager">
                             <BudgetPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/approve"
+                    element={
+                        <RoleProtectedRoute requiredRoles="expenditure_manager">
+                            <ExpenditureManagerApprovalPage />
                         </RoleProtectedRoute>
                     }
                 />
@@ -901,7 +922,7 @@ function Layout() {
                     }
                 />
 
-                
+
                 <Route
                     path="/transfer-monthly"
                     element={
@@ -911,7 +932,7 @@ function Layout() {
                     }
                 />
 
-                 <Route
+                <Route
                     path="/transfer-summary"
                     element={
                         <RoleProtectedRoute requiredRoles={"expenditure_manager"}>
