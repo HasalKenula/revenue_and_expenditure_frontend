@@ -618,13 +618,23 @@ const Sidebar = () => {
               </Link>
             </div>
 
-             {/* account */}
+            {/* account */}
             <div>
               <Link to="/account" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <PieChart size={18} />
                 <span className="text-sm">Account</span>
               </Link>
             </div>
+
+
+            {/* account data */}
+            <div>
+              <Link to="/acccount-data" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <PieChart size={18} />
+                <span className="text-sm">Account data</span>
+              </Link>
+            </div>
+
 
             {/* Head Info - Both */}
             {/* <div>

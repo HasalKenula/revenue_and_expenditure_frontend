@@ -634,6 +634,7 @@ import LocalGovTransferSummaryPage from "./pages/LocalGovTransferSummaryPage";
 import UserFinanceUploadPage from "./pages/UserFinanceUploadPage";
 import ExpenditureManagerApprovalPage from "./pages/ExpenditureManagerApprovalPage";
 import AccountNumbersPage from "./pages/AccountNumbersPage";
+import RevenueAccountDataPage from "./pages/RevenueAccountDataPage";
 
 
 
@@ -1082,11 +1083,20 @@ function Layout() {
                     }
                 />
 
-                 <Route
+                <Route
                     path="/account"
                     element={
                         <RoleProtectedRoute requiredRoles="revenue_manager">
                             <AccountNumbersPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/acccount-data"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueAccountDataPage />
                         </RoleProtectedRoute>
                     }
                 />
