@@ -635,6 +635,7 @@ import UserFinanceUploadPage from "./pages/UserFinanceUploadPage";
 import ExpenditureManagerApprovalPage from "./pages/ExpenditureManagerApprovalPage";
 import AccountNumbersPage from "./pages/AccountNumbersPage";
 import RevenueAccountDataPage from "./pages/RevenueAccountDataPage";
+import RevenueCollectionAccountNumberPage from "./pages/RevenueCollectionAccountNumberPage";
 
 
 
@@ -1100,6 +1101,16 @@ function Layout() {
                         </RoleProtectedRoute>
                     }
                 />
+
+                <Route
+                    path="/revenue-collection-account-number"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueCollectionAccountNumberPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
 
 
             </Routes>
