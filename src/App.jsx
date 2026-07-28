@@ -633,6 +633,7 @@ import LocalGovTransferMonthlyPage from "./pages/LocalGovTransferMonthlyPage";
 import LocalGovTransferSummaryPage from "./pages/LocalGovTransferSummaryPage";
 import UserFinanceUploadPage from "./pages/UserFinanceUploadPage";
 import ExpenditureManagerApprovalPage from "./pages/ExpenditureManagerApprovalPage";
+import AccountNumbersPage from "./pages/AccountNumbersPage";
 
 
 
@@ -1080,6 +1081,16 @@ function Layout() {
                         </RoleProtectedRoute>
                     }
                 />
+
+                 <Route
+                    path="/account"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <AccountNumbersPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
 
             </Routes>
         </>
