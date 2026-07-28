@@ -637,6 +637,7 @@ import AccountNumbersPage from "./pages/AccountNumbersPage";
 import RevenueAccountDataPage from "./pages/RevenueAccountDataPage";
 import RevenueCollectionAccountNumberPage from "./pages/RevenueCollectionAccountNumberPage";
 import RevenueReceiptsInCashPage from "./pages/RevenueReceiptsInCashPage";
+import RevenueReceiptsInCashSummaryPage from "./pages/RevenueReceiptsInCashSummaryPage";
 
 
 
@@ -1117,6 +1118,15 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="revenue_manager">
                             <RevenueReceiptsInCashPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue-receipts-in-cash-summary"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueReceiptsInCashSummaryPage />
                         </RoleProtectedRoute>
                     }
                 />
