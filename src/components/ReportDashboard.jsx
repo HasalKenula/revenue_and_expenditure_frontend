@@ -61,6 +61,8 @@ const ReportDashboard = () => {
         { id: 'other-debit', name: 'Other Dept Debits', path: '/odd', icon: FileText },
         { id: 'other-surcharge', name: 'Other Dept Surcharge', path: '/ods', icon: FileSpreadsheet },
         { id: 'upkeep', name: 'Mainteneance', path: '/upkeep', icon: FileSpreadsheet },
+        { id: 'stamp-month', name: 'Stamp Monthly', path: '/stamp-month', icon: FileSpreadsheet },
+        { id: 'transfer-monthly', name: 'Transfer Monthly', path: '/transfer-monthly', icon: FileSpreadsheet },
       ]
     },
     {
@@ -89,6 +91,8 @@ const ReportDashboard = () => {
       description: 'View summary and consolidated reports',
       reports: [
        { id: 'journal-summary', name: 'Journal Summary', path: '/journal', icon: FileText },
+       { id: 'transfer-summary', name: 'Transfer Summary', path: '/transfer-summary', icon: FileText },
+       { id: 'stamp-summary', name: 'Stamp Summary', path: '/stamp-summary', icon: FileText },
       ]
     },
     {

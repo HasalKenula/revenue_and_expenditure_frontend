@@ -583,6 +583,13 @@ const Sidebar = () => {
                 <span className="text-sm">Head Upload</span>
               </Link>
             </div>
+
+            <div>
+              <Link to="/user_upload" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <Upload size={18} />
+                <span className="text-sm">User Upload</span>
+              </Link>
+            </div>
           </>
         )}
 
@@ -706,6 +713,13 @@ const Sidebar = () => {
               </Link>
             </div>
 
+            {/* aprove */}
+            <div>
+              <Link to="/approve" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <PieChart size={18} />
+                <span className="text-sm">Approve repots</span>
+              </Link>
+            </div>
 
 
           </>
