@@ -778,6 +778,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -1030,165 +1031,205 @@ const NetExpenditureReport = () => {
         setLastPage(1);
     };
 
-   // Generate PDF Report - A3 Landscape
-const handleExportPDF = () => {
-    if (records.length === 0) {
-        alert('No data to export');
-        return;
-    }
-
-    setLoading(true);
-    
-    try {
-        // Create PDF in landscape orientation (A3)
-        const doc = new jsPDF({
-            orientation: 'landscape',
-            unit: 'mm',
-            format: 'a3'
-        });
-
-        // Get current date
-        const currentDate = new Date().toLocaleString();
-
-        // Add Header
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Net Expenditure Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
-        
-        // Add filter information
-        let filterText = `Head : ${appliedFilters.head || 'All'}`;
-        if (appliedFilters.program) filterText += ` | Program: ${appliedFilters.program}`;
-        if (appliedFilters.project) filterText += ` | Project: ${appliedFilters.project}`;
-        if (appliedFilters.month) filterText += ` | Month: ${monthNames[appliedFilters.month]} (Cumulative)`;
-        
-        doc.setFontSize(9);
-        doc.text(filterText, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
-        
-        // Prepare table data
-        const tableBody = records.map(record => [
-            record.object,
-            record.subproject,
-            formatNumber(record.allocation),
-            formatNumber(record.fr66p),
-            formatNumber(record.fr66m),
-            formatNumber(record.supplementary),
-            formatNumber(record.net_allocation),
-            formatNumber(record.debit),
-            formatNumber(record.other_dept_debit),
-            formatNumber(record.surcharge),
-            formatNumber(record.other_dept_surcharge),
-            formatNumber(record.net_expenditure),
-            formatNumber(record.cumulative_expenditure),
-            formatNumber(record.balance)
-        ]);
-
-        // Add totals row
-        tableBody.push([
-            'TOTAL',
-            '',
-            formatNumber(totals.total_allocation),
-            formatNumber(totals.total_fr66p),
-            formatNumber(totals.total_fr66m),
-            formatNumber(totals.total_supplementary),
-            formatNumber(totals.total_net_allocation),
-            formatNumber(totals.total_debit),
-            formatNumber(totals.total_other_dept_debit),
-            formatNumber(totals.total_surcharge),
-            formatNumber(totals.total_other_dept_surcharge),
-            formatNumber(totals.total_net_expenditure),
-            formatNumber(totals.total_cumulative_expenditure),
-            formatNumber(totals.total_balance)
-        ]);
-
-        // Define table headers
-        const tableHeaders = [
-            'Object',
-            'Sub Project',
-            'Allocation (Rs)',
-            'FR30P (Rs)',
-            'FR30M (Rs)',
-            'Supplementary (Rs)',
-            'Net Allocation (Rs)',
-            'Debit-Same (Rs)',
-            'Debit-Other (Rs)',
-            'Surcharge-Same (Rs)',
-            'Surcharge-Other (Rs)',
-            'Net Exp. (Rs)',
-            'Cumulative Exp. (Rs)',
-            'Balance (Rs)'
-        ];
-
-        // Generate table using autoTable function (not doc.autoTable)
-        autoTable(doc, {
-            head: [tableHeaders],
-            body: tableBody,
-            startY: 35,
-            theme: 'striped',
-            headStyles: {
-                fillColor: [41, 128, 185],
-                textColor: [255, 255, 255],
-                fontSize: 8,
-                fontStyle: 'bold',
-                halign: 'center',
-                cellPadding: 2
-            },
-            bodyStyles: {
-                fontSize: 7,
-                cellPadding: 2
-            },
-            columnStyles: {
-                0: { cellWidth: 20 }, // Object
-                1: { cellWidth: 25 }, // Sub Project
-                2: { cellWidth: 30, halign: 'right' }, // Allocation
-                3: { cellWidth: 25, halign: 'right' }, // FR66P
-                4: { cellWidth: 25, halign: 'right' }, // FR66M
-                5: { cellWidth: 30, halign: 'right' }, // Supplementary
-                6: { cellWidth: 30, halign: 'right' }, // Net Allocation
-                7: { cellWidth: 28, halign: 'right' }, // Debit-Same
-                8: { cellWidth: 28, halign: 'right' }, // Debit-Other
-                9: { cellWidth: 30, halign: 'right' }, // Surcharge-Same
-                10: { cellWidth: 30, halign: 'right' }, // Surcharge-Other
-                11: { cellWidth: 25, halign: 'right' }, // Net Exp.
-                12: { cellWidth: 30, halign: 'right' }, // Cumulative Exp.
-                13: { cellWidth: 25, halign: 'right' }  // Balance
-            },
-            alternateRowStyles: { fillColor: [245, 245, 245] },
-            margin: { top: 35, left: 10, right: 10 },
-            didDrawPage: function(data) {
-                // Footer is added after table generation
-            }
-        });
-
-        // Add footer to all pages
-        const pageCount = doc.internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setTextColor(128, 128, 128);
-            doc.text(
-                `Page ${i} of ${pageCount}`,
-                doc.internal.pageSize.getWidth() / 2,
-                doc.internal.pageSize.getHeight() - 10,
-                { align: 'center' }
-            );
+    // Generate PDF Report - A3 Landscape
+    const handleExportPDF = () => {
+        if (records.length === 0) {
+            alert('No data to export');
+            return;
         }
 
-        // Save PDF
-        doc.save(`net_expenditure_report_${appliedFilters.head}_${new Date().toISOString().split('T')[0]}.pdf`);
-        alert('PDF exported successfully!');
-        
-    } catch (error) {
-        console.error('Error generating PDF:', error);
-        alert('Failed to generate PDF: ' + error.message);
-    } finally {
-        setLoading(false);
-    }
-};
+        setLoading(true);
 
+        try {
+            // Create PDF in landscape orientation (A3)
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a3'
+            });
+
+            // Get current date
+            const currentDate = new Date().toLocaleString();
+
+            // Add Header
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Net Expenditure Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
+
+            // Add filter information
+            let filterText = `Head : ${appliedFilters.head || 'All'}`;
+            if (appliedFilters.program) filterText += ` | Program: ${appliedFilters.program}`;
+            if (appliedFilters.project) filterText += ` | Project: ${appliedFilters.project}`;
+            if (appliedFilters.month) filterText += ` | Month: ${monthNames[appliedFilters.month]} (Cumulative)`;
+
+            doc.setFontSize(9);
+            doc.text(filterText, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
+
+            // Prepare table data
+            const tableBody = records.map(record => [
+                record.object,
+                record.subproject,
+                formatNumber(record.allocation),
+                formatNumber(record.fr66p),
+                formatNumber(record.fr66m),
+                formatNumber(record.supplementary),
+                formatNumber(record.net_allocation),
+                formatNumber(record.debit),
+                formatNumber(record.other_dept_debit),
+                formatNumber(record.surcharge),
+                formatNumber(record.other_dept_surcharge),
+                formatNumber(record.net_expenditure),
+                formatNumber(record.cumulative_expenditure),
+                formatNumber(record.balance)
+            ]);
+
+            // Add totals row
+            tableBody.push([
+                'TOTAL',
+                '',
+                formatNumber(totals.total_allocation),
+                formatNumber(totals.total_fr66p),
+                formatNumber(totals.total_fr66m),
+                formatNumber(totals.total_supplementary),
+                formatNumber(totals.total_net_allocation),
+                formatNumber(totals.total_debit),
+                formatNumber(totals.total_other_dept_debit),
+                formatNumber(totals.total_surcharge),
+                formatNumber(totals.total_other_dept_surcharge),
+                formatNumber(totals.total_net_expenditure),
+                formatNumber(totals.total_cumulative_expenditure),
+                formatNumber(totals.total_balance)
+            ]);
+
+            // Define table headers
+            const tableHeaders = [
+                'Object',
+                'Sub Project',
+                'Allocation (Rs)',
+                'FR30P (Rs)',
+                'FR30M (Rs)',
+                'Supplementary (Rs)',
+                'Net Allocation (Rs)',
+                'Debit-Same (Rs)',
+                'Debit-Other (Rs)',
+                'Surcharge-Same (Rs)',
+                'Surcharge-Other (Rs)',
+                'Net Exp. (Rs)',
+                'Cumulative Exp. (Rs)',
+                'Balance (Rs)'
+            ];
+
+            // Generate table using autoTable function (not doc.autoTable)
+            autoTable(doc, {
+                head: [tableHeaders],
+                body: tableBody,
+                startY: 35,
+                theme: 'striped',
+                headStyles: {
+                    fillColor: [41, 128, 185],
+                    textColor: [255, 255, 255],
+                    fontSize: 8,
+                    fontStyle: 'bold',
+                    halign: 'center',
+                    cellPadding: 2
+                },
+                bodyStyles: {
+                    fontSize: 7,
+                    cellPadding: 2
+                },
+                columnStyles: {
+                    0: { cellWidth: 20 }, // Object
+                    1: { cellWidth: 25 }, // Sub Project
+                    2: { cellWidth: 30, halign: 'right' }, // Allocation
+                    3: { cellWidth: 25, halign: 'right' }, // FR66P
+                    4: { cellWidth: 25, halign: 'right' }, // FR66M
+                    5: { cellWidth: 30, halign: 'right' }, // Supplementary
+                    6: { cellWidth: 30, halign: 'right' }, // Net Allocation
+                    7: { cellWidth: 28, halign: 'right' }, // Debit-Same
+                    8: { cellWidth: 28, halign: 'right' }, // Debit-Other
+                    9: { cellWidth: 30, halign: 'right' }, // Surcharge-Same
+                    10: { cellWidth: 30, halign: 'right' }, // Surcharge-Other
+                    11: { cellWidth: 25, halign: 'right' }, // Net Exp.
+                    12: { cellWidth: 30, halign: 'right' }, // Cumulative Exp.
+                    13: { cellWidth: 25, halign: 'right' }  // Balance
+                },
+                alternateRowStyles: { fillColor: [245, 245, 245] },
+                margin: { top: 35, left: 10, right: 10 },
+                didDrawPage: function (data) {
+                    // Footer is added after table generation
+                }
+            });
+
+            // Add footer to all pages
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(128, 128, 128);
+                doc.text(
+                    `Page ${i} of ${pageCount}`,
+                    doc.internal.pageSize.getWidth() / 2,
+                    doc.internal.pageSize.getHeight() - 10,
+                    { align: 'center' }
+                );
+            }
+
+            // Save PDF
+            doc.save(`net_expenditure_report_${appliedFilters.head}_${new Date().toISOString().split('T')[0]}.pdf`);
+            toast.success("PDF exported successfully!");
+
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            toast.error("Failed to generate report");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // const handleExportCSV = async () => {
+    //     if (records.length === 0) {
+    //         alert('No data to export');
+    //         return;
+    //     }
+
+    //     setLoading(true);
+    //     try {
+    //         const params = { ...appliedFilters };
+    //         Object.keys(params).forEach(key => {
+    //             if (!params[key]) delete params[key];
+    //         });
+
+    //         const response = await apiClient.get('/net-expenditure/export', { params });
+
+    //         if (response.data.success) {
+    //             const csvData = response.data.data;
+    //             if (csvData.length > 0) {
+    //                 const headers = Object.keys(csvData[0]);
+    //                 const csvRows = [
+    //                     headers.join(','),
+    //                     ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+    //                 ];
+    //                 const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    //                 const url = URL.createObjectURL(csvBlob);
+    //                 const a = document.createElement('a');
+    //                 a.href = url;
+    //                 a.download = `net-expenditure-${new Date().toISOString().split('T')[0]}.csv`;
+    //                 a.click();
+    //                 URL.revokeObjectURL(url);
+    //                 alert('Export completed successfully!');
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error('Error exporting data:', error);
+    //         alert('Error exporting data');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
     const handleExportCSV = async () => {
         if (records.length === 0) {
             alert('No data to export');
@@ -1206,12 +1247,37 @@ const handleExportPDF = () => {
 
             if (response.data.success) {
                 const csvData = response.data.data;
-                if (csvData.length > 0) {
+                if (csvData && csvData.length > 0) {
                     const headers = Object.keys(csvData[0]);
                     const csvRows = [
                         headers.join(','),
-                        ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+                        ...csvData.map(row => headers.map(h => {
+                            const value = row[h];
+
+                            // Handle null, undefined, or empty values
+                            if (value === null || value === undefined || value === '') {
+                                return '""';
+                            }
+
+                            // If value is 0 (number), keep it as "0"
+                            if (value === 0) {
+                                return '0';
+                            }
+
+                            // For numeric values, format properly
+                            if (typeof value === 'number') {
+                                // Format with 2 decimal places if it's a decimal/currency value
+                                if (Number.isInteger(value)) {
+                                    return value.toString();
+                                }
+                                return value.toFixed(2);
+                            }
+
+                            // For strings, wrap in quotes and escape
+                            return `"${value.toString().replace(/"/g, '""')}"`;
+                        }).join(','))
                     ];
+
                     const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
                     const url = URL.createObjectURL(csvBlob);
                     const a = document.createElement('a');
@@ -1219,17 +1285,21 @@ const handleExportPDF = () => {
                     a.download = `net-expenditure-${new Date().toISOString().split('T')[0]}.csv`;
                     a.click();
                     URL.revokeObjectURL(url);
-                    alert('Export completed successfully!');
+                    toast.success("CSV exported successfully!");
+                } else {
+                    toast.error("Failed to generate CSV");
                 }
+            } else {
+                toast.error("Failed to generate CSV");
             }
         } catch (error) {
             console.error('Error exporting data:', error);
-            alert('Error exporting data');
+            toast.error("Failed to generate CSV");
         } finally {
             setLoading(false);
         }
     };
-
+    
     const refreshData = () => {
         if (appliedFilters.head) {
             fetchRecords();
@@ -1392,8 +1462,8 @@ const handleExportPDF = () => {
                     onClick={handleExportPDF}
                     disabled={records.length === 0}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
-                            ? 'bg-red-600 text-white hover:bg-red-700'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-red-600 text-white hover:bg-red-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                 >
                     <FileText size={16} />
@@ -1403,8 +1473,8 @@ const handleExportPDF = () => {
                     onClick={handleExportCSV}
                     disabled={records.length === 0}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
-                            ? 'bg-green-600 text-white hover:bg-green-700'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-green-600 text-white hover:bg-green-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                 >
                     <Download size={16} />
@@ -1450,8 +1520,8 @@ const handleExportPDF = () => {
                                             <Filter size={40} className="text-gray-300" />
                                             <p>Please click the Filter button and select a TR No to view data</p>
                                         </div>
-                                     </td>
-                                 </tr>
+                                    </td>
+                                </tr>
                             ) : paginatedRecords.length === 0 ? (
                                 <tr>
                                     <td colSpan="14" className="text-center py-12 text-gray-500">
@@ -1464,8 +1534,8 @@ const handleExportPDF = () => {
                                                 Clear filters and try again
                                             </button>
                                         </div>
-                                     </td>
-                                 </tr>
+                                    </td>
+                                </tr>
                             ) : (
                                 paginatedRecords.map((record, index) => (
                                     <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">

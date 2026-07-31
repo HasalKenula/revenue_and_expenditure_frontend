@@ -230,7 +230,7 @@
 //     }
 
 //     setLoading(true);
-    
+
 //     try {
 //       const doc = new jsPDF({
 //         orientation: 'portrait',
@@ -246,12 +246,12 @@
 //       doc.setFontSize(14);
 //       doc.setFont('helvetica', 'bold');
 //       doc.text('PROVINCIAL TREASURY - SOUTHERN PROVINCE', pageWidth / 2, 20, { align: 'center' });
-      
+
 //       // Title
 //       doc.setFontSize(16);
 //       doc.setFont('helvetica', 'bold');
 //       doc.text('MAIN JOURNAL', pageWidth / 2, 30, { align: 'center' });
-      
+
 //       // Month and Head
 //       doc.setFontSize(11);
 //       doc.setFont('helvetica', 'normal');
@@ -261,7 +261,7 @@
 //         filterText += `  |  Head : ${appliedFilters.trno}`;
 //       }
 //       doc.text(filterText, 20, 40);
-      
+
 //       // Description
 //       doc.setFontSize(10);
 //       doc.text('Your Summary of accounts for this month has been posted in Treasury books as follows.', 20, 50);
@@ -271,17 +271,17 @@
 
 //       // Prepare table data - Name, Total Debits, Total Credits
 //       const tableHeaders = ['Name', 'Total Debits', 'Total Credits'];
-      
+
 //       const tableBody = [];
-      
+
 //       // Add each account
 //       let grandTotalDebitSum = 0;
 //       let grandTotalCreditSum = 0;
-      
+
 //       // For first record (if multiple TRNOs, show first one)
 //       const record = records[0] || {};
 //       const accounts = record.accounts || {};
-      
+
 //       accountKeys.forEach((key) => {
 //         const account = accounts[key];
 //         if (account) {
@@ -332,13 +332,13 @@
 //         didDrawPage: function(data) {
 //           // Add note after table
 //           const finalY = data.cursor.y || 200;
-          
+
 //           // Grand Total
 //           doc.setFontSize(11);
 //           doc.setFont('helvetica', 'bold');
 //           const grandTotal = grandTotals.total_debits || 0;
 //           doc.text(`Grand Total: ${formatNumber(grandTotal)}`, pageWidth - 80, finalY + 15);
-          
+
 //           // Confirmation text
 //           doc.setFontSize(9);
 //           doc.setFont('helvetica', 'normal');
@@ -357,7 +357,7 @@
 //             20,
 //             finalY + 44
 //           );
-          
+
 //           // Footer
 //           doc.setFontSize(10);
 //           doc.setFont('helvetica', 'bold');
@@ -370,7 +370,7 @@
 //       const fileName = `main_journal_${appliedFilters.year}_${monthText}${appliedFilters.trno ? '_' + appliedFilters.trno : ''}.pdf`;
 //       doc.save(fileName);
 //       alert('PDF exported successfully!');
-      
+
 //     } catch (error) {
 //       console.error('Error generating PDF:', error);
 //       alert('Failed to generate PDF: ' + error.message);
@@ -604,7 +604,7 @@
 //                   const accounts = record.accounts || {};
 //                   let totalDebits = 0;
 //                   let totalCredits = 0;
-                  
+
 //                   const accountRows = accountKeys.map((key) => {
 //                     const account = accounts[key];
 //                     if (account) {
@@ -824,6 +824,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -1051,7 +1052,7 @@ const MainJournalPanel = () => {
     }
 
     setLoading(true);
-    
+
     try {
       const doc = new jsPDF({
         orientation: 'portrait',
@@ -1067,12 +1068,12 @@ const MainJournalPanel = () => {
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.text('PROVINCIAL TREASURY - SOUTHERN PROVINCE', pageWidth / 2, 20, { align: 'center' });
-      
+
       // Title
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.text('MAIN JOURNAL', pageWidth / 2, 30, { align: 'center' });
-      
+
       // Month and Head
       doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
@@ -1082,7 +1083,7 @@ const MainJournalPanel = () => {
         filterText += `  |  Head : ${appliedFilters.trno}`;
       }
       doc.text(filterText, 20, 40);
-      
+
       // Description
       doc.setFontSize(10);
       doc.text('Your Summary of accounts for this month has been posted in Treasury books as follows.', 20, 50);
@@ -1092,15 +1093,15 @@ const MainJournalPanel = () => {
 
       // Prepare table data
       const tableHeaders = ['Name', 'Total Debits', 'Total Credits'];
-      
+
       const tableBody = [];
-      
+
       const record = records[0] || {};
       const accounts = record.accounts || {};
-      
+
       let totalDebits = 0;
       let totalCredits = 0;
-      
+
       accountKeys.forEach((key) => {
         const account = accounts[key];
         if (account) {
@@ -1120,7 +1121,7 @@ const MainJournalPanel = () => {
       const diff = totalDebits - totalCredits;
       const balanceDebit = diff < 0 ? abs(diff) : 0;
       const balanceCredit = diff > 0 ? diff : 0;
-      
+
       tableBody.push([
         'Balance',
         balanceDebit > 0 ? formatNumber(balanceDebit) : '0.00',
@@ -1162,14 +1163,14 @@ const MainJournalPanel = () => {
         },
         alternateRowStyles: { fillColor: [245, 245, 245] },
         margin: { top: 60, left: 20, right: 20, bottom: 30 },
-        didDrawPage: function(data) {
+        didDrawPage: function (data) {
           const finalY = data.cursor.y || 200;
-          
+
           // Grand Total
           doc.setFontSize(11);
           doc.setFont('helvetica', 'bold');
           doc.text(`Grand Total: ${formatNumber(totalDebitsWithBalance)}`, pageWidth - 60, finalY + 15);
-          
+
           // Confirmation text
           doc.setFontSize(9);
           doc.setFont('helvetica', 'normal');
@@ -1188,7 +1189,7 @@ const MainJournalPanel = () => {
             20,
             finalY + 44
           );
-          
+
           // Footer
           doc.setFontSize(10);
           doc.setFont('helvetica', 'bold');
@@ -1200,16 +1201,59 @@ const MainJournalPanel = () => {
 
       const fileName = `main_journal_${appliedFilters.year}_${monthText}${appliedFilters.trno ? '_' + appliedFilters.trno : ''}.pdf`;
       doc.save(fileName);
-      alert('PDF exported successfully!');
-      
+      toast.success("PDF exported successfully!");
+
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error("Failed to generate report");
     } finally {
       setLoading(false);
     }
   };
 
+  // const handleExportCSV = async () => {
+  //   if (records.length === 0) {
+  //     alert('No data to export');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   try {
+  //     const params = {
+  //       year: appliedFilters.year,
+  //       month: appliedFilters.month
+  //     };
+  //     if (appliedFilters.trno) {
+  //       params.trno = appliedFilters.trno;
+  //     }
+
+  //     const response = await apiClient.get('/main-journal/export', { params });
+
+  //     if (response.data.success) {
+  //       const csvData = response.data.data;
+  //       if (csvData.length > 0) {
+  //         const headers = Object.keys(csvData[0]);
+  //         const csvRows = [
+  //           headers.join(','),
+  //           ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+  //         ];
+  //         const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  //         const url = URL.createObjectURL(csvBlob);
+  //         const a = document.createElement('a');
+  //         a.href = url;
+  //         a.download = `main_journal_${appliedFilters.year}_${monthNames[appliedFilters.month]}${appliedFilters.trno ? '_' + appliedFilters.trno : ''}.csv`;
+  //         a.click();
+  //         URL.revokeObjectURL(url);
+  //         alert('Export completed successfully!');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error exporting data:', error);
+  //     alert('Error exporting data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleExportCSV = async () => {
     if (records.length === 0) {
       alert('No data to export');
@@ -1218,37 +1262,123 @@ const MainJournalPanel = () => {
 
     setLoading(true);
     try {
-      const params = {
-        year: appliedFilters.year,
-        month: appliedFilters.month
-      };
-      if (appliedFilters.trno) {
-        params.trno = appliedFilters.trno;
-      }
+      // Build CSV data from existing frontend records
+      const exportData = [];
 
-      const response = await apiClient.get('/main-journal/export', { params });
+      // Header row
+      exportData.push(['Name', 'Total Debits (Rs)', 'Total Credits (Rs)']);
 
-      if (response.data.success) {
-        const csvData = response.data.data;
-        if (csvData.length > 0) {
-          const headers = Object.keys(csvData[0]);
-          const csvRows = [
-            headers.join(','),
-            ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
-          ];
-          const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(csvBlob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `main_journal_${appliedFilters.year}_${monthNames[appliedFilters.month]}${appliedFilters.trno ? '_' + appliedFilters.trno : ''}.csv`;
-          a.click();
-          URL.revokeObjectURL(url);
-          alert('Export completed successfully!');
+      // Get account data from the first record
+      const record = records[0] || {};
+      const accounts = record.accounts || {};
+      const accountKeys = Object.keys(accountTypes);
+
+      let totalDebits = 0;
+      let totalCredits = 0;
+
+      // Add account rows
+      accountKeys.forEach((key) => {
+        const account = accounts[key];
+        if (account) {
+          const debit = account.debit || 0;
+          const credit = account.credit || 0;
+          exportData.push([
+            account.label || key,
+            debit,
+            credit
+          ]);
+          totalDebits += debit;
+          totalCredits += credit;
         }
+      });
+
+      // Add empty row for spacing
+      exportData.push(['', '', '']);
+
+      // Calculate balance
+      const diff = totalDebits - totalCredits;
+      const balanceDebit = diff < 0 ? Math.abs(diff) : 0;
+      const balanceCredit = diff > 0 ? diff : 0;
+
+      // Add Balance row
+      exportData.push([
+        'Balance',
+        balanceDebit > 0 ? balanceDebit : 0,
+        balanceCredit > 0 ? balanceCredit : 0
+      ]);
+
+      // Add Total row with balance
+      const totalDebitsWithBalance = totalDebits + balanceDebit;
+      const totalCreditsWithBalance = totalCredits + balanceCredit;
+
+      exportData.push([
+        'TOTAL',
+        totalDebitsWithBalance,
+        totalCreditsWithBalance
+      ]);
+
+      // Add empty row for spacing
+      exportData.push(['', '', '']);
+
+      // Add Grand Total
+      exportData.push([
+        'GRAND TOTAL',
+        totalDebitsWithBalance,
+        totalCreditsWithBalance
+      ]);
+
+      // Add empty rows for spacing
+      exportData.push(['', '', '']);
+      exportData.push(['', '', '']);
+
+      // Add report information
+      const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
+      exportData.push([
+        `Report: Main Journal - ${monthText} ${appliedFilters.year}`,
+        '',
+        ''
+      ]);
+
+      if (appliedFilters.trno) {
+        exportData.push([`Head (TR No): ${appliedFilters.trno}`, '', '']);
       }
+
+      exportData.push([`Generated on: ${new Date().toLocaleString()}`, '', '']);
+      exportData.push([`Total Records: ${records.length}`, '', '']);
+
+      // Convert to CSV string
+      const csvRows = exportData.map(row => {
+        return row.map(cell => {
+          // Handle null, undefined, or empty values
+          if (cell === null || cell === undefined || cell === '') {
+            return '""';
+          }
+          // Handle numeric values
+          if (typeof cell === 'number') {
+            return cell.toFixed(2);
+          }
+          // Handle strings - wrap in quotes and escape
+          return `"${String(cell).replace(/"/g, '""')}"`;
+        }).join(',');
+      });
+
+      // Create and download CSV file
+      const csvBlob = new Blob([csvRows.join('\n')], {
+        type: 'text/csv;charset=utf-8;'
+      });
+      const url = URL.createObjectURL(csvBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `main_journal_${appliedFilters.year}_${monthText}${appliedFilters.trno ? '_' + appliedFilters.trno : ''}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("CSV exported successfully!");
+
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Error exporting data');
+      toast.error("Failed to generate CSV");
     } finally {
       setLoading(false);
     }
@@ -1291,7 +1421,7 @@ const MainJournalPanel = () => {
           {appliedFilters.year && appliedFilters.month && (
             <div className="bg-blue-50 rounded-lg px-3 py-2">
               <p className="text-sm text-blue-700">
-                <span className="font-medium">Month:</span> {monthNames[appliedFilters.month]} | 
+                <span className="font-medium">Month:</span> {monthNames[appliedFilters.month]} |
                 <span className="font-medium ml-2">Head:</span> {appliedFilters.trno || 'All'}
               </p>
             </div>
@@ -1357,8 +1487,8 @@ const MainJournalPanel = () => {
               </span>
             )}
           </div>
-          <button 
-            onClick={clearFilters} 
+          <button
+            onClick={clearFilters}
             className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
           >
             <X size={14} /> Clear All
@@ -1368,39 +1498,37 @@ const MainJournalPanel = () => {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
-        <button 
-          onClick={() => setShowFilterModal(true)} 
+        <button
+          onClick={() => setShowFilterModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
         >
           <Filter size={16} />
           <span>Filter</span>
         </button>
-        <button 
-          onClick={handleExportPDF} 
-          disabled={records.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            records.length > 0 
-              ? 'bg-red-600 text-white hover:bg-red-700' 
+        <button
+          onClick={handleExportPDF}
+          disabled={records.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+              ? 'bg-red-600 text-white hover:bg-red-700'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+            }`}
         >
           <FileText size={16} />
           <span>Export PDF</span>
         </button>
-        <button 
-          onClick={handleExportCSV} 
-          disabled={records.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            records.length > 0 
-              ? 'bg-green-600 text-white hover:bg-green-700' 
+        <button
+          onClick={handleExportCSV}
+          disabled={records.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+              ? 'bg-green-600 text-white hover:bg-green-700'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+            }`}
         >
           <Download size={16} />
           <span>Export CSV</span>
         </button>
-        <button 
-          onClick={refreshData} 
+        <button
+          onClick={refreshData}
           className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
         >
           <RefreshCw size={16} />
@@ -1434,8 +1562,8 @@ const MainJournalPanel = () => {
                   <td colSpan="3" className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <p>No records found for the selected filters.</p>
-                      <button 
-                        onClick={clearFilters} 
+                      <button
+                        onClick={clearFilters}
                         className="text-blue-600 hover:text-blue-800 text-sm"
                       >
                         Clear filters and try again
@@ -1449,7 +1577,7 @@ const MainJournalPanel = () => {
                   const accounts = record.accounts || {};
                   let totalDebits = 0;
                   let totalCredits = 0;
-                  
+
                   const accountRows = accountKeys.map((key) => {
                     const account = accounts[key];
                     if (account) {
@@ -1482,7 +1610,7 @@ const MainJournalPanel = () => {
                   return (
                     <>
                       {accountRows}
-                      
+
                       {/* Balance row - shows only if balance > 0 */}
                       {balanceDebit > 0 && (
                         <tr className="border-b border-gray-200 bg-yellow-50">
@@ -1506,7 +1634,7 @@ const MainJournalPanel = () => {
                           </td>
                         </tr>
                       )}
-                      
+
                       {/* Total row with balance */}
                       <tr className="border-b border-gray-200 bg-gray-100 font-semibold">
                         <td className="px-4 py-3 text-gray-800">Total</td>
@@ -1530,12 +1658,12 @@ const MainJournalPanel = () => {
           <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3 bg-white">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Show</span>
-              <select 
-                value={entriesPerPage} 
-                onChange={(e) => { 
-                  setEntriesPerPage(Number(e.target.value)); 
-                  setCurrentPage(1); 
-                }} 
+              <select
+                value={entriesPerPage}
+                onChange={(e) => {
+                  setEntriesPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
                 className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value={10}>10</option>
@@ -1549,9 +1677,9 @@ const MainJournalPanel = () => {
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <button 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-                disabled={currentPage === 1} 
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
                 className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
               >
                 <ChevronLeft size={16} />
@@ -1559,9 +1687,9 @@ const MainJournalPanel = () => {
               <span className="text-sm text-gray-600">
                 Page {currentPage} of {lastPage || 1}
               </span>
-              <button 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))} 
-                disabled={currentPage === lastPage || lastPage === 0} 
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
+                disabled={currentPage === lastPage || lastPage === 0}
                 className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
               >
                 <ChevronRight size={16} />
@@ -1577,8 +1705,8 @@ const MainJournalPanel = () => {
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Filter Main Journal</h3>
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
                 <X size={20} />
@@ -1652,14 +1780,14 @@ const MainJournalPanel = () => {
             </div>
 
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
-              <button 
-                onClick={applyFilters} 
+              <button
+                onClick={applyFilters}
                 disabled={!filters.year || !filters.month}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >

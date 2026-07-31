@@ -22,6 +22,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -577,9 +578,9 @@ const StampDutyMonthlyPanel = () => {
                         if (data.row.index === 0) return;
                         if (data.row.index === stampDutyData.length - 1) {
                             data.cell.styles.fontStyle = 'bold';
-                           
+
                             data.cell.styles.textColor = [0, 0, 0];
-                           
+
                         }
                         // Highlight Total Exp. and Balance for last table
                         if (groupIndex === monthGroups.length - 1) {
@@ -620,16 +621,56 @@ const StampDutyMonthlyPanel = () => {
 
             const fileName = `stamp_duty_monthly_${appliedFilters.year}_${monthText}.pdf`;
             doc.save(fileName);
-            alert('PDF exported successfully!');
+            toast.success("PDF exported successfully!");
 
         } catch (error) {
             console.error('Error generating PDF:', error);
-            alert('Failed to generate PDF: ' + error.message);
+            toast.error("Failed to generate report");
         } finally {
             setLoading(false);
         }
     };
 
+    // const handleExportCSV = async () => {
+    //     if (stampDutyData.length === 0) {
+    //         alert('No data to export');
+    //         return;
+    //     }
+
+    //     setLoading(true);
+    //     try {
+    //         const params = {
+    //             year: appliedFilters.year,
+    //             month: appliedFilters.month
+    //         };
+
+    //         const response = await apiClient.get('/stamp-duty-monthly/export', { params });
+
+    //         if (response.data.success) {
+    //             const csvData = response.data.data;
+    //             if (csvData.length > 0) {
+    //                 const headers = Object.keys(csvData[0]);
+    //                 const csvRows = [
+    //                     headers.join(','),
+    //                     ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+    //                 ];
+    //                 const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    //                 const url = URL.createObjectURL(csvBlob);
+    //                 const a = document.createElement('a');
+    //                 a.href = url;
+    //                 a.download = `stamp_duty_monthly_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
+    //                 a.click();
+    //                 URL.revokeObjectURL(url);
+    //                 alert('Export completed successfully!');
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error('Error exporting data:', error);
+    //         alert('Error exporting data');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
     const handleExportCSV = async () => {
         if (stampDutyData.length === 0) {
             alert('No data to export');
@@ -651,8 +692,33 @@ const StampDutyMonthlyPanel = () => {
                     const headers = Object.keys(csvData[0]);
                     const csvRows = [
                         headers.join(','),
-                        ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+                        ...csvData.map(row => headers.map(h => {
+                            const value = row[h];
+
+                            // Handle null, undefined, or empty values
+                            if (value === null || value === undefined) {
+                                return '""';
+                            }
+
+                            // If value is 0 (number), keep it as "0"
+                            if (value === 0) {
+                                return '0';
+                            }
+
+                            // For numeric values, format properly
+                            if (typeof value === 'number') {
+                                // Format with 2 decimal places if it's a decimal/currency value
+                                if (Number.isInteger(value)) {
+                                    return value.toString();
+                                }
+                                return value.toFixed(2);
+                            }
+
+                            // For strings, wrap in quotes and escape
+                            return `"${value.toString().replace(/"/g, '""')}"`;
+                        }).join(','))
                     ];
+
                     const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
                     const url = URL.createObjectURL(csvBlob);
                     const a = document.createElement('a');
@@ -660,17 +726,16 @@ const StampDutyMonthlyPanel = () => {
                     a.download = `stamp_duty_monthly_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
                     a.click();
                     URL.revokeObjectURL(url);
-                    alert('Export completed successfully!');
+                    toast.success("CSV exported successfully!");
                 }
             }
         } catch (error) {
             console.error('Error exporting data:', error);
-            alert('Error exporting data');
+            toast.error("Failed to generate CSV");
         } finally {
             setLoading(false);
         }
     };
-
     const refreshData = () => {
         fetchFilterOptions();
         if (appliedFilters.year && appliedFilters.month) {
@@ -798,8 +863,8 @@ const StampDutyMonthlyPanel = () => {
                     onClick={handleExportPDF}
                     disabled={stampDutyData.length === 0}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${stampDutyData.length > 0
-                            ? 'bg-red-600 text-white hover:bg-red-700'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-red-600 text-white hover:bg-red-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                 >
                     <FileText size={16} />
@@ -809,8 +874,8 @@ const StampDutyMonthlyPanel = () => {
                     onClick={handleExportCSV}
                     disabled={stampDutyData.length === 0}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${stampDutyData.length > 0
-                            ? 'bg-green-600 text-white hover:bg-green-700'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-green-600 text-white hover:bg-green-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                 >
                     <Download size={16} />

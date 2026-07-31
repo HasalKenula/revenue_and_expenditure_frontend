@@ -23,6 +23,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -250,7 +251,7 @@ const ImprestBalancePanel = () => {
     setMonthNamesList({});
   };
 
-  
+
 
 
   // const handleExportPDF = () => {
@@ -430,260 +431,304 @@ const ImprestBalancePanel = () => {
   // };
 
   const handleExportPDF = () => {
-  if (records.length === 0) {
-    alert('No data to export');
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const currentDate = new Date().toLocaleString();
-
-    // ========== PAGE 1: HEADER & DEBITS/CREDITS SUMMARY ==========
-    
-    // Header
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Imprest Balance Report', pageWidth / 2, 20, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 28, { align: 'center' });
-
-    const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
-    let filterText = `Year: ${appliedFilters.year} | Month: ${monthText}`;
-    if (appliedFilters.trno) {
-      filterText += ` | TR No: ${appliedFilters.trno}`;
-    }
-    if (appliedFilters.view_type === 'cumulative') {
-      filterText += ` | View: Cumulative (Jan - ${monthText})`;
-    } else {
-      filterText += ` | View: Monthly (${monthText})`;
-    }
-    doc.setFontSize(9);
-    doc.text(filterText, pageWidth / 2, 36, { align: 'center' });
-
-    // Separator line
-    doc.setDrawColor(200, 200, 200);
-    doc.line(15, 40, pageWidth - 15, 40);
-
-    // Calculate totals for summary
-    let totalOpeningBalance = 0;
-    let totalDR = 0;
-    let totalIssue = 0;
-    let totalCR = 0;
-    let totalSettle = 0;
-    let totalGrand = 0;
-
-    records.forEach(record => {
-      totalOpeningBalance += record.opening_balance || 0;
-      totalDR += record.dr_amount || 0;
-      totalIssue += record.issue_amount || 0;
-      totalCR += record.cr_amount || 0;
-      totalSettle += record.settle_amount || 0;
-      totalGrand += record.grand_total || 0;
-    });
-
-    // Use grand totals from API if available
-    if (grandTotals.total_opening_balance) {
-      totalOpeningBalance = grandTotals.total_opening_balance;
-      totalDR = grandTotals.total_dr;
-      totalIssue = grandTotals.total_issue;
-      totalCR = grandTotals.total_cr;
-      totalSettle = grandTotals.total_settle;
-      totalGrand = grandTotals.total_grand;
+    if (records.length === 0) {
+      alert('No data to export');
+      return;
     }
 
-    // ===== DEBITS SECTION =====
-    let startY = 50;
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('DEBITS', 20, startY);
-    startY += 8;
+    setLoading(true);
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Balance of previous year:`, 25, startY);
-    doc.text(`${formatNumber(totalOpeningBalance)}`, 190, startY, { align: 'right' });
-    startY += 7;
+    try {
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
 
-    doc.text(`Imprest issued so far:`, 25, startY);
-    doc.text(`${formatNumber(totalIssue)}`, 190, startY, { align: 'right' });
-    startY += 7;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const currentDate = new Date().toLocaleString();
 
-    doc.text(`Debits from monthly Summary:`, 25, startY);
-    doc.text(`${formatNumber(totalDR)}`, 190, startY, { align: 'right' });
-    startY += 9;
+      // ========== PAGE 1: HEADER & DEBITS/CREDITS SUMMARY ==========
 
-    // Sub Total Debits
-    const subTotalDebits = totalOpeningBalance + totalIssue + totalDR;
-    doc.setDrawColor(200, 200, 200);
-    doc.line(20, startY - 2, pageWidth - 20, startY - 2);
-    doc.setFont('helvetica', 'bold');
-    startY += 7;
-    doc.text(`Sub Total:`, 25, startY);
-    doc.text(`${formatNumber(subTotalDebits)}`, 190, startY, { align: 'right' });
-    startY += 12;
+      // Header
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Imprest Balance Report', pageWidth / 2, 20, { align: 'center' });
 
-    // ===== CREDITS SECTION =====
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('CREDITS', 20, startY);
-    startY += 8;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 28, { align: 'center' });
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Imprest settle so far:`, 25, startY);
-    doc.text(`${formatNumber(totalSettle)}`, 190, startY, { align: 'right' });
-    startY += 7;
-
-    doc.text(`Credits from monthly Summary:`, 25, startY);
-    doc.text(`${formatNumber(totalCR)}`, 190, startY, { align: 'right' });
-    startY += 9;
-
-    // Sub Total Credits
-    const subTotalCredits = totalSettle + totalCR;
-    doc.setDrawColor(200, 200, 200);
-    doc.line(20, startY - 2, pageWidth - 20, startY - 2);
-    doc.setFont('helvetica', 'bold');
-    startY += 7;
-    doc.text(`Sub Total:`, 25, startY);
-    doc.text(`${formatNumber(subTotalCredits)}`, 190, startY, { align: 'right' });
-    startY += 12;
-
-    // ===== GRAND TOTAL =====
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.5);
-    doc.line(20, startY - 2, pageWidth - 20, startY - 2);
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    startY += 7;
-    doc.text(`Grand Total:`, 25, startY);
-    doc.text(`${formatNumber(totalGrand)}`, 190, startY, { align: 'right' });
-    startY += 10;
-
-    // Footer on page 1
-    doc.setDrawColor(200, 200, 200);
-    doc.line(10, pageHeight - 12, pageWidth - 10, pageHeight - 12);
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
-    doc.text('Page 1 of 2', pageWidth / 2, pageHeight - 5, { align: 'center' });
-
-    // ========== PAGE 2: TABLE ==========
-    doc.addPage();
-
-    // Header on page 2
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Imprest Balance Report - Details', pageWidth / 2, 20, { align: 'center' });
-
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Year: ${appliedFilters.year} | Month: ${monthText}`, pageWidth / 2, 28, { align: 'center' });
-
-    doc.setDrawColor(200, 200, 200);
-    doc.line(15, 32, pageWidth - 15, 32);
-
-    // Table headers
-    const tableHeaders = [
-      'TR No', 'Opening Balance', 'DR Amount', 'Issue Amount', 'CR Amount', 'Settle Amount', 'Grand Total'
-    ];
-
-    const tableBody = records.map(record => [
-      record.trno || '-',
-      formatNumber(record.opening_balance),
-      formatNumber(record.dr_amount),
-      formatNumber(record.issue_amount),
-      formatNumber(record.cr_amount),
-      formatNumber(record.settle_amount),
-      formatNumber(record.grand_total)
-    ]);
-
-    // Add grand total row
-    tableBody.push([
-      'GRAND TOTAL',
-      formatNumber(grandTotals.total_opening_balance || totalOpeningBalance),
-      formatNumber(grandTotals.total_dr || totalDR),
-      formatNumber(grandTotals.total_issue || totalIssue),
-      formatNumber(grandTotals.total_cr || totalCR),
-      formatNumber(grandTotals.total_settle || totalSettle),
-      formatNumber(grandTotals.total_grand || totalGrand)
-    ]);
-
-    autoTable(doc, {
-      head: [tableHeaders],
-      body: tableBody,
-      startY: 38,
-      theme: 'striped',
-      headStyles: {
-        fillColor: [41, 128, 185],
-        textColor: [255, 255, 255],
-        fontSize: 8,
-        fontStyle: 'bold',
-        halign: 'center',
-        cellPadding: 2.5
-      },
-      bodyStyles: {
-        fontSize: 8,
-        cellPadding: 2.5
-      },
-      columnStyles: {
-        0: { cellWidth: 22, halign: 'left' },
-        1: { cellWidth: 28, halign: 'right' },
-        2: { cellWidth: 28, halign: 'right' },
-        3: { cellWidth: 28, halign: 'right' },
-        4: { cellWidth: 28, halign: 'right' },
-        5: { cellWidth: 28, halign: 'right' },
-        6: { cellWidth: 30, halign: 'right' }
-      },
-      alternateRowStyles: { fillColor: [245, 245, 245] },
-      margin: {
-        top: 38,
-        left: 10,
-        right: 10,
-        bottom: 15
-      },
-      tableWidth: 'auto',
-      didDrawPage: function(data) {
-        // Footer on page 2
-        const pageCount = doc.internal.getNumberOfPages();
-        doc.setDrawColor(200, 200, 200);
-        doc.line(10, pageHeight - 12, pageWidth - 10, pageHeight - 12);
-        doc.setFontSize(8);
-        doc.setTextColor(128, 128, 128);
-        doc.text('Page 2 of 2', pageWidth / 2, pageHeight - 5, { align: 'center' });
-      },
-      didParseCell: function(data) {
-        // Make grand total row bold
-        if (data.row.index === tableBody.length - 1) {
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor = [240, 240, 240];
-        }
+      const monthText = monthNames[appliedFilters.month] || appliedFilters.month;
+      let filterText = `Year: ${appliedFilters.year} | Month: ${monthText}`;
+      if (appliedFilters.trno) {
+        filterText += ` | TR No: ${appliedFilters.trno}`;
       }
-    });
+      if (appliedFilters.view_type === 'cumulative') {
+        filterText += ` | View: Cumulative (Jan - ${monthText})`;
+      } else {
+        filterText += ` | View: Monthly (${monthText})`;
+      }
+      doc.setFontSize(9);
+      doc.text(filterText, pageWidth / 2, 36, { align: 'center' });
 
-    const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
-    const fileName = `imprest_balance_${viewText}_${appliedFilters.year}_${monthText}${appliedFilters.trno ? '_' + appliedFilters.trno : ''}.pdf`;
-    doc.save(fileName);
-    alert('PDF exported successfully!');
+      // Separator line
+      doc.setDrawColor(200, 200, 200);
+      doc.line(15, 40, pageWidth - 15, 40);
 
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    alert('Failed to generate PDF: ' + error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+      // Calculate totals for summary
+      let totalOpeningBalance = 0;
+      let totalDR = 0;
+      let totalIssue = 0;
+      let totalCR = 0;
+      let totalSettle = 0;
+      let totalGrand = 0;
 
+      records.forEach(record => {
+        totalOpeningBalance += record.opening_balance || 0;
+        totalDR += record.dr_amount || 0;
+        totalIssue += record.issue_amount || 0;
+        totalCR += record.cr_amount || 0;
+        totalSettle += record.settle_amount || 0;
+        totalGrand += record.grand_total || 0;
+      });
+
+      // Use grand totals from API if available
+      if (grandTotals.total_opening_balance) {
+        totalOpeningBalance = grandTotals.total_opening_balance;
+        totalDR = grandTotals.total_dr;
+        totalIssue = grandTotals.total_issue;
+        totalCR = grandTotals.total_cr;
+        totalSettle = grandTotals.total_settle;
+        totalGrand = grandTotals.total_grand;
+      }
+
+      // ===== DEBITS SECTION =====
+      let startY = 50;
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DEBITS', 20, startY);
+      startY += 8;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Balance of previous year:`, 25, startY);
+      doc.text(`${formatNumber(totalOpeningBalance)}`, 190, startY, { align: 'right' });
+      startY += 7;
+
+      doc.text(`Imprest issued so far:`, 25, startY);
+      doc.text(`${formatNumber(totalIssue)}`, 190, startY, { align: 'right' });
+      startY += 7;
+
+      doc.text(`Debits from monthly Summary:`, 25, startY);
+      doc.text(`${formatNumber(totalDR)}`, 190, startY, { align: 'right' });
+      startY += 9;
+
+      // Sub Total Debits
+      const subTotalDebits = totalOpeningBalance + totalIssue + totalDR;
+      doc.setDrawColor(200, 200, 200);
+      doc.line(20, startY - 2, pageWidth - 20, startY - 2);
+      doc.setFont('helvetica', 'bold');
+      startY += 7;
+      doc.text(`Sub Total:`, 25, startY);
+      doc.text(`${formatNumber(subTotalDebits)}`, 190, startY, { align: 'right' });
+      startY += 12;
+
+      // ===== CREDITS SECTION =====
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('CREDITS', 20, startY);
+      startY += 8;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Imprest settle so far:`, 25, startY);
+      doc.text(`${formatNumber(totalSettle)}`, 190, startY, { align: 'right' });
+      startY += 7;
+
+      doc.text(`Credits from monthly Summary:`, 25, startY);
+      doc.text(`${formatNumber(totalCR)}`, 190, startY, { align: 'right' });
+      startY += 9;
+
+      // Sub Total Credits
+      const subTotalCredits = totalSettle + totalCR;
+      doc.setDrawColor(200, 200, 200);
+      doc.line(20, startY - 2, pageWidth - 20, startY - 2);
+      doc.setFont('helvetica', 'bold');
+      startY += 7;
+      doc.text(`Sub Total:`, 25, startY);
+      doc.text(`${formatNumber(subTotalCredits)}`, 190, startY, { align: 'right' });
+      startY += 12;
+
+      // ===== GRAND TOTAL =====
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.5);
+      doc.line(20, startY - 2, pageWidth - 20, startY - 2);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      startY += 7;
+      doc.text(`Grand Total:`, 25, startY);
+      doc.text(`${formatNumber(totalGrand)}`, 190, startY, { align: 'right' });
+      startY += 10;
+
+      // Footer on page 1
+      doc.setDrawColor(200, 200, 200);
+      doc.line(10, pageHeight - 12, pageWidth - 10, pageHeight - 12);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text('Page 1 of 2', pageWidth / 2, pageHeight - 5, { align: 'center' });
+
+      // ========== PAGE 2: TABLE ==========
+      doc.addPage();
+
+      // Header on page 2
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Imprest Balance Report - Details', pageWidth / 2, 20, { align: 'center' });
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Year: ${appliedFilters.year} | Month: ${monthText}`, pageWidth / 2, 28, { align: 'center' });
+
+      doc.setDrawColor(200, 200, 200);
+      doc.line(15, 32, pageWidth - 15, 32);
+
+      // Table headers
+      const tableHeaders = [
+        'TR No', 'Opening Balance', 'DR Amount', 'Issue Amount', 'CR Amount', 'Settle Amount', 'Grand Total'
+      ];
+
+      const tableBody = records.map(record => [
+        record.trno || '-',
+        formatNumber(record.opening_balance),
+        formatNumber(record.dr_amount),
+        formatNumber(record.issue_amount),
+        formatNumber(record.cr_amount),
+        formatNumber(record.settle_amount),
+        formatNumber(record.grand_total)
+      ]);
+
+      // Add grand total row
+      tableBody.push([
+        'GRAND TOTAL',
+        formatNumber(grandTotals.total_opening_balance || totalOpeningBalance),
+        formatNumber(grandTotals.total_dr || totalDR),
+        formatNumber(grandTotals.total_issue || totalIssue),
+        formatNumber(grandTotals.total_cr || totalCR),
+        formatNumber(grandTotals.total_settle || totalSettle),
+        formatNumber(grandTotals.total_grand || totalGrand)
+      ]);
+
+      autoTable(doc, {
+        head: [tableHeaders],
+        body: tableBody,
+        startY: 38,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: [255, 255, 255],
+          fontSize: 8,
+          fontStyle: 'bold',
+          halign: 'center',
+          cellPadding: 2.5
+        },
+        bodyStyles: {
+          fontSize: 8,
+          cellPadding: 2.5
+        },
+        columnStyles: {
+          0: { cellWidth: 22, halign: 'left' },
+          1: { cellWidth: 28, halign: 'right' },
+          2: { cellWidth: 28, halign: 'right' },
+          3: { cellWidth: 28, halign: 'right' },
+          4: { cellWidth: 28, halign: 'right' },
+          5: { cellWidth: 28, halign: 'right' },
+          6: { cellWidth: 30, halign: 'right' }
+        },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: {
+          top: 38,
+          left: 10,
+          right: 10,
+          bottom: 15
+        },
+        tableWidth: 'auto',
+        didDrawPage: function (data) {
+          // Footer on page 2
+          const pageCount = doc.internal.getNumberOfPages();
+          doc.setDrawColor(200, 200, 200);
+          doc.line(10, pageHeight - 12, pageWidth - 10, pageHeight - 12);
+          doc.setFontSize(8);
+          doc.setTextColor(128, 128, 128);
+          doc.text('Page 2 of 2', pageWidth / 2, pageHeight - 5, { align: 'center' });
+        },
+        didParseCell: function (data) {
+          // Make grand total row bold
+          if (data.row.index === tableBody.length - 1) {
+            data.cell.styles.fontStyle = 'bold';
+            data.cell.styles.fillColor = [240, 240, 240];
+          }
+        }
+      });
+
+      const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
+      const fileName = `imprest_balance_${viewText}_${appliedFilters.year}_${monthText}${appliedFilters.trno ? '_' + appliedFilters.trno : ''}.pdf`;
+      doc.save(fileName);
+      toast.success("PDF exported successfully!");
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate report");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // const handleExportCSV = async () => {
+  //   if (records.length === 0) {
+  //     alert('No data to export');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   try {
+  //     const params = {
+  //       year: appliedFilters.year,
+  //       month: appliedFilters.month,
+  //       view_type: appliedFilters.view_type || 'cumulative'
+  //     };
+  //     if (appliedFilters.trno) {
+  //       params.trno = appliedFilters.trno;
+  //     }
+
+  //     const response = await apiClient.get('/imprest-balance/export', { params });
+
+  //     if (response.data.success) {
+  //       const csvData = response.data.data;
+  //       if (csvData.length > 0) {
+  //         const headers = Object.keys(csvData[0]);
+  //         const csvRows = [
+  //           headers.join(','),
+  //           ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+  //         ];
+  //         const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  //         const url = URL.createObjectURL(csvBlob);
+  //         const a = document.createElement('a');
+  //         a.href = url;
+  //         a.download = `imprest_balance_${appliedFilters.view_type}_${appliedFilters.year}_${monthNames[appliedFilters.month]}${appliedFilters.trno ? '_' + appliedFilters.trno : ''}.csv`;
+  //         a.click();
+  //         URL.revokeObjectURL(url);
+  //         alert('Export completed successfully!');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error exporting data:', error);
+  //     alert('Error exporting data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleExportCSV = async () => {
     if (records.length === 0) {
       alert('No data to export');
@@ -705,12 +750,37 @@ const ImprestBalancePanel = () => {
 
       if (response.data.success) {
         const csvData = response.data.data;
-        if (csvData.length > 0) {
+        if (csvData && csvData.length > 0) {
           const headers = Object.keys(csvData[0]);
           const csvRows = [
             headers.join(','),
-            ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+            ...csvData.map(row => headers.map(h => {
+              const value = row[h];
+
+              // Handle null, undefined, or empty values
+              if (value === null || value === undefined || value === '') {
+                return '""';
+              }
+
+              // If value is 0 (number), keep it as "0"
+              if (value === 0) {
+                return '0';
+              }
+
+              // For numeric values, format properly
+              if (typeof value === 'number') {
+                // Format with 2 decimal places if it's a decimal/currency value
+                if (Number.isInteger(value)) {
+                  return value.toString();
+                }
+                return value.toFixed(2);
+              }
+
+              // For strings, wrap in quotes and escape
+              return `"${value.toString().replace(/"/g, '""')}"`;
+            }).join(','))
           ];
+
           const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(csvBlob);
           const a = document.createElement('a');
@@ -718,17 +788,21 @@ const ImprestBalancePanel = () => {
           a.download = `imprest_balance_${appliedFilters.view_type}_${appliedFilters.year}_${monthNames[appliedFilters.month]}${appliedFilters.trno ? '_' + appliedFilters.trno : ''}.csv`;
           a.click();
           URL.revokeObjectURL(url);
-          alert('Export completed successfully!');
+          toast.success("CSV exported successfully!");
+        } else {
+          toast.error("Failed to generate CSV");
         }
+      } else {
+        toast.error("Failed to generate CSV");
       }
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Error exporting data');
+      toast.error("Failed to generate CSV");
     } finally {
       setLoading(false);
     }
   };
-
+  
   const refreshData = () => {
     fetchFilterOptions();
     if (appliedFilters.year && appliedFilters.month) {

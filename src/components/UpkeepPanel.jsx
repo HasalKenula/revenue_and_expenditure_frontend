@@ -24,6 +24,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -715,16 +716,69 @@ const UpkeepPanel = () => {
       const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
       const fileName = `upkeep_report_${viewText}_${appliedFilters.year}_${monthText}.pdf`;
       doc.save(fileName);
-      alert('PDF exported successfully!');
+      toast.success("PDF exported successfully!");
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error("Failed to generate report");
     } finally {
       setLoading(false);
     }
   };
 
+  // const handleExportCSV = async () => {
+  //   const allData = [
+  //     ...educationData,
+  //     ...westernMedicineData,
+  //     ...indigenousMedicineData,
+  //     ...roadsIrrigationData,
+  //     ...agricultureData,
+  //     ...probationChildcareData,
+  //     ...socialServicesData,
+  //     ...localGovernmentData,
+  //     ...livestockData
+  //   ];
+
+  //   if (allData.length === 0) {
+  //     alert('No data to export');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   try {
+  //     const params = {
+  //       year: appliedFilters.year,
+  //       month: appliedFilters.month,
+  //       view_type: appliedFilters.view_type || 'cumulative'
+  //     };
+
+  //     const response = await apiClient.get('/upkeep/export', { params });
+
+  //     if (response.data.success) {
+  //       const csvData = response.data.data;
+  //       if (csvData.length > 0) {
+  //         const headers = Object.keys(csvData[0]);
+  //         const csvRows = [
+  //           headers.join(','),
+  //           ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+  //         ];
+  //         const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  //         const url = URL.createObjectURL(csvBlob);
+  //         const a = document.createElement('a');
+  //         a.href = url;
+  //         a.download = `upkeep_report_${appliedFilters.view_type}_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
+  //         a.click();
+  //         URL.revokeObjectURL(url);
+  //         alert('Export completed successfully!');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error exporting data:', error);
+  //     alert('Error exporting data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleExportCSV = async () => {
     const allData = [
       ...educationData,
@@ -756,29 +810,56 @@ const UpkeepPanel = () => {
       if (response.data.success) {
         const csvData = response.data.data;
         if (csvData.length > 0) {
+          // Get headers from the first object
           const headers = Object.keys(csvData[0]);
+
+          // Create CSV rows
           const csvRows = [
-            headers.join(','),
-            ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+            headers.join(','), // Header row
+            ...csvData.map(row => headers.map(h => {
+              const value = row[h];
+
+              // Handle null, undefined, or empty values
+              if (value === null || value === undefined || value === '') {
+                return '""';
+              }
+
+              // If value is 0 (number), keep it as "0"
+              if (value === 0) {
+                return '0';
+              }
+
+              // For numeric values, format properly
+              if (typeof value === 'number') {
+                return value.toString();
+              }
+
+              // For strings, wrap in quotes and escape
+              return `"${String(value).replace(/"/g, '""')}"`;
+            }).join(','))
           ];
+
           const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(csvBlob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `upkeep_report_${appliedFilters.view_type}_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
+          a.download = `maintenance_report_${appliedFilters.view_type}_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
           a.click();
           URL.revokeObjectURL(url);
-          alert('Export completed successfully!');
+          toast.success("CSV exported successfully!");
+        } else {
+          toast.error("Failed to generate CSV");
         }
+      } else {
+        toast.error("Failed to generate CSV");
       }
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Error exporting data');
+      toast.error("Failed to generate CSV");
     } finally {
       setLoading(false);
     }
   };
-
   const refreshData = () => {
     fetchFilterOptions();
     if (appliedFilters.year && appliedFilters.month) {

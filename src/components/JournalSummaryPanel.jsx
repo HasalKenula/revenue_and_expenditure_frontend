@@ -29,6 +29,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -580,15 +581,55 @@ const JournalSummaryPanel = () => {
             // Save PDF
             const fileName = `journal_summary_${appliedFilters.year}_${monthNames[appliedFilters.month]}.pdf`;
             doc.save(fileName);
-            alert('PDF exported successfully!');
+            toast.success("PDF exported successfully!");
 
         } catch (error) {
             console.error('Error generating PDF:', error);
-            alert('Failed to generate PDF: ' + error.message);
+            toast.error("Failed to generate report");
         } finally {
             setLoading(false);
         }
     };
+    // const handleExportCSV = async () => {
+    //     if (records.length === 0) {
+    //         alert('No data to export');
+    //         return;
+    //     }
+
+    //     setLoading(true);
+    //     try {
+    //         const params = {
+    //             year: appliedFilters.year,
+    //             month: appliedFilters.month
+    //         };
+
+    //         const response = await apiClient.get('/journal-summary/export', { params });
+
+    //         if (response.data.success) {
+    //             const csvData = response.data.data;
+    //             if (csvData.length > 0) {
+    //                 const headers = Object.keys(csvData[0]);
+    //                 const csvRows = [
+    //                     headers.join(','),
+    //                     ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+    //                 ];
+    //                 const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    //                 const url = URL.createObjectURL(csvBlob);
+    //                 const a = document.createElement('a');
+    //                 a.href = url;
+    //                 a.download = `journal_summary_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
+    //                 a.click();
+    //                 URL.revokeObjectURL(url);
+    //                 alert('Export completed successfully!');
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error('Error exporting data:', error);
+    //         alert('Error exporting data');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
     const handleExportCSV = async () => {
         if (records.length === 0) {
             alert('No data to export');
@@ -608,10 +649,52 @@ const JournalSummaryPanel = () => {
                 const csvData = response.data.data;
                 if (csvData.length > 0) {
                     const headers = Object.keys(csvData[0]);
+
+                    // Identify numeric headers (amount fields)
+                    const numericKeywords = ['amount', 'total', 'balance', 'debit', 'credit', 'dr', 'cr', 'sum', 'net'];
+                    const numericHeaders = headers.filter(h =>
+                        numericKeywords.some(keyword => h.toLowerCase().includes(keyword))
+                    );
+
                     const csvRows = [
                         headers.join(','),
-                        ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+                        ...csvData.map(row => headers.map(h => {
+                            const value = row[h];
+
+                            // Handle null/undefined
+                            if (value === null || value === undefined) {
+                                // If it's a numeric header, return 0
+                                if (numericHeaders.includes(h)) {
+                                    return '0';
+                                }
+                                return '""';
+                            }
+
+                            // Handle numeric values
+                            if (typeof value === 'number') {
+                                // Format with 2 decimal places for currency/amount fields
+                                if (numericHeaders.includes(h)) {
+                                    return value.toFixed(2);
+                                }
+                                return value.toString();
+                            }
+
+                            // Handle string values
+                            if (typeof value === 'string') {
+                                // Check if it's a numeric string
+                                const numValue = parseFloat(value);
+                                if (!isNaN(numValue) && numericHeaders.includes(h)) {
+                                    return numValue.toFixed(2);
+                                }
+                                // Escape quotes and wrap in quotes
+                                return `"${value.replace(/"/g, '""')}"`;
+                            }
+
+                            // Handle boolean or other types
+                            return String(value);
+                        }).join(','))
                     ];
+
                     const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
                     const url = URL.createObjectURL(csvBlob);
                     const a = document.createElement('a');
@@ -619,17 +702,16 @@ const JournalSummaryPanel = () => {
                     a.download = `journal_summary_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
                     a.click();
                     URL.revokeObjectURL(url);
-                    alert('Export completed successfully!');
+                    toast.success("CSV exported successfully!");
                 }
             }
         } catch (error) {
             console.error('Error exporting data:', error);
-            alert('Error exporting data');
+            toast.error("Failed to generate CSV");
         } finally {
             setLoading(false);
         }
     };
-
     const refreshData = () => {
         fetchFilterOptions();
         if (appliedFilters.year && appliedFilters.month) {
@@ -806,8 +888,8 @@ const JournalSummaryPanel = () => {
                     onClick={handleExportPDF}
                     disabled={records.length === 0}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
-                            ? 'bg-red-600 text-white hover:bg-red-700'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-red-600 text-white hover:bg-red-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                 >
                     <FileText size={16} />
@@ -817,8 +899,8 @@ const JournalSummaryPanel = () => {
                     onClick={handleExportCSV}
                     disabled={records.length === 0}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
-                            ? 'bg-green-600 text-white hover:bg-green-700'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-green-600 text-white hover:bg-green-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                 >
                     <Download size={16} />

@@ -26,6 +26,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -496,7 +497,7 @@ const PSDPanel = () => {
         startY = doc.lastAutoTable.finalY + 12;
       });
 
-     
+
       // Add Summary Page
       doc.addPage();
 
@@ -647,16 +648,59 @@ const PSDPanel = () => {
       const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
       const fileName = `psd_report_${viewText}_${appliedFilters.year}_${monthText}.pdf`;
       doc.save(fileName);
-      alert('PDF exported successfully!');
+      toast.success("PDF exported successfully!");
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error("Failed to generate report");
     } finally {
       setLoading(false);
     }
   };
 
+  // const handleExportCSV = async () => {
+  //   if (mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
+  //     animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
+  //     landMinistryData.length === 0 && mainSecretaryData.length === 0) {
+  //     alert('No data to export');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   try {
+  //     const params = {
+  //       year: appliedFilters.year,
+  //       month: appliedFilters.month,
+  //       view_type: appliedFilters.view_type || 'cumulative'
+  //     };
+
+  //     const response = await apiClient.get('/psd/export', { params });
+
+  //     if (response.data.success) {
+  //       const csvData = response.data.data;
+  //       if (csvData.length > 0) {
+  //         const headers = Object.keys(csvData[0]);
+  //         const csvRows = [
+  //           headers.join(','),
+  //           ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+  //         ];
+  //         const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  //         const url = URL.createObjectURL(csvBlob);
+  //         const a = document.createElement('a');
+  //         a.href = url;
+  //         a.download = `psd_report_${appliedFilters.view_type}_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
+  //         a.click();
+  //         URL.revokeObjectURL(url);
+  //         alert('Export completed successfully!');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error exporting data:', error);
+  //     alert('Error exporting data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleExportCSV = async () => {
     if (mainMinistryData.length === 0 && educationMinistryData.length === 0 &&
       animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
@@ -678,11 +722,35 @@ const PSDPanel = () => {
       if (response.data.success) {
         const csvData = response.data.data;
         if (csvData.length > 0) {
+          // Get headers from the first object
           const headers = Object.keys(csvData[0]);
+
+          // Create CSV rows
           const csvRows = [
-            headers.join(','),
-            ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+            headers.join(','), // Header row
+            ...csvData.map(row => headers.map(h => {
+              const value = row[h];
+
+              // Handle null, undefined, or empty values
+              if (value === null || value === undefined || value === '') {
+                return '""';
+              }
+
+              // If value is 0 (number), keep it as "0"
+              if (value === 0) {
+                return '0';
+              }
+
+              // For numeric values, format properly
+              if (typeof value === 'number') {
+                return value.toString();
+              }
+
+              // For strings, wrap in quotes and escape
+              return `"${String(value).replace(/"/g, '""')}"`;
+            }).join(','))
           ];
+
           const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(csvBlob);
           const a = document.createElement('a');
@@ -690,12 +758,17 @@ const PSDPanel = () => {
           a.download = `psd_report_${appliedFilters.view_type}_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
           a.click();
           URL.revokeObjectURL(url);
-          alert('Export completed successfully!');
+          toast.success("CSV exported successfully!");
+
+        } else {
+          toast.error("Failed to generate CSV");
         }
+      } else {
+       toast.error("Failed to generate CSV");
       }
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Error exporting data');
+      toast.error("Failed to generate CSV");
     } finally {
       setLoading(false);
     }
@@ -751,7 +824,7 @@ const PSDPanel = () => {
                   <td className="px-3 py-2 text-gray-700">{record.program}</td>
                   <td className="px-3 py-2 text-gray-700">{record.project}</td>
                   <td className="px-3 py-2 text-gray-700">{record.sub_project}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.object }</td>
+                  <td className="px-3 py-2 text-gray-700">{record.object}</td>
                   <td className="px-3 py-2 text-gray-700">{record.subject_name}</td>
                   <td className="px-3 py-2 text-right text-gray-600">Rs{formatNumber(record.debit)}</td>
                   <td className="px-3 py-2 text-right text-gray-600">Rs{formatNumber(record.other_debit)}</td>
@@ -790,7 +863,7 @@ const PSDPanel = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-800">PSDG Report</h1>
             <p className="text-sm text-gray-500 mt-1">
-               Provincial Specification Development Grant
+              Provincial Specification Development Grant
             </p>
           </div>
           {appliedFilters.year && appliedFilters.month && (
@@ -938,10 +1011,10 @@ const PSDPanel = () => {
             animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
             landMinistryData.length === 0 && mainSecretaryData.length === 0}
           className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${mainMinistryData.length > 0 || educationMinistryData.length > 0 ||
-              animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
-              landMinistryData.length > 0 || mainSecretaryData.length > 0
-              ? 'bg-red-600 text-white hover:bg-red-700'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
+            landMinistryData.length > 0 || mainSecretaryData.length > 0
+            ? 'bg-red-600 text-white hover:bg-red-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
         >
           <FileText size={16} />
@@ -953,10 +1026,10 @@ const PSDPanel = () => {
             animalMinistryData.length === 0 && agricultureMinistryData.length === 0 &&
             landMinistryData.length === 0 && mainSecretaryData.length === 0}
           className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${mainMinistryData.length > 0 || educationMinistryData.length > 0 ||
-              animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
-              landMinistryData.length > 0 || mainSecretaryData.length > 0
-              ? 'bg-green-600 text-white hover:bg-green-700'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            animalMinistryData.length > 0 || agricultureMinistryData.length > 0 ||
+            landMinistryData.length > 0 || mainSecretaryData.length > 0
+            ? 'bg-green-600 text-white hover:bg-green-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
         >
           <Download size={16} />

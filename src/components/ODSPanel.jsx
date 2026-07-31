@@ -19,6 +19,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -211,7 +212,7 @@ const ODSPanel = () => {
     }
 
     setLoading(true);
-    
+
     try {
       const doc = new jsPDF({
         orientation: 'landscape',
@@ -224,11 +225,11 @@ const ODSPanel = () => {
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.text('Other Department Surcharge Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-      
+
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
-      
+
       doc.setFontSize(9);
       doc.text(`Year: ${appliedFilters.year} | Month: ${monthNames[appliedFilters.month]}`, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
 
@@ -237,13 +238,13 @@ const ODSPanel = () => {
       ];
 
       const tableBody = records.map(record => [
-        record.trno ,
-        record.head ,
-        record.program ,
-        record.project ,
-        record.object ,
-        record.sub_project ,
-        record.sub_object ,
+        record.trno,
+        record.head,
+        record.program,
+        record.project,
+        record.object,
+        record.sub_project,
+        record.sub_object,
         formatNumber(record.surcharge_amount)
       ]);
 
@@ -282,7 +283,7 @@ const ODSPanel = () => {
         },
         alternateRowStyles: { fillColor: [245, 245, 245] },
         margin: { top: 30, left: 8, right: 8 },
-        didDrawPage: function(data) {
+        didDrawPage: function (data) {
           const pageCount = doc.internal.getNumberOfPages();
           for (let i = 1; i <= pageCount; i++) {
             doc.setPage(i);
@@ -300,16 +301,55 @@ const ODSPanel = () => {
 
       const fileName = `ods_report_${appliedFilters.year}_${monthNames[appliedFilters.month]}.pdf`;
       doc.save(fileName);
-      alert('PDF exported successfully!');
-      
+      toast.success("PDF exported successfully!");
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error("Failed to generate report");
     } finally {
       setLoading(false);
     }
   };
 
+  // const handleExportCSV = async () => {
+  //   if (records.length === 0) {
+  //     alert('No data to export');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   try {
+  //     const params = {
+  //       year: appliedFilters.year,
+  //       month: appliedFilters.month
+  //     };
+
+  //     const response = await apiClient.get('/ods/export', { params });
+
+  //     if (response.data.success) {
+  //       const csvData = response.data.data;
+  //       if (csvData.length > 0) {
+  //         const headers = Object.keys(csvData[0]);
+  //         const csvRows = [
+  //           headers.join(','),
+  //           ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+  //         ];
+  //         const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  //         const url = URL.createObjectURL(csvBlob);
+  //         const a = document.createElement('a');
+  //         a.href = url;
+  //         a.download = `ods_report_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
+  //         a.click();
+  //         URL.revokeObjectURL(url);
+  //         alert('Export completed successfully!');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error exporting data:', error);
+  //     alert('Error exporting data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleExportCSV = async () => {
     if (records.length === 0) {
       alert('No data to export');
@@ -331,8 +371,33 @@ const ODSPanel = () => {
           const headers = Object.keys(csvData[0]);
           const csvRows = [
             headers.join(','),
-            ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+            ...csvData.map(row => headers.map(h => {
+              const value = row[h];
+
+              // Handle null, undefined, or empty values
+              if (value === null || value === undefined) {
+                return '""';
+              }
+
+              // If value is 0 (number), keep it as "0"
+              if (value === 0) {
+                return '0';
+              }
+
+              // For numeric values, format properly
+              if (typeof value === 'number') {
+                // Format with 2 decimal places if it's a decimal/currency value
+                if (Number.isInteger(value)) {
+                  return value.toString();
+                }
+                return value.toFixed(2);
+              }
+
+              // For strings, wrap in quotes and escape
+              return `"${value.toString().replace(/"/g, '""')}"`;
+            }).join(','))
           ];
+
           const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(csvBlob);
           const a = document.createElement('a');
@@ -340,17 +405,16 @@ const ODSPanel = () => {
           a.download = `ods_report_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
           a.click();
           URL.revokeObjectURL(url);
-          alert('Export completed successfully!');
+          toast.success("CSV exported successfully!");
         }
       }
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Error exporting data');
+      toast.error("Failed to generate CSV");
     } finally {
       setLoading(false);
     }
   };
-
   const refreshData = () => {
     fetchFilterOptions();
     if (appliedFilters.year && appliedFilters.month) {
@@ -386,7 +450,7 @@ const ODSPanel = () => {
           {appliedFilters.year && appliedFilters.month && (
             <div className="bg-blue-50 rounded-lg px-3 py-2">
               <p className="text-sm text-blue-700">
-                <span className="font-medium">Year:</span> {appliedFilters.year} | 
+                <span className="font-medium">Year:</span> {appliedFilters.year} |
                 <span className="font-medium ml-2">Month:</span> {monthNames[appliedFilters.month]}
               </p>
             </div>
@@ -450,8 +514,8 @@ const ODSPanel = () => {
               </span>
             )}
           </div>
-          <button 
-            onClick={clearFilters} 
+          <button
+            onClick={clearFilters}
             className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
           >
             <X size={14} /> Clear All
@@ -461,39 +525,37 @@ const ODSPanel = () => {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
-        <button 
-          onClick={() => setShowFilterModal(true)} 
+        <button
+          onClick={() => setShowFilterModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
         >
           <Filter size={16} />
           <span>Filter</span>
         </button>
-        <button 
-          onClick={handleExportPDF} 
-          disabled={records.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            records.length > 0 
-              ? 'bg-red-600 text-white hover:bg-red-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+        <button
+          onClick={handleExportPDF}
+          disabled={records.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+            ? 'bg-red-600 text-white hover:bg-red-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
           <FileText size={16} />
           <span>Export PDF</span>
         </button>
-        <button 
-          onClick={handleExportCSV} 
-          disabled={records.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            records.length > 0 
-              ? 'bg-green-600 text-white hover:bg-green-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+        <button
+          onClick={handleExportCSV}
+          disabled={records.length === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+            ? 'bg-green-600 text-white hover:bg-green-700'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
           <Download size={16} />
           <span>Export CSV</span>
         </button>
-        <button 
-          onClick={refreshData} 
+        <button
+          onClick={refreshData}
           className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
         >
           <RefreshCw size={16} />
@@ -532,8 +594,8 @@ const ODSPanel = () => {
                   <td colSpan="8" className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <p>No records found for the selected filters.</p>
-                      <button 
-                        onClick={clearFilters} 
+                      <button
+                        onClick={clearFilters}
                         className="text-blue-600 hover:text-blue-800 text-sm"
                       >
                         Clear filters and try again
@@ -576,12 +638,12 @@ const ODSPanel = () => {
           <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3 bg-white">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Show</span>
-              <select 
-                value={entriesPerPage} 
-                onChange={(e) => { 
-                  setEntriesPerPage(Number(e.target.value)); 
-                  setCurrentPage(1); 
-                }} 
+              <select
+                value={entriesPerPage}
+                onChange={(e) => {
+                  setEntriesPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
                 className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value={10}>10</option>
@@ -595,9 +657,9 @@ const ODSPanel = () => {
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <button 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-                disabled={currentPage === 1} 
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
                 className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
               >
                 <ChevronLeft size={16} />
@@ -605,9 +667,9 @@ const ODSPanel = () => {
               <span className="text-sm text-gray-600">
                 Page {currentPage} of {lastPage || 1}
               </span>
-              <button 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))} 
-                disabled={currentPage === lastPage || lastPage === 0} 
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
+                disabled={currentPage === lastPage || lastPage === 0}
                 className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
               >
                 <ChevronRight size={16} />
@@ -623,8 +685,8 @@ const ODSPanel = () => {
           <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Filter Report</h3>
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
                 <X size={20} />
@@ -681,14 +743,14 @@ const ODSPanel = () => {
             </div>
 
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-              <button 
-                onClick={() => setShowFilterModal(false)} 
+              <button
+                onClick={() => setShowFilterModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
-              <button 
-                onClick={applyFilters} 
+              <button
+                onClick={applyFilters}
                 disabled={!filters.year || !filters.month}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
