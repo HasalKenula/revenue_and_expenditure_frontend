@@ -1274,38 +1274,77 @@ const NetRevenuePanel = () => {
 };
 
   // Export CSV
+  // const handleExportCSV = async () => {
+  //   if (records.length === 0) {
+  //     alert('No data to export');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   try {
+  //     const params = {
+  //       year: appliedFilters.year,
+  //       month: appliedFilters.month
+  //     };
+
+  //     const response = await apiClient.get('/net-revenue/export-csv', { params });
+
+  //     if (response.status === 200) {
+  //       const blob = new Blob([response.data], { type: 'text/csv' });
+  //       const url = window.URL.createObjectURL(blob);
+  //       const a = document.createElement('a');
+  //       a.href = url;
+  //       a.download = `net_revenue_${appliedFilters.year}_${appliedFilters.month}.csv`;
+  //       a.click();
+  //       window.URL.revokeObjectURL(url);
+  //       alert('CSV exported successfully!');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error exporting CSV:', error);
+  //     alert('Failed to export CSV: ' + (error.response?.data?.message || error.message));
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleExportCSV = async () => {
-    if (records.length === 0) {
-      alert('No data to export');
-      return;
+  if (records.length === 0) {
+    alert('No data to export');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const params = {
+      year: appliedFilters.year,
+      month: appliedFilters.month
+    };
+
+    const response = await apiClient.get('/net-revenue/export-csv', { 
+      params,
+      responseType: 'blob'
+    });
+
+    if (response.status === 200) {
+      // Create download link
+      const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const monthName = monthNames[appliedFilters.month] || appliedFilters.month;
+      a.download = `net_revenue_${appliedFilters.year}_${monthName}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      alert('CSV exported successfully!');
     }
-
-    setLoading(true);
-    try {
-      const params = {
-        year: appliedFilters.year,
-        month: appliedFilters.month
-      };
-
-      const response = await apiClient.get('/net-revenue/export-csv', { params });
-
-      if (response.status === 200) {
-        const blob = new Blob([response.data], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `net_revenue_${appliedFilters.year}_${appliedFilters.month}.csv`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-        alert('CSV exported successfully!');
-      }
-    } catch (error) {
-      console.error('Error exporting CSV:', error);
-      alert('Failed to export CSV: ' + (error.response?.data?.message || error.message));
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (error) {
+    console.error('Error exporting CSV:', error);
+    alert('Failed to export CSV: ' + (error.response?.data?.message || error.message));
+  } finally {
+    setLoading(false);
+  }
+};
 
   const refreshData = () => {
     fetchFilterOptions();

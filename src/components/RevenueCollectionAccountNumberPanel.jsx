@@ -661,6 +661,45 @@ const RevenueCollectionAccountNumber = () => {
     }
   };
   // Export CSV
+  // const handleExportCSV = async () => {
+  //   if (records.length === 0) {
+  //     alert('No data to export');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   try {
+  //     const params = {
+  //       year: appliedFilters.year
+  //     };
+
+  //     const response = await apiClient.get('/revenue-collection-account-number/export', { params });
+
+  //     if (response.data.success) {
+  //       const csvData = response.data.data;
+  //       if (csvData.length > 0) {
+  //         const headers = Object.keys(csvData[0]);
+  //         const csvRows = [
+  //           headers.join(','),
+  //           ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+  //         ];
+  //         const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  //         const url = URL.createObjectURL(csvBlob);
+  //         const a = document.createElement('a');
+  //         a.href = url;
+  //         a.download = `revenue_collection_account_number_${appliedFilters.year}.csv`;
+  //         a.click();
+  //         URL.revokeObjectURL(url);
+  //         alert('Export completed successfully!');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error exporting data:', error);
+  //     alert('Error exporting data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleExportCSV = async () => {
     if (records.length === 0) {
       alert('No data to export');
@@ -677,13 +716,39 @@ const RevenueCollectionAccountNumber = () => {
 
       if (response.data.success) {
         const csvData = response.data.data;
-        if (csvData.length > 0) {
+        if (csvData && csvData.length > 0) {
           const headers = Object.keys(csvData[0]);
           const csvRows = [
             headers.join(','),
-            ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+            ...csvData.map(row => headers.map(h => {
+              const value = row[h];
+
+              // Handle null, undefined, or empty values
+              if (value === null || value === undefined || value === '') {
+                return '""';
+              }
+
+              // If value is 0 (number), keep it as "0"
+              if (value === 0) {
+                return '0';
+              }
+
+              // For numeric values, format properly
+              if (typeof value === 'number') {
+                if (Number.isInteger(value)) {
+                  return value.toString();
+                }
+                return value.toFixed(2);
+              }
+
+              // For strings, wrap in quotes and escape
+              return `"${String(value).replace(/"/g, '""')}"`;
+            }).join(','))
           ];
-          const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+
+          const csvBlob = new Blob([csvRows.join('\n')], {
+            type: 'text/csv;charset=utf-8;'
+          });
           const url = URL.createObjectURL(csvBlob);
           const a = document.createElement('a');
           a.href = url;
@@ -691,11 +756,15 @@ const RevenueCollectionAccountNumber = () => {
           a.click();
           URL.revokeObjectURL(url);
           alert('Export completed successfully!');
+        } else {
+          alert('No data received from server');
         }
+      } else {
+        alert('Export failed: ' + (response.data.message || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Error exporting data');
+      alert('Error exporting data: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
