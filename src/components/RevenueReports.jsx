@@ -51,7 +51,6 @@ const RevenueReports = () => {
         { id: 'net_revenue', name: 'Net Revenue', path: '/net_revenue', icon: FileText },
         { id: 'quarter-revenue-report', name: 'Quarter Revenue Report', path: '/quarter_revenue', icon: FileText },
         { id: 'monthly_revenue-report', name: 'Mothly Revenue Report', path: '/monthly_revenue', icon: FileSpreadsheet },
-        { id: 'monthly_summery_revenue-report', name: 'Mothly summery Revenue Report', path: '/monthly_summery_revenue', icon: FileText },
         { id: 'tax_revenue-report', name: 'Tax Revenue Report', path: '/tax_revenue', icon: FileSpreadsheet },
         { id: 'non_tax_revenue', name: 'Non Tax Revenue Report', path: '/non_tax_revenue', icon: FileText },
         { id: 'revenue_collection', name: 'Revenue Collection', path: '/revenue_collection', icon: FileSpreadsheet },
@@ -59,7 +58,10 @@ const RevenueReports = () => {
         { id: 'revenue_refundAccount', name: 'Revenue Refund', path: '/revenue_refundAccount', icon: FileText },
         { id: 'revenue_crossByHead', name: 'Revenue Cross EntryBy Head', path: '/revenue_crossByHead', icon: FileSpreadsheet },
         { id: 'revenue_refundByHead', name: 'Revenue Refund EntryBy Head', path: '/revenue_refundByHead', icon: FileText },
-        
+        { id: 'revenue-collection-account-number', name: 'Revenue Collection by Account', path: '/revenue-collection-account-number', icon: FileText },
+        { id: 'revenue-receipts-in-cash', name: 'Revenue Receipts In Cash', path: '/revenue-receipts-in-cash', icon: FileSpreadsheet },
+
+
       ]
     },
     {
@@ -74,7 +76,7 @@ const RevenueReports = () => {
       reports: [
         // { id: 'psdg-report', name: 'PSDG Report', path: '/psd', icon: FileText },
         // { id: 'cbg-report', name: 'CBG Report', path: '/cbg', icon: FileSpreadsheet },
-       
+
       ]
     },
     {
@@ -87,7 +89,8 @@ const RevenueReports = () => {
       textColor: 'text-purple-600',
       description: 'View summary and consolidated reports',
       reports: [
-    //    { id: 'journal-summary', name: 'Journal Summary', path: '/journal', icon: FileText },
+        { id: 'monthly_summery_revenue-report', name: 'Mothly summery Revenue Report', path: '/monthly_summery_revenue', icon: FileText },
+        { id: 'revenue-receipts-in-cash-summary', name: 'Revenue Receipts In Cash Summary', path: '/revenue-receipts-in-cash-summary', icon: FileText },
       ]
     },
     {
@@ -138,32 +141,32 @@ const RevenueReports = () => {
 
   // Statistics Cards
   const stats = [
-    { 
-      label: 'Total Reports', 
-      value: getAllReports().length, 
-      icon: FileText, 
-      color: 'blue',
+    {
+      label: 'Total Reports',
+      value: getAllReports().length,
+      icon: FileText,
+      color: 'orange',
       change: '+2 this month'
     },
-    { 
-      label: 'Monthly Reports', 
-      value: categories.find(c => c.id === 'monthly')?.reports.length || 0, 
-      icon: Calendar, 
-      color: 'green',
+    {
+      label: 'Monthly Reports',
+      value: categories.find(c => c.id === 'monthly')?.reports.length || 0,
+      icon: Calendar,
+      color: 'blue',
       change: '5 active'
     },
-    { 
-      label: 'Department Reports', 
-      value: categories.find(c => c.id === 'department')?.reports.length || 0, 
-      icon: Building2, 
-      color: 'purple',
+    {
+      label: 'Department Reports',
+      value: categories.find(c => c.id === 'department')?.reports.length || 0,
+      icon: Building2,
+      color: 'green',
       change: '6 ministries'
     },
-    { 
-      label: 'Summary Reports', 
-      value: categories.find(c => c.id === 'summary')?.reports.length || 0, 
-      icon: BarChart3, 
-      color: 'orange',
+    {
+      label: 'Summary Reports',
+      value: categories.find(c => c.id === 'summary')?.reports.length || 0,
+      icon: BarChart3,
+      color: 'purple',
       change: '4 reports'
     }
   ];
@@ -195,16 +198,6 @@ const RevenueReports = () => {
               Access and manage all financial reports from one central location
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
-              <Download size={16} />
-              Export All
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
-              <Printer size={16} />
-              Print
-            </button>
-          </div>
         </div>
       </div>
 
@@ -214,7 +207,7 @@ const RevenueReports = () => {
           const Icon = stat.icon;
           const colorClass = getColorClasses(stat.color);
           return (
-            <div 
+            <div
               key={index}
               className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition"
             >
@@ -243,17 +236,15 @@ const RevenueReports = () => {
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition text-sm ${
-                isActive
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition text-sm ${isActive
                   ? `${colorClass.bg} ${colorClass.border} ${colorClass.text} border-2`
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
+                }`}
             >
               <Icon size={16} />
               <span>{category.name}</span>
-              <span className={`ml-1 text-xs px-2 py-0.5 rounded-full ${
-                isActive ? `${colorClass.bg} ${colorClass.text}` : 'bg-gray-100 text-gray-500'
-              }`}>
+              <span className={`ml-1 text-xs px-2 py-0.5 rounded-full ${isActive ? `${colorClass.bg} ${colorClass.text}` : 'bg-gray-100 text-gray-500'
+                }`}>
                 {category.id === 'all' ? getAllReports().length : category.reports.length}
               </span>
             </button>
@@ -286,9 +277,8 @@ const RevenueReports = () => {
             return (
               <div
                 key={index}
-                className={`bg-white rounded-xl border border-gray-200 p-5 shadow-sm transition-all cursor-pointer ${
-                  isHovered ? 'shadow-md transform -translate-y-1' : ''
-                }`}
+                className={`bg-white rounded-xl border border-gray-200 p-5 shadow-sm transition-all cursor-pointer ${isHovered ? 'shadow-md transform -translate-y-1' : ''
+                  }`}
                 onMouseEnter={() => setHoveredCard(report.id)}
                 onMouseLeave={() => setHoveredCard(null)}
                 onClick={() => handleReportClick(report.path)}

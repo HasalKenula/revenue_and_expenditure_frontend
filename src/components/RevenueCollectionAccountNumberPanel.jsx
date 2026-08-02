@@ -14,6 +14,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -159,7 +160,7 @@ const RevenueCollectionAccountNumber = () => {
     } catch (error) {
       console.error('Error fetching records:', error);
       if (error.response?.status !== 401) {
-        alert('Failed to fetch records: ' + (error.response?.data?.message || error.message));
+        toast.error('Failed to fetch records: ' + (error.response?.data?.message || error.message));
       }
     } finally {
       setLoading(false);
@@ -201,7 +202,7 @@ const RevenueCollectionAccountNumber = () => {
 
   const applyFilters = () => {
     if (!filters.year) {
-      alert('Please select a Year');
+      toast.error('Please select a Year');
       return;
     }
     setAppliedFilters({ ...filters });
@@ -223,226 +224,9 @@ const RevenueCollectionAccountNumber = () => {
   };
 
   // Generate PDF Report with Two Tables (New Page for Second Table)
-  // const handleExportPDF = () => {
-  //   if (records.length === 0) {
-  //     alert('No data to export');
-  //     return;
-  //   }
-
-  //   setLoading(true);
-
-  //   try {
-  //     // Create PDF in landscape orientation (A4)
-  //     const doc = new jsPDF({
-  //       orientation: 'landscape',
-  //       unit: 'mm',
-  //       format: 'a4'
-  //     });
-
-  //     // Get current date
-  //     const currentDate = new Date().toLocaleString();
-
-  //     // ==================== PAGE 1: FIRST TABLE (Jan to Jun) ====================
-  //     // Add Header
-  //     doc.setFontSize(16);
-  //     doc.setFont('helvetica', 'bold');
-  //     doc.text('Revenue Collection by Account Number', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-
-  //     doc.setFontSize(10);
-  //     doc.setFont('helvetica', 'normal');
-  //     doc.text(`Year: ${appliedFilters.year}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
-  //     doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
-
-  //     // First Table: Jan to Jun (Months 1-6)
-  //     const firstTableHeaders = ['Account Number', 'Revenue Code', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-  //     const firstMonthKeys = ['1', '2', '3', '4', '5', '6'];
-
-  //     const firstTableData = records.map(record => {
-  //       const row = [
-  //         record.account_number,
-  //         record.revenue_code || '-'
-  //       ];
-  //       firstMonthKeys.forEach(monthNum => {
-  //         const amount = record.monthly_totals[monthNum] || 0;
-  //         row.push(formatNumber(amount));
-  //       });
-  //       return row;
-  //     });
-
-  //     // Add grand total row for first table
-  //     const firstGrandTotalRow = ['GRAND TOTAL', ''];
-  //     let firstOverallTotal = 0;
-  //     firstMonthKeys.forEach(monthNum => {
-  //       const amount = grandTotals[monthNum] || 0;
-  //       firstOverallTotal += amount;
-  //       firstGrandTotalRow.push(formatNumber(amount));
-  //     });
-  //     firstTableData.push(firstGrandTotalRow);
-
-  //     // Generate first table
-  //     autoTable(doc, {
-  //       head: [firstTableHeaders],
-  //       body: firstTableData,
-  //       startY: 37,
-  //       theme: 'grid',
-  //       headStyles: {
-  //         fillColor: [41, 128, 185],
-  //         textColor: [255, 255, 255],
-  //         fontSize: 9,
-  //         fontStyle: 'bold',
-  //         halign: 'center',
-  //         cellPadding: 2
-  //       },
-  //       bodyStyles: {
-  //         fontSize: 8,
-  //         cellPadding: 2,
-  //         fontStyle: 'normal',
-  //         textColor: [0, 0, 0],
-  //       },
-  //       columnStyles: {
-  //         0: { cellWidth: 40, halign: 'left' },
-  //         1: { cellWidth: 70, halign: 'left' },
-  //         2: { cellWidth: 30, halign: 'right' },
-  //         3: { cellWidth: 30, halign: 'right' },
-  //         4: { cellWidth: 30, halign: 'right' },
-  //         5: { cellWidth: 30, halign: 'right' },
-  //         6: { cellWidth: 30, halign: 'right' },
-  //         7: { cellWidth: 30, halign: 'right' }
-  //       },
-  //       alternateRowStyles: { fillColor: [245, 245, 245] },
-  //       margin: { top: 37, left: 3.5, right: 3.5 },
-  //       tableWidth: 290,
-  //       rowStyles: {
-  //         [firstTableData.length - 1]: {
-  //           fontStyle: 'bold',
-  //           fillColor: [44, 62, 80],
-  //           textColor: [255, 255, 255],
-  //           fontSize: 9
-  //         }
-  //       }
-  //     });
-
-  //     // ==================== PAGE 2: SECOND TABLE (Jul to Dec with Total) ====================
-  //     // Add a new page
-  //     doc.addPage();
-
-  //     // Add Header for second page
-  //     doc.setFontSize(16);
-  //     doc.setFont('helvetica', 'bold');
-  //     doc.text('Revenue Collection by Account Number (Continued)', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-
-  //     doc.setFontSize(10);
-  //     doc.setFont('helvetica', 'normal');
-  //     doc.text(`Year: ${appliedFilters.year}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
-  //     doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
-
-  //     // Second Table: Jul to Dec (Months 7-12) + Total
-  //     const secondTableHeaders = ['Account Number', 'Revenue Code', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total'];
-  //     const secondMonthKeys = ['7', '8', '9', '10', '11', '12'];
-
-  //     const secondTableData = records.map(record => {
-  //       const row = [
-  //         record.account_number,
-  //         record.revenue_code || '-'
-  //       ];
-  //       let total = 0;
-  //       secondMonthKeys.forEach(monthNum => {
-  //         const amount = record.monthly_totals[monthNum] || 0;
-  //         total += amount;
-  //         row.push(formatNumber(amount));
-  //       });
-  //       row.push(formatNumber(total));
-  //       return row;
-  //     });
-
-  //     // Add grand total row for second table
-  //     const secondGrandTotalRow = ['GRAND TOTAL', ''];
-  //     let secondOverallTotal = 0;
-  //     secondMonthKeys.forEach(monthNum => {
-  //       const amount = grandTotals[monthNum] || 0;
-  //       secondOverallTotal += amount;
-  //       secondGrandTotalRow.push(formatNumber(amount));
-  //     });
-  //     // Add total of Jul-Dec
-  //     const totalJulDec = secondMonthKeys.reduce((sum, monthNum) => sum + (grandTotals[monthNum] || 0), 0);
-  //     secondGrandTotalRow.push(formatNumber(totalJulDec));
-  //     secondTableData.push(secondGrandTotalRow);
-
-  //     // Generate second table on new page
-  //     autoTable(doc, {
-  //       head: [secondTableHeaders],
-  //       body: secondTableData,
-  //       startY: 37,
-  //       theme: 'grid',
-  //       headStyles: {
-  //         fillColor: [41, 128, 185],
-  //         textColor: [255, 255, 255],
-  //         fontSize: 9,
-  //         fontStyle: 'bold',
-  //         halign: 'center',
-  //         cellPadding: 2
-  //       },
-  //       bodyStyles: {
-  //         fontSize: 8,
-  //         cellPadding: 2,
-  //         fontStyle: 'normal',
-  //         textColor: [0, 0, 0],
-  //       },
-  //       columnStyles: {
-  //         0: { cellWidth: 36, halign: 'left' },
-  //         1: { cellWidth: 58, halign: 'left' },
-  //         2: { cellWidth: 28, halign: 'right' },
-  //         3: { cellWidth: 28, halign: 'right' },
-  //         4: { cellWidth: 28, halign: 'right' },
-  //         5: { cellWidth: 28, halign: 'right' },
-  //         6: { cellWidth: 28, halign: 'right' },
-  //         7: { cellWidth: 28, halign: 'right' },
-  //         8: { cellWidth: 28, halign: 'right', fontStyle: 'bold' }
-  //       },
-  //       alternateRowStyles: { fillColor: [245, 245, 245] },
-  //       margin: { top: 37, left: 3.5, right: 3.5 },
-  //       tableWidth: 290,
-  //       rowStyles: {
-  //         [secondTableData.length - 1]: {
-  //           fontStyle: 'bold',
-  //           fillColor: [44, 62, 80],
-  //           textColor: [255, 255, 255],
-  //           fontSize: 9
-  //         }
-  //       }
-  //     });
-
-  //     // Add footer to all pages
-  //     const pageCount = doc.internal.getNumberOfPages();
-  //     for (let i = 1; i <= pageCount; i++) {
-  //       doc.setPage(i);
-  //       doc.setFontSize(8);
-  //       doc.setTextColor(128, 128, 128);
-  //       doc.text(
-  //         `Page ${i} of ${pageCount}`,
-  //         doc.internal.pageSize.getWidth() / 2,
-  //         doc.internal.pageSize.getHeight() - 10,
-  //         { align: 'center' }
-  //       );
-  //     }
-
-  //     // Save PDF
-  //     doc.save(`revenue_collection_account_number_${appliedFilters.year}.pdf`);
-  //     alert('PDF exported successfully!');
-
-  //   } catch (error) {
-  //     console.error('Error generating PDF:', error);
-  //     alert('Failed to generate PDF: ' + error.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-
-  // Generate PDF Report with Two Tables (New Page for Second Table)
   const handleExportPDF = () => {
     if (records.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -651,58 +435,20 @@ const RevenueCollectionAccountNumber = () => {
 
       // Save PDF
       doc.save(`revenue_collection_account_number_${appliedFilters.year}.pdf`);
-      alert('PDF exported successfully!');
+      toast.success('PDF exported successfully!');
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error('Failed to generate PDF: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
+
   // Export CSV
-  // const handleExportCSV = async () => {
-  //   if (records.length === 0) {
-  //     alert('No data to export');
-  //     return;
-  //   }
-
-  //   setLoading(true);
-  //   try {
-  //     const params = {
-  //       year: appliedFilters.year
-  //     };
-
-  //     const response = await apiClient.get('/revenue-collection-account-number/export', { params });
-
-  //     if (response.data.success) {
-  //       const csvData = response.data.data;
-  //       if (csvData.length > 0) {
-  //         const headers = Object.keys(csvData[0]);
-  //         const csvRows = [
-  //           headers.join(','),
-  //           ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
-  //         ];
-  //         const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-  //         const url = URL.createObjectURL(csvBlob);
-  //         const a = document.createElement('a');
-  //         a.href = url;
-  //         a.download = `revenue_collection_account_number_${appliedFilters.year}.csv`;
-  //         a.click();
-  //         URL.revokeObjectURL(url);
-  //         alert('Export completed successfully!');
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('Error exporting data:', error);
-  //     alert('Error exporting data');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const handleExportCSV = async () => {
     if (records.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -755,16 +501,16 @@ const RevenueCollectionAccountNumber = () => {
           a.download = `revenue_collection_account_number_${appliedFilters.year}.csv`;
           a.click();
           URL.revokeObjectURL(url);
-          alert('Export completed successfully!');
+          toast.success('Export completed successfully!');
         } else {
-          alert('No data received from server');
+          toast.error('No data received from server');
         }
       } else {
-        alert('Export failed: ' + (response.data.message || 'Unknown error'));
+        toast.error('Export failed: ' + (response.data.message || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Error exporting data: ' + (error.response?.data?.message || error.message));
+      toast.error('Error exporting data: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -787,335 +533,339 @@ const RevenueCollectionAccountNumber = () => {
   const monthKeys = Object.keys(monthShort);
 
   return (
-    <div className="space-y-6">
+
+    <>
       {/* Loading Overlay */}
       {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6">
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 shadow-xl">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading...</p>
           </div>
         </div>
       )}
 
-      {/* Page Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Revenue Collection by Account Number</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              View revenue collection data grouped by account number with monthly breakdown
-            </p>
-            {appliedFilters.year && (
-              <p className="text-sm text-blue-600 mt-1">
-                Showing {accountsWithData} record(s) with revenue data for {appliedFilters.year}
+      <div className="space-y-6">
+
+        {/* Page Header */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">Revenue Collection by Account Number</h1>
+              <p className="text-sm text-gray-500 mt-1">
+                View revenue collection data grouped by account number with monthly breakdown
               </p>
+              {appliedFilters.year && (
+                <p className="text-sm text-blue-600 mt-1">
+                  Showing {accountsWithData} record(s) with revenue data for {appliedFilters.year}
+                </p>
+              )}
+            </div>
+            {appliedFilters.year && (
+              <div className="bg-blue-50 rounded-lg px-3 py-2">
+                <p className="text-sm text-blue-700">
+                  <span className="font-medium">Year:</span> {appliedFilters.year}
+                </p>
+              </div>
             )}
           </div>
-          {appliedFilters.year && (
-            <div className="bg-blue-50 rounded-lg px-3 py-2">
-              <p className="text-sm text-blue-700">
-                <span className="font-medium">Year:</span> {appliedFilters.year}
-              </p>
+        </div>
+
+        {/* Summary Cards */}
+        {appliedFilters.year && records.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
+              <p className="text-sm opacity-90">Total Records</p>
+              <p className="text-xl font-bold mt-1">{records.length}</p>
+            </div>
+            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
+              <p className="text-sm opacity-90">Total Revenue</p>
+              <p className="text-xl font-bold mt-1">Rs{formatNumber(grandTotalOverall)}</p>
+            </div>
+            <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
+              <p className="text-sm opacity-90">Total Months</p>
+              <p className="text-xl font-bold mt-1">12</p>
+            </div>
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white shadow-lg">
+              <p className="text-sm opacity-90">Average per Record</p>
+              <p className="text-xl font-bold mt-1">Rs{records.length > 0 ? formatNumber(grandTotalOverall / records.length) : '0.00'}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Active Filters Display */}
+        {appliedFilters.year && (
+          <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium text-blue-700">Applied Filters:</span>
+              {appliedFilters.year && (
+                <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
+                  <Calendar size={12} className="mr-1" />
+                  Year: {appliedFilters.year}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={clearFilters}
+              className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
+            >
+              <X size={14} /> Clear All
+            </button>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={() => setShowFilterModal(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
+          >
+            <Filter size={16} />
+            <span>Filter</span>
+          </button>
+          <button
+            onClick={handleExportPDF}
+            disabled={records.length === 0}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+              ? 'bg-red-600 text-white hover:bg-red-700'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+          >
+            <FileText size={16} />
+            <span>Export PDF (A3)</span>
+          </button>
+          <button
+            onClick={handleExportCSV}
+            disabled={records.length === 0}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+              ? 'bg-green-600 text-white hover:bg-green-700'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+          >
+            <Download size={16} />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={refreshData}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
+            disabled={!appliedFilters.year}
+          >
+            <RefreshCw size={16} />
+            <span>Refresh</span>
+          </button>
+        </div>
+
+        {/* Records Table */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 sticky left-0 bg-gray-50 min-w-[150px]">
+                    Account Number
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[200px]">
+                    Revenue Code
+                  </th>
+                  {monthKeys.map((monthNum) => (
+                    <th key={monthNum} className="px-3 py-3 text-right font-semibold text-gray-700 min-w-[80px]">
+                      {monthShort[monthNum]}
+                    </th>
+                  ))}
+                  <th className="px-4 py-3 text-right font-semibold  min-w-[100px]">
+                    Total
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {!appliedFilters.year ? (
+                  <tr>
+                    <td colSpan={monthKeys.length + 3} className="text-center py-12 text-gray-500">
+                      <div className="flex flex-col items-center gap-2">
+                        <Filter size={40} className="text-gray-300" />
+                        <p>Please select a Year to view data</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : paginatedRecords.length === 0 ? (
+                  <tr>
+                    <td colSpan={monthKeys.length + 3} className="text-center py-12 text-gray-500">
+                      <div className="flex flex-col items-center gap-2">
+                        <p>No records found for the selected year.</p>
+                        <button
+                          onClick={clearFilters}
+                          className="text-blue-600 hover:text-blue-800 text-sm"
+                        >
+                          Clear filters and try again
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedRecords.map((record, index) => {
+                    let total = 0;
+                    monthKeys.forEach(monthNum => {
+                      total += record.monthly_totals[monthNum] || 0;
+                    });
+
+                    return (
+                      <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td className="px-4 py-3 font-medium text-blue-700 sticky left-0 bg-white hover:bg-gray-50 whitespace-nowrap">
+                          {record.account_number}
+                        </td>
+                        <td className="px-4 py-3 text-gray-600 text-sm">
+                          {record.revenue_code || '-'}
+                        </td>
+                        {monthKeys.map((monthNum) => (
+                          <td key={monthNum} className="px-3 py-3 text-right">
+                            {formatNumber(record.monthly_totals[monthNum] || 0)}
+                          </td>
+                        ))}
+                        <td className="px-4 py-3 text-right font-bold">
+                          {formatNumber(total)}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+              {paginatedRecords.length > 0 && (
+                <tfoot className=" border-t border-gray-700">
+                  <tr>
+                    <td className="px-4 py-3 text-right font-bold " colSpan="2">
+                      GRAND TOTAL
+                    </td>
+                    {monthKeys.map((monthNum) => (
+                      <td key={monthNum} className="px-3 py-3 text-right font-bold  ">
+                        {formatNumber(grandTotals[monthNum] || 0)}
+                      </td>
+                    ))}
+                    <td className="px-4 py-3 text-right font-bold">
+                      {formatNumber(grandTotalOverall)}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {records.length > 0 && (
+            <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3 bg-white">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">Show</span>
+                <select
+                  value={entriesPerPage}
+                  onChange={(e) => {
+                    setEntriesPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <span className="text-sm text-gray-600">entries</span>
+                <span className="text-sm text-gray-500 ml-2">
+                  Showing {(currentPage - 1) * entriesPerPage + 1} to {Math.min(currentPage * entriesPerPage, totalRecords)} of {totalRecords}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <span className="text-sm text-gray-600">
+                  Page {currentPage} of {lastPage || 1}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
+                  disabled={currentPage === lastPage || lastPage === 0}
+                  className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
             </div>
           )}
         </div>
-      </div>
 
-      {/* Summary Cards */}
-      {appliedFilters.year && records.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Total Records</p>
-            <p className="text-xl font-bold mt-1">{records.length}</p>
-          </div>
-          <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Total Revenue</p>
-            <p className="text-xl font-bold mt-1">Rs{formatNumber(grandTotalOverall)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Total Months</p>
-            <p className="text-xl font-bold mt-1">12</p>
-          </div>
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Average per Record</p>
-            <p className="text-xl font-bold mt-1">Rs{records.length > 0 ? formatNumber(grandTotalOverall / records.length) : '0.00'}</p>
-          </div>
-        </div>
-      )}
+        {/* Filter Modal */}
+        {showFilterModal && (
+          <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Filter Report</h3>
+                <button
+                  onClick={() => setShowFilterModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition"
+                >
+                  <X size={20} />
+                </button>
+              </div>
 
-      {/* Active Filters Display */}
-      {appliedFilters.year && (
-        <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium text-blue-700">Applied Filters:</span>
-            {appliedFilters.year && (
-              <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
-                <Calendar size={12} className="mr-1" />
-                Year: {appliedFilters.year}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={clearFilters}
-            className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
-          >
-            <X size={14} /> Clear All
-          </button>
-        </div>
-      )}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Year <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="year"
+                    value={filters.year}
+                    onChange={handleFilterChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select Year</option>
+                    {filterOptions.years.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Filters data based on created_at year
+                  </p>
+                </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={() => setShowFilterModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
-        >
-          <Filter size={16} />
-          <span>Filter</span>
-        </button>
-        <button
-          onClick={handleExportPDF}
-          disabled={records.length === 0}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
-            ? 'bg-red-600 text-white hover:bg-red-700'
-            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-        >
-          <FileText size={16} />
-          <span>Export PDF (A3)</span>
-        </button>
-        <button
-          onClick={handleExportCSV}
-          disabled={records.length === 0}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
-            ? 'bg-green-600 text-white hover:bg-green-700'
-            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-        >
-          <Download size={16} />
-          <span>Export CSV</span>
-        </button>
-        <button
-          onClick={refreshData}
-          className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
-          disabled={!appliedFilters.year}
-        >
-          <RefreshCw size={16} />
-          <span>Refresh</span>
-        </button>
-      </div>
+                <div className="bg-blue-50 rounded-lg p-3">
+                  <p className="text-xs text-blue-700">
+                    <strong>Report:</strong> Revenue Collection by Account Number
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    <strong>Columns:</strong> Account Number, Revenue Code (head-project-object), 12 Months (Jan-Dec), Total
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    <strong>Revenue Code Format:</strong> Head (4 digits) - Project (2 digits) - Object (3 digits)
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    <strong>Note:</strong> Each revenue code is displayed as a separate row
+                  </p>
+                </div>
+              </div>
 
-      {/* Records Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700 sticky left-0 bg-gray-50 min-w-[150px]">
-                  Account Number
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[200px]">
-                  Revenue Code
-                </th>
-                {monthKeys.map((monthNum) => (
-                  <th key={monthNum} className="px-3 py-3 text-right font-semibold text-gray-700 min-w-[80px]">
-                    {monthShort[monthNum]}
-                  </th>
-                ))}
-                <th className="px-4 py-3 text-right font-semibold  min-w-[100px]">
-                  Total
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {!appliedFilters.year ? (
-                <tr>
-                  <td colSpan={monthKeys.length + 3} className="text-center py-12 text-gray-500">
-                    <div className="flex flex-col items-center gap-2">
-                      <Filter size={40} className="text-gray-300" />
-                      <p>Please select a Year to view data</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : paginatedRecords.length === 0 ? (
-                <tr>
-                  <td colSpan={monthKeys.length + 3} className="text-center py-12 text-gray-500">
-                    <div className="flex flex-col items-center gap-2">
-                      <p>No records found for the selected year.</p>
-                      <button
-                        onClick={clearFilters}
-                        className="text-blue-600 hover:text-blue-800 text-sm"
-                      >
-                        Clear filters and try again
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                paginatedRecords.map((record, index) => {
-                  let total = 0;
-                  monthKeys.forEach(monthNum => {
-                    total += record.monthly_totals[monthNum] || 0;
-                  });
-
-                  return (
-                    <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                      <td className="px-4 py-3 font-medium text-blue-700 sticky left-0 bg-white hover:bg-gray-50 whitespace-nowrap">
-                        {record.account_number}
-                      </td>
-                      <td className="px-4 py-3 text-gray-600 text-sm">
-                        {record.revenue_code || '-'}
-                      </td>
-                      {monthKeys.map((monthNum) => (
-                        <td key={monthNum} className="px-3 py-3 text-right">
-                          {formatNumber(record.monthly_totals[monthNum] || 0)}
-                        </td>
-                      ))}
-                      <td className="px-4 py-3 text-right font-bold">
-                        {formatNumber(total)}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-            {paginatedRecords.length > 0 && (
-              <tfoot className=" border-t border-gray-700">
-                <tr>
-                  <td className="px-4 py-3 text-right font-bold " colSpan="2">
-                    GRAND TOTAL
-                  </td>
-                  {monthKeys.map((monthNum) => (
-                    <td key={monthNum} className="px-3 py-3 text-right font-bold  ">
-                      {formatNumber(grandTotals[monthNum] || 0)}
-                    </td>
-                  ))}
-                  <td className="px-4 py-3 text-right font-bold">
-                    {formatNumber(grandTotalOverall)}
-                  </td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {records.length > 0 && (
-          <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3 bg-white">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Show</span>
-              <select
-                value={entriesPerPage}
-                onChange={(e) => {
-                  setEntriesPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-              <span className="text-sm text-gray-600">entries</span>
-              <span className="text-sm text-gray-500 ml-2">
-                Showing {(currentPage - 1) * entriesPerPage + 1} to {Math.min(currentPage * entriesPerPage, totalRecords)} of {totalRecords}
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <span className="text-sm text-gray-600">
-                Page {currentPage} of {lastPage || 1}
-              </span>
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
-                disabled={currentPage === lastPage || lastPage === 0}
-                className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
-              >
-                <ChevronRight size={16} />
-              </button>
+              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
+                <button
+                  onClick={() => setShowFilterModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={applyFilters}
+                  disabled={!filters.year}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Apply Filters
+                </button>
+              </div>
             </div>
           </div>
         )}
       </div>
-
-      {/* Filter Modal */}
-      {showFilterModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Filter Report</h3>
-              <button
-                onClick={() => setShowFilterModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Year <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="year"
-                  value={filters.year}
-                  onChange={handleFilterChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select Year</option>
-                  {filterOptions.years.map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  Filters data based on created_at year
-                </p>
-              </div>
-
-              <div className="bg-blue-50 rounded-lg p-3">
-                <p className="text-xs text-blue-700">
-                  <strong>Report:</strong> Revenue Collection by Account Number
-                </p>
-                <p className="text-xs text-blue-700 mt-1">
-                  <strong>Columns:</strong> Account Number, Revenue Code (head-project-object), 12 Months (Jan-Dec), Total
-                </p>
-                <p className="text-xs text-blue-700 mt-1">
-                  <strong>Revenue Code Format:</strong> Head (4 digits) - Project (2 digits) - Object (3 digits)
-                </p>
-                <p className="text-xs text-blue-700 mt-1">
-                  <strong>Note:</strong> Each revenue code is displayed as a separate row
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-              <button
-                onClick={() => setShowFilterModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={applyFilters}
-                disabled={!filters.year}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
