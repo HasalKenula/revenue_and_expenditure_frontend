@@ -146,28 +146,28 @@ const RevenueReports = () => {
       value: getAllReports().length,
       icon: FileText,
       color: 'orange',
-      change: '+2 this month'
+      change: ''
     },
     {
       label: 'Monthly Reports',
       value: categories.find(c => c.id === 'monthly')?.reports.length || 0,
       icon: Calendar,
       color: 'blue',
-      change: '5 active'
+      change: ''
     },
     {
       label: 'Department Reports',
       value: categories.find(c => c.id === 'department')?.reports.length || 0,
       icon: Building2,
       color: 'green',
-      change: '6 ministries'
+      change: ''
     },
     {
       label: 'Summary Reports',
       value: categories.find(c => c.id === 'summary')?.reports.length || 0,
       icon: BarChart3,
       color: 'purple',
-      change: '4 reports'
+      change: ''
     }
   ];
 

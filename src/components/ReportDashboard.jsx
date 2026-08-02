@@ -54,7 +54,6 @@ const ReportDashboard = () => {
         { id: 'r&cExpenditure-report', name: 'Recurrent & Capital Expenditure Report', path: '/rc', icon: FileSpreadsheet },
         { id: 'main-journal', name: 'Main Journal', path: '/main_journal', icon: FileText },
         { id: 'imprest-balance', name: 'Imprest Balance', path: '/imprestBalance', icon: FileSpreadsheet },
-        // { id: 'journal-summary', name: 'Journal Summary', path: '/journal', icon: FileText },
         { id: 'net-expenditure', name: 'Net Expenditure', path: '/net-expenditure', icon: FileSpreadsheet },
         { id: 'net-allocation', name: 'Net Allocation', path: '/net-allocation', icon: FileText },
         { id: 'allocation-balance', name: 'Allocation Balance Report', path: '/allocation_balance', icon: FileSpreadsheet },
@@ -77,7 +76,7 @@ const ReportDashboard = () => {
       reports: [
         { id: 'psdg-report', name: 'PSDG Report', path: '/psd', icon: FileText },
         { id: 'cbg-report', name: 'CBG Report', path: '/cbg', icon: FileSpreadsheet },
-       
+
       ]
     },
     {
@@ -90,9 +89,9 @@ const ReportDashboard = () => {
       textColor: 'text-purple-600',
       description: 'View summary and consolidated reports',
       reports: [
-       { id: 'journal-summary', name: 'Journal Summary', path: '/journal', icon: FileText },
-       { id: 'transfer-summary', name: 'Transfer Summary', path: '/transfer-summary', icon: FileText },
-       { id: 'stamp-summary', name: 'Stamp Summary', path: '/stamp-summary', icon: FileText },
+        { id: 'journal-summary', name: 'Journal Summary', path: '/journal', icon: FileText },
+        { id: 'transfer-summary', name: 'Transfer Summary', path: '/transfer-summary', icon: FileText },
+        { id: 'stamp-summary', name: 'Stamp Summary', path: '/stamp-summary', icon: FileText },
       ]
     },
     {
@@ -143,33 +142,33 @@ const ReportDashboard = () => {
 
   // Statistics Cards
   const stats = [
-    { 
-      label: 'Total Reports', 
-      value: getAllReports().length, 
-      icon: FileText, 
-      color: 'blue',
-      change: '+2 this month'
-    },
-    { 
-      label: 'Monthly Reports', 
-      value: categories.find(c => c.id === 'monthly')?.reports.length || 0, 
-      icon: Calendar, 
-      color: 'green',
-      change: '5 active'
-    },
-    { 
-      label: 'Department Reports', 
-      value: categories.find(c => c.id === 'department')?.reports.length || 0, 
-      icon: Building2, 
-      color: 'purple',
-      change: '6 ministries'
-    },
-    { 
-      label: 'Summary Reports', 
-      value: categories.find(c => c.id === 'summary')?.reports.length || 0, 
-      icon: BarChart3, 
+    {
+      label: 'Total Reports',
+      value: getAllReports().length,
+      icon: FileText,
       color: 'orange',
-      change: '4 reports'
+      change: ''
+    },
+    {
+      label: 'Monthly Reports',
+      value: categories.find(c => c.id === 'monthly')?.reports.length || 0,
+      icon: Calendar,
+      color: 'blue',
+      change: ''
+    },
+    {
+      label: 'Department Reports',
+      value: categories.find(c => c.id === 'department')?.reports.length || 0,
+      icon: Building2,
+      color: 'green',
+      change: ''
+    },
+    {
+      label: 'Summary Reports',
+      value: categories.find(c => c.id === 'summary')?.reports.length || 0,
+      icon: BarChart3,
+      color: 'purple',
+      change: ''
     }
   ];
 
@@ -200,16 +199,6 @@ const ReportDashboard = () => {
               Access and manage all financial reports from one central location
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
-              <Download size={16} />
-              Export All
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
-              <Printer size={16} />
-              Print
-            </button>
-          </div>
         </div>
       </div>
 
@@ -219,7 +208,7 @@ const ReportDashboard = () => {
           const Icon = stat.icon;
           const colorClass = getColorClasses(stat.color);
           return (
-            <div 
+            <div
               key={index}
               className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition"
             >
@@ -248,17 +237,15 @@ const ReportDashboard = () => {
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition text-sm ${
-                isActive
-                  ? `${colorClass.bg} ${colorClass.border} ${colorClass.text} border-2`
-                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition text-sm ${isActive
+                ? `${colorClass.bg} ${colorClass.border} ${colorClass.text} border-2`
+                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
             >
               <Icon size={16} />
               <span>{category.name}</span>
-              <span className={`ml-1 text-xs px-2 py-0.5 rounded-full ${
-                isActive ? `${colorClass.bg} ${colorClass.text}` : 'bg-gray-100 text-gray-500'
-              }`}>
+              <span className={`ml-1 text-xs px-2 py-0.5 rounded-full ${isActive ? `${colorClass.bg} ${colorClass.text}` : 'bg-gray-100 text-gray-500'
+                }`}>
                 {category.id === 'all' ? getAllReports().length : category.reports.length}
               </span>
             </button>
@@ -291,9 +278,8 @@ const ReportDashboard = () => {
             return (
               <div
                 key={index}
-                className={`bg-white rounded-xl border border-gray-200 p-5 shadow-sm transition-all cursor-pointer ${
-                  isHovered ? 'shadow-md transform -translate-y-1' : ''
-                }`}
+                className={`bg-white rounded-xl border border-gray-200 p-5 shadow-sm transition-all cursor-pointer ${isHovered ? 'shadow-md transform -translate-y-1' : ''
+                  }`}
                 onMouseEnter={() => setHoveredCard(report.id)}
                 onMouseLeave={() => setHoveredCard(null)}
                 onClick={() => handleReportClick(report.path)}
