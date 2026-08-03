@@ -633,6 +633,11 @@ import LocalGovTransferMonthlyPage from "./pages/LocalGovTransferMonthlyPage";
 import LocalGovTransferSummaryPage from "./pages/LocalGovTransferSummaryPage";
 import UserFinanceUploadPage from "./pages/UserFinanceUploadPage";
 import ExpenditureManagerApprovalPage from "./pages/ExpenditureManagerApprovalPage";
+import AccountNumbersPage from "./pages/AccountNumbersPage";
+import RevenueAccountDataPage from "./pages/RevenueAccountDataPage";
+import RevenueCollectionAccountNumberPage from "./pages/RevenueCollectionAccountNumberPage";
+import RevenueReceiptsInCashPage from "./pages/RevenueReceiptsInCashPage";
+import RevenueReceiptsInCashSummaryPage from "./pages/RevenueReceiptsInCashSummaryPage";
 
 
 
@@ -1080,6 +1085,53 @@ function Layout() {
                         </RoleProtectedRoute>
                     }
                 />
+
+                <Route
+                    path="/account"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <AccountNumbersPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/acccount-data"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueAccountDataPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue-collection-account-number"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueCollectionAccountNumberPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue-receipts-in-cash"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueReceiptsInCashPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue-receipts-in-cash-summary"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueReceiptsInCashSummaryPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+
 
             </Routes>
         </>
