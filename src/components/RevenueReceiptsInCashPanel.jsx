@@ -619,28 +619,6 @@ const RevenueReceiptsInCash = () => {
                     </div>
                 </div>
 
-                {/* Summary Cards */}
-                {appliedFilters.year && records.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-                            <p className="text-sm opacity-90">Total Records</p>
-                            <p className="text-xl font-bold mt-1">{records.length}</p>
-                        </div>
-                        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
-                            <p className="text-sm opacity-90">Total Revenue</p>
-                            <p className="text-xl font-bold mt-1">Rs{formatNumber(grandTotalOverall)}</p>
-                        </div>
-                        <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
-                            <p className="text-sm opacity-90">Selected Accounts</p>
-                            <p className="text-xl font-bold mt-1">{appliedFilters.selected_accounts.length}</p>
-                        </div>
-                        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white shadow-lg">
-                            <p className="text-sm opacity-90">Average per Record</p>
-                            <p className="text-xl font-bold mt-1">Rs{records.length > 0 ? formatNumber(grandTotalOverall / records.length) : '0.00'}</p>
-                        </div>
-                    </div>
-                )}
-
                 {/* Active Filters Display */}
                 {appliedFilters.year && appliedFilters.selected_accounts.length > 0 && (
                     <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
@@ -712,18 +690,18 @@ const RevenueReceiptsInCash = () => {
                 {/* Records Table */}
                 <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-sm border-collapse">
                             <thead className=" border-b border-gray-200">
                                 <tr>
-                                    <th className="px-4 py-3 text-left font-semibold text-gray-700 sticky left-0 bg-gray-50 min-w-[180px]">
+                                    <th className="px-4 py-3 text-left font-semibold text-gray-700 sticky left-0  min-w-[180px] border border-gray-300">
                                         Account Number
                                     </th>
                                     {monthKeys.map((monthNum) => (
-                                        <th key={monthNum} className="px-3 py-3 text-right font-semibold  min-w-[80px]">
+                                        <th key={monthNum} className="px-3 py-3 text-right font-semibold  min-w-[80px] border border-gray-300">
                                             {monthShort[monthNum]}
                                         </th>
                                     ))}
-                                    <th className="px-4 py-3 text-right font-semibold  min-w-[100px]">
+                                    <th className="px-4 py-3 text-right font-semibold  min-w-[100px] border border-gray-300">
                                         Total
                                     </th>
                                 </tr>
@@ -764,15 +742,15 @@ const RevenueReceiptsInCash = () => {
 
                                         return (
                                             <tr key={index} className={`border-b border-gray-100 hover:bg-gray-50 transition ${bgColor}`}>
-                                                <td className={`px-4 py-3 font-medium sticky left-0 bg-white hover:bg-gray-50 whitespace-nowrap ${isOther ? 'text-orange-700' : 'text-blue-700'}`}>
+                                                <td className={`px-4 py-3 font-medium border border-gray-300 sticky left-0 bg-white hover:bg-gray-50 whitespace-nowrap ${isOther ? 'text-gray-700' : 'text-gray-700'}`}>
                                                     {record.account_number}
                                                 </td>
                                                 {monthKeys.map((monthNum) => (
-                                                    <td key={monthNum} className="px-3 py-3 text-right ">
+                                                    <td key={monthNum} className="px-3 py-3 text-right border border-gray-300">
                                                         {formatNumber(record.monthly_totals[monthNum] || 0)}
                                                     </td>
                                                 ))}
-                                                <td className={`px-4 py-3 text-right font-bold `}>
+                                                <td className={`px-4 py-3 text-right font-bold border border-gray-300`}>
                                                     {formatNumber(total)}
                                                 </td>
                                             </tr>
@@ -783,15 +761,15 @@ const RevenueReceiptsInCash = () => {
                             {paginatedRecords.length > 0 && (
                                 <tfoot className=" border-t border-gray-700">
                                     <tr>
-                                        <td className="px-4 py-3 text-right font-bold ">
+                                        <td className="px-4 py-3 text-right font-bold border border-gray-300">
                                             GRAND TOTAL
                                         </td>
                                         {monthKeys.map((monthNum) => (
-                                            <td key={monthNum} className="px-3 py-3 text-right font-bold ">
+                                            <td key={monthNum} className="px-3 py-3 text-right font-bold border border-gray-300">
                                                 {formatNumber(grandTotals[monthNum] || 0)}
                                             </td>
                                         ))}
-                                        <td className="px-4 py-3 text-right font-bold">
+                                        <td className="px-4 py-3 text-right font-bold border border-gray-300">
                                             {formatNumber(grandTotalOverall)}
                                         </td>
                                     </tr>

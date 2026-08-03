@@ -14,7 +14,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 const RevenueAccountData = () => {
   const navigate = useNavigate();
@@ -455,30 +455,6 @@ const RevenueAccountData = () => {
         <h1 className="text-2xl font-bold text-gray-800">Revenue Account Data Management</h1>
         <p className="text-sm text-gray-500 mt-1">Manage revenue data linked to account numbers and estimates</p>
       </div>
-
-      {/* Summary Cards */}
-      {summary && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-5 text-white">
-            <p className="text-sm opacity-90">Total Revenue</p>
-            <p className="text-2xl font-bold mt-1">Rs.{formatCurrency(summary.grand_total || 0)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-5 text-white">
-            <p className="text-sm opacity-90">Total Records</p>
-            <p className="text-2xl font-bold mt-1">{totalRecords}</p>
-          </div>
-          <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl p-5 text-white">
-            <p className="text-sm opacity-90">Account Groups</p>
-            <p className="text-2xl font-bold mt-1">{summary.data?.length || 0}</p>
-          </div>
-          <div className="bg-gradient-to-r from-orange-600 to-orange-700 rounded-xl p-5 text-white">
-            <p className="text-sm opacity-90">Average Per Record</p>
-            <p className="text-2xl font-bold mt-1">
-              Rs.{totalRecords > 0 ? formatCurrency(summary.grand_total / totalRecords) : '0.00'}
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Month Wise Summary */}
       {monthWiseSummary && monthWiseSummary.length > 0 && (

@@ -550,24 +550,6 @@ const RevenueRefundAccountPanel = () => {
                     </div>
                 </div>
 
-                {/* Summary Cards */}
-                {appliedFilters.year && records.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-                            <p className="text-sm opacity-90">Total Records</p>
-                            <p className="text-xl font-bold mt-1">{totalRecords}</p>
-                        </div>
-                        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
-                            <p className="text-sm opacity-90">Total Refund</p>
-                            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.total || 0)}</p>
-                        </div>
-                        <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
-                            <p className="text-sm opacity-90">Year</p>
-                            <p className="text-xl font-bold mt-1">{appliedFilters.year}</p>
-                        </div>
-                    </div>
-                )}
-
                 {/* Active Filters Display */}
                 {appliedFilters.year && (
                     <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
@@ -632,21 +614,21 @@ const RevenueRefundAccountPanel = () => {
                 {/* Records Table */}
                 <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-xs">
+                        <table className="w-full text-xs border-collapse">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>
-                                    <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[100px]">
+                                    <th className="px-2 py-2 text-left font-semibold text-gray-700 border border-gray-300 min-w-[100px]">
                                         Revenue Code Name
                                     </th>
-                                    <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[150px]">
+                                    <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[150px] border border-gray-300">
                                         Revenue Code
                                     </th>
                                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((month) => (
-                                        <th key={month} className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[60px]">
+                                        <th key={month} className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[60px] border border-gray-300">
                                             {monthNames[month].substring(0, 3)}
                                         </th>
                                     ))}
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[70px] bg-blue-50">
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[70px] border border-gray-300">
                                         Total
                                     </th>
                                 </tr>
@@ -678,18 +660,18 @@ const RevenueRefundAccountPanel = () => {
                                 ) : (
                                     paginatedRecords.map((record, index) => (
                                         <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                                            <td className="px-2 py-2 font-medium text-gray-900">
+                                            <td className="px-2 py-2 font-medium text-gray-900 border border-gray-300">
                                                 {record.revenue_code_name || '-'}
                                             </td>
-                                            <td className="px-2 py-2 text-gray-700 font-medium">
+                                            <td className="px-2 py-2 text-gray-700 font-medium border border-gray-300">
                                                 {formatCombinedCode(record)}
                                             </td>
                                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((month) => (
-                                                <td key={month} className="px-2 py-2 text-right text-gray-700">
+                                                <td key={month} className="px-2 py-2 text-right text-gray-700 border border-gray-300">
                                                     {formatNumber(record.months?.[month] || 0)}
                                                 </td>
                                             ))}
-                                            <td className="px-2 py-2 text-right text-blue-600 font-bold bg-blue-50">
+                                            <td className="px-2 py-2 text-right text-gray-600 font-bold border border-gray-300">
                                                 {formatNumber(record.total || 0)}
                                             </td>
                                         </tr>
@@ -699,15 +681,15 @@ const RevenueRefundAccountPanel = () => {
                             {paginatedRecords.length > 0 && (
                                 <tfoot className="bg-gray-50 border-t border-gray-200">
                                     <tr className="font-semibold">
-                                        <td className="px-2 py-2 text-right text-gray-700" colSpan="2">
+                                        <td className="px-2 py-2 text-right text-gray-700 border border-gray-300" colSpan="2">
                                             TOTAL
                                         </td>
                                         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((month) => (
-                                            <td key={month} className="px-2 py-2 text-right text-gray-700">
+                                            <td key={month} className="px-2 py-2 text-right text-gray-700 border border-gray-300">
                                                 {formatNumber(totals.months?.[month] || 0)}
                                             </td>
                                         ))}
-                                        <td className="px-2 py-2 text-right text-blue-700 bg-blue-50">
+                                        <td className="px-2 py-2 text-right text-gray-700 border border-gray-300">
                                             {formatNumber(totals.total || 0)}
                                         </td>
                                     </tr>

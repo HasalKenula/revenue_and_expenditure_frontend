@@ -449,32 +449,6 @@ const MonthlySummaryPanel = () => {
           </div>
         </div>
 
-        {/* Summary Cards */}
-        {appliedFilters.year && records.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total X Entry</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.x_entry || 0)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Collection</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.collection || 0)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.total || 0)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Refund</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.refund || 0)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Net Revenue</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.net_revenue || 0)}</p>
-            </div>
-          </div>
-        )}
-
         {/* Active Filters Display */}
         {(appliedFilters.year || appliedFilters.month) && (
           <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
@@ -549,25 +523,25 @@ const MonthlySummaryPanel = () => {
         {/* Records Table */}
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm border-collapse">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[120px]">
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[120px] border border-gray-300">
                     Month
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] bg-blue-50">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] border border-gray-300">
                     X Entry (Rs)
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] bg-green-50">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] border border-gray-300">
                     Collection (Rs)
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] bg-purple-50">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] border border-gray-300">
                     Total (Rs)
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] bg-red-50">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] border border-gray-300">
                     Refund (Rs)
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] bg-indigo-50">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[120px] border border-gray-300">
                     Net Revenue (Rs)
                   </th>
                 </tr>
@@ -599,22 +573,22 @@ const MonthlySummaryPanel = () => {
                 ) : (
                   paginatedRecords.map((record, index) => (
                     <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                      <td className="px-4 py-3 font-medium text-gray-900">
+                      <td className="px-4 py-3 font-medium text-gray-900 border border-gray-300">
                         {record.month_name}
                       </td>
-                      <td className="px-4 py-3 text-right text-blue-600 font-medium">
+                      <td className="px-4 py-3 text-right text-gray-600 font-medium border border-gray-300">
                         {formatNumber(record.x_entry || 0)}
                       </td>
-                      <td className="px-4 py-3 text-right text-green-600 font-medium">
+                      <td className="px-4 py-3 text-right text-gray-600 font-medium border border-gray-300">
                         {formatNumber(record.collection || 0)}
                       </td>
-                      <td className="px-4 py-3 text-right text-purple-600 font-bold">
+                      <td className="px-4 py-3 text-right text-gray-600 font-bold border border-gray-300">
                         {formatNumber(record.total || 0)}
                       </td>
-                      <td className="px-4 py-3 text-right text-red-600 font-medium">
+                      <td className="px-4 py-3 text-right text-gray-600 font-medium border border-gray-300">
                         {formatNumber(record.refund || 0)}
                       </td>
-                      <td className="px-4 py-3 text-right text-indigo-600 font-bold bg-indigo-50">
+                      <td className="px-4 py-3 text-right text-gray-600 font-bold border border-gray-300">
                         {formatNumber(record.net_revenue || 0)}
                       </td>
                     </tr>
@@ -624,20 +598,20 @@ const MonthlySummaryPanel = () => {
               {paginatedRecords.length > 0 && (
                 <tfoot className="bg-gray-50 border-t border-gray-200">
                   <tr className="font-semibold">
-                    <td className="px-4 py-3 text-right text-gray-700">TOTAL</td>
-                    <td className="px-4 py-3 text-right text-blue-700">
+                    <td className="px-4 py-3 text-right text-gray-700 border border-gray-300">TOTAL</td>
+                    <td className="px-4 py-3 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.x_entry || 0)}
                     </td>
-                    <td className="px-4 py-3 text-right text-green-700">
+                    <td className="px-4 py-3 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.collection || 0)}
                     </td>
-                    <td className="px-4 py-3 text-right text-purple-700">
+                    <td className="px-4 py-3 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.total || 0)}
                     </td>
-                    <td className="px-4 py-3 text-right text-red-700">
+                    <td className="px-4 py-3 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.refund || 0)}
                     </td>
-                    <td className="px-4 py-3 text-right text-indigo-700 bg-indigo-50">
+                    <td className="px-4 py-3 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.net_revenue || 0)}
                     </td>
                   </tr>

@@ -454,20 +454,6 @@ const RevenueRefundByTrnoPanel = () => {
           </div>
         </div>
 
-        {/* Summary Cards */}
-        {appliedFilters.year && records.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Refund Records</p>
-              <p className="text-xl font-bold mt-1">{totals.total_records || 0}</p>
-            </div>
-            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Refund Amount</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.total_refund || 0)}</p>
-            </div>
-          </div>
-        )}
-
         {/* Active Filters Display */}
         {appliedFilters.year && (
           <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
@@ -532,22 +518,22 @@ const RevenueRefundByTrnoPanel = () => {
         {/* Records Table */}
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm border-collapse">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-center font-semibold text-gray-700 min-w-[80px]">
+                  <th className="px-4 py-3 text-center font-semibold text-gray-700 min-w-[80px] border border-gray-300">
                     Head
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[150px]">
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[150px] border border-gray-300">
                     Revenue Code Name
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[200px]">
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[200px] border border-gray-300">
                     Revenue Code (Head-Program-Project-SubProject-Object)
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px] bg-blue-50">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px] border border-gray-300">
                     Refund Amount (Rs)
                   </th>
-                  <th className="px-4 py-3 text-center font-semibold text-gray-700 min-w-[100px]">
+                  <th className="px-4 py-3 text-center font-semibold text-gray-700 min-w-[100px] border border-gray-300">
                     Month
                   </th>
                 </tr>
@@ -584,30 +570,30 @@ const RevenueRefundByTrnoPanel = () => {
                     return (
                       <tr
                         key={index}
-                        className={`border-b border-gray-100 ${isSubtotal ? 'bg-blue-50' :
-                          isGrandTotal ? 'bg-yellow-100' :
+                        className={`border-b border-gray-100 border border-gray-300 ${isSubtotal ? 'bg-gray-50' :
+                          isGrandTotal ? 'bg-gray-100' :
                             'hover:bg-gray-50'
                           }`}
                       >
-                        <td className={`px-4 py-3 text-center font-medium ${isSubtotal || isGrandTotal ? 'font-bold' : 'text-gray-900'
+                        <td className={`px-4 py-3 text-center font-medium border border-gray-300 ${isSubtotal || isGrandTotal ? 'font-bold' : 'text-gray-900'
                           }`}>
                           {record.trno || '-'}
                         </td>
-                        <td className={`px-4 py-3 ${isSubtotal || isGrandTotal ? 'font-bold text-gray-700' : 'text-gray-600'
+                        <td className={`px-4 py-3 border border-gray-300 ${isSubtotal || isGrandTotal ? 'font-bold text-gray-700' : 'text-gray-600'
                           }`}>
                           {record.revenue_code_name || '-'}
                         </td>
-                        <td className={`px-4 py-3 ${isSubtotal || isGrandTotal ? 'font-bold text-gray-700' : 'text-gray-700 font-medium'
+                        <td className={`px-4 py-3 border border-gray-300 ${isSubtotal || isGrandTotal ? 'font-bold text-gray-700' : 'text-gray-700 font-medium'
                           }`}>
                           {isSubtotal || isGrandTotal ? '-' : formatCombinedCode(record)}
                         </td>
-                        <td className={`px-4 py-3 text-right font-bold ${isSubtotal ? 'text-blue-700 bg-blue-100' :
-                          isGrandTotal ? 'text-green-700 bg-yellow-50' :
-                            'text-blue-600 bg-blue-50'
+                        <td className={`px-4 py-3 text-right font-bold border border-gray-300 ${isSubtotal ? 'text-gray-700' :
+                          isGrandTotal ? 'text-gray-700 bg-gray-50' :
+                            'text-gray-600'
                           }`}>
                           {formatNumber(record.refund_amount || 0)}
                         </td>
-                        <td className={`px-4 py-3 text-center ${isSubtotal || isGrandTotal ? 'text-gray-500' : 'text-gray-600'
+                        <td className={`px-4 py-3 text-center border border-gray-300 ${isSubtotal || isGrandTotal ? 'text-gray-500' : 'text-gray-600'
                           }`}>
                           {record.month_name || '-'}
                         </td>
@@ -619,13 +605,13 @@ const RevenueRefundByTrnoPanel = () => {
               {paginatedRecords.length > 0 && (
                 <tfoot className="bg-gray-50 border-t border-gray-200">
                   <tr className="font-semibold">
-                    <td className="px-4 py-3 text-center text-gray-700" colSpan="3">
+                    <td className="px-4 py-3 text-center text-gray-700 border border-gray-300" colSpan="3">
                       GRAND TOTAL
                     </td>
-                    <td className="px-4 py-3 text-right text-green-700 bg-green-50">
+                    <td className="px-4 py-3 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.total_refund || 0)}
                     </td>
-                    <td className="px-4 py-3 text-center text-gray-500">
+                    <td className="px-4 py-3 text-center text-gray-500 border border-gray-300">
                       -
                     </td>
                   </tr>

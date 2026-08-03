@@ -530,32 +530,6 @@ const NetRevenuePanel = () => {
           </div>
         </div>
 
-        {/* Summary Cards */}
-        {appliedFilters.year && appliedFilters.month && records.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Estimate</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.estimate || 0)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Re-Estimate</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.re_estimate || 0)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Revenue</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.total_revenue || 0)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Revenue Refund</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.revenue_refund || 0)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Net Revenue</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.net_revenue || 0)}</p>
-            </div>
-          </div>
-        )}
-
         {/* Active Filters Display */}
         {(appliedFilters.year || appliedFilters.month) && (
           <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
@@ -625,33 +599,33 @@ const NetRevenuePanel = () => {
         {/* Records Table */}
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-xs border-collapse">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[180px]">
+                  <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[180px] border border-gray-300">
                     Revenue Code
                   </th>
-                  <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[100px]">
+                  <th className="px-2 py-2 text-left font-semibold text-gray-700 min-w-[100px] border border-gray-300">
                     Revenue Category
                   </th>
-                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[80px]">
+                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[80px] border border-gray-300">
                     Original Estimate
                   </th>
-                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[80px]">
+                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[80px] border border-gray-300">
                     Revised Estimate
                   </th>
                   {monthColumns.map((month) => (
-                    <th key={month} className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[70px]">
+                    <th key={month} className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[70px] border border-gray-300">
                       {monthNamesData[month] || `Month ${month}`}
                     </th>
                   ))}
-                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[90px] bg-blue-50">
+                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[90px] border border-gray-300">
                     Total Revenue
                   </th>
-                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[90px] bg-red-50">
+                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[90px] border border-gray-300">
                     Revenue Refund
                   </th>
-                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[90px] bg-indigo-50">
+                  <th className="px-2 py-2 text-right font-semibold text-gray-700 min-w-[90px] border border-gray-300">
                     Net Revenue
                   </th>
                 </tr>
@@ -683,30 +657,30 @@ const NetRevenuePanel = () => {
                 ) : (
                   paginatedRecords.map((record, index) => (
                     <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                      <td className="px-2 py-2 font-medium text-gray-900 text-xs">
+                      <td className="px-2 py-2 font-medium text-gray-900 text-xs border border-gray-300">
                         {formatCombinedCode(record)}
                       </td>
-                      <td className="px-2 py-2 text-gray-600 text-xs">
+                      <td className="px-2 py-2 text-gray-600 text-xs border border-gray-300">
                         {record.revenue_code_name || '-'}
                       </td>
-                      <td className="px-2 py-2 text-right text-blue-600 font-medium text-xs">
+                      <td className="px-2 py-2 text-right text-gray-600 font-medium text-xs border border-gray-300">
                         {formatNumber(record.estimate || 0)}
                       </td>
-                      <td className="px-2 py-2 text-right text-green-600 font-medium text-xs">
+                      <td className="px-2 py-2 text-right text-gray-600 font-medium text-xs border border-gray-300">
                         {formatNumber(record.re_estimate || 0)}
                       </td>
                       {monthColumns.map((month) => (
-                        <td key={month} className="px-2 py-2 text-right text-gray-700 font-medium text-xs">
+                        <td key={month} className="px-2 py-2 text-right text-gray-700 font-medium text-xs border border-gray-300">
                           {formatNumber(record.months?.[month] || 0)}
                         </td>
                       ))}
-                      <td className="px-2 py-2 text-right text-blue-600 font-bold text-xs bg-blue-50">
+                      <td className="px-2 py-2 text-right text-gray-600 font-bold text-xs border border-gray-300">
                         {formatNumber(record.total_revenue || 0)}
                       </td>
-                      <td className="px-2 py-2 text-right text-red-600 font-bold text-xs bg-red-50">
+                      <td className="px-2 py-2 text-right text-gray-600 font-bold text-xs border border-gray-300">
                         {formatNumber(record.revenue_refund || 0)}
                       </td>
-                      <td className="px-2 py-2 text-right text-indigo-600 font-bold text-xs bg-indigo-50">
+                      <td className="px-2 py-2 text-right text-gray-600 font-bold text-xs border border-gray-300">
                         {formatNumber(record.net_revenue || 0)}
                       </td>
                     </tr>
@@ -716,26 +690,26 @@ const NetRevenuePanel = () => {
               {paginatedRecords.length > 0 && (
                 <tfoot className="bg-gray-50 border-t border-gray-200">
                   <tr className="font-semibold">
-                    <td className="px-2 py-2 text-right text-gray-700">TOTAL</td>
+                    <td className="px-2 py-2 text-right text-gray-700 border border-gray-300">TOTAL</td>
                     <td className="px-2 py-2"></td>
-                    <td className="px-2 py-2 text-right text-blue-700">
+                    <td className="px-2 py-2 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.estimate || 0)}
                     </td>
-                    <td className="px-2 py-2 text-right text-green-700">
+                    <td className="px-2 py-2 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.re_estimate || 0)}
                     </td>
                     {monthColumns.map((month) => (
-                      <td key={month} className="px-2 py-2 text-right text-gray-700">
+                      <td key={month} className="px-2 py-2 text-right text-gray-700 border border-gray-300">
                         {formatNumber(totals.months?.[month] || 0)}
                       </td>
                     ))}
-                    <td className="px-2 py-2 text-right text-blue-700 bg-blue-50">
+                    <td className="px-2 py-2 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.total_revenue || 0)}
                     </td>
-                    <td className="px-2 py-2 text-right text-red-700 bg-red-50">
+                    <td className="px-2 py-2 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.revenue_refund || 0)}
                     </td>
-                    <td className="px-2 py-2 text-right text-indigo-700 bg-indigo-50">
+                    <td className="px-2 py-2 text-right text-gray-700 border border-gray-300">
                       {formatNumber(totals.net_revenue || 0)}
                     </td>
                   </tr>
