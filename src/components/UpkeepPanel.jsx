@@ -24,6 +24,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -267,7 +268,7 @@ const UpkeepPanel = () => {
     } catch (error) {
       console.error('Error fetching records:', error);
       if (error.response?.status !== 401) {
-        alert('Failed to fetch records: ' + (error.response?.data?.message || error.message));
+        toast.error('Failed to fetch records: ' + (error.response?.data?.message || error.message));
       }
     } finally {
       setLoading(false);
@@ -306,11 +307,11 @@ const UpkeepPanel = () => {
 
   const applyFilters = () => {
     if (!filters.year) {
-      alert('Please select a Year');
+      toast.error('Please select a Year');
       return;
     }
     if (!filters.month) {
-      alert('Please select a Month');
+      toast.error('Please select a Month');
       return;
     }
     setAppliedFilters({ ...filters });
@@ -379,7 +380,7 @@ const UpkeepPanel = () => {
     ];
 
     if (allData.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -497,7 +498,7 @@ const UpkeepPanel = () => {
           head: [tableHeaders],
           body: tableBody,
           startY: startY + 5,
-          theme: 'striped',
+          theme: 'grid',
           headStyles: {
             fillColor: table.color,
             textColor: [255, 255, 255],
@@ -508,7 +509,8 @@ const UpkeepPanel = () => {
           },
           bodyStyles: {
             fontSize: 6,
-            cellPadding: 2
+            cellPadding: 2,
+            textColor: [0, 0, 0]
           },
           columnStyles: {
             0: { cellWidth: 16, halign: 'center' },
@@ -644,7 +646,7 @@ const UpkeepPanel = () => {
         head: [['Category', 'Head', 'Total Allocation (Rs)', 'Total Expenditure (Rs)', 'Total Balance (Rs)']],
         body: summaryData,
         startY: 35,
-        theme: 'striped',
+        theme: 'grid',
         headStyles: {
           fillColor: [41, 128, 185],
           textColor: [255, 255, 255],
@@ -655,7 +657,8 @@ const UpkeepPanel = () => {
         },
         bodyStyles: {
           fontSize: 7.5,
-          cellPadding: 2.5
+          cellPadding: 2.5,
+          textColor: [0, 0, 0]
         },
         columnStyles: {
           0: { cellWidth: 40, halign: 'left' },
@@ -715,11 +718,11 @@ const UpkeepPanel = () => {
       const viewText = appliedFilters.view_type === 'cumulative' ? 'cumulative' : 'monthly';
       const fileName = `upkeep_report_${viewText}_${appliedFilters.year}_${monthText}.pdf`;
       doc.save(fileName);
-      alert('PDF exported successfully!');
+      toast.success("PDF exported successfully!");
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error("Failed to generate report");
     } finally {
       setLoading(false);
     }
@@ -739,7 +742,7 @@ const UpkeepPanel = () => {
     ];
 
     if (allData.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -756,29 +759,56 @@ const UpkeepPanel = () => {
       if (response.data.success) {
         const csvData = response.data.data;
         if (csvData.length > 0) {
+          // Get headers from the first object
           const headers = Object.keys(csvData[0]);
+
+          // Create CSV rows
           const csvRows = [
-            headers.join(','),
-            ...csvData.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+            headers.join(','), // Header row
+            ...csvData.map(row => headers.map(h => {
+              const value = row[h];
+
+              // Handle null, undefined, or empty values
+              if (value === null || value === undefined || value === '') {
+                return '""';
+              }
+
+              // If value is 0 (number), keep it as "0"
+              if (value === 0) {
+                return '0';
+              }
+
+              // For numeric values, format properly
+              if (typeof value === 'number') {
+                return value.toString();
+              }
+
+              // For strings, wrap in quotes and escape
+              return `"${String(value).replace(/"/g, '""')}"`;
+            }).join(','))
           ];
+
           const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(csvBlob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `upkeep_report_${appliedFilters.view_type}_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
+          a.download = `maintenance_report_${appliedFilters.view_type}_${appliedFilters.year}_${monthNames[appliedFilters.month]}.csv`;
           a.click();
           URL.revokeObjectURL(url);
-          alert('Export completed successfully!');
+          toast.success("CSV exported successfully!");
+        } else {
+          toast.error("Failed to generate CSV");
         }
+      } else {
+        toast.error("Failed to generate CSV");
       }
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Error exporting data');
+      toast.error("Failed to generate CSV");
     } finally {
       setLoading(false);
     }
   };
-
   const refreshData = () => {
     fetchFilterOptions();
     if (appliedFilters.year && appliedFilters.month) {
@@ -808,32 +838,32 @@ const UpkeepPanel = () => {
           <span className="text-sm text-gray-500">(Head: {trno})</span>
         </div>
         <div className="overflow-x-auto border rounded-lg">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm border-collapse">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-3 py-2 text-left font-semibold text-gray-700">Head</th>
-                <th className="px-3 py-2 text-left font-semibold text-gray-700">Program</th>
-                <th className="px-3 py-2 text-left font-semibold text-gray-700">Project</th>
-                <th className="px-3 py-2 text-left font-semibold text-gray-700">Sub Project</th>
-                <th className="px-3 py-2 text-left font-semibold text-gray-700">Object</th>
-                <th className="px-3 py-2 text-left font-semibold text-gray-700">Subject Name</th>
-                <th className="px-3 py-2 text-right font-semibold text-gray-700">Allocation</th>
-                <th className="px-3 py-2 text-right font-semibold text-gray-700">Expenditure</th>
-                <th className="px-3 py-2 text-right font-semibold text-gray-700 bg-purple-50">Balance</th>
+                <th className="px-3 py-2 text-left font-semibold text-gray-700 border border-gray-300">Head</th>
+                <th className="px-3 py-2 text-left font-semibold text-gray-700 border border-gray-300">Program</th>
+                <th className="px-3 py-2 text-left font-semibold text-gray-700 border border-gray-300">Project</th>
+                <th className="px-3 py-2 text-left font-semibold text-gray-700 border border-gray-300">Sub Project</th>
+                <th className="px-3 py-2 text-left font-semibold text-gray-700 border border-gray-300">Object</th>
+                <th className="px-3 py-2 text-left font-semibold text-gray-700 border border-gray-300">Subject Name</th>
+                <th className="px-3 py-2 text-right font-semibold text-gray-700 border border-gray-300">Allocation</th>
+                <th className="px-3 py-2 text-right font-semibold text-gray-700 border border-gray-300">Expenditure</th>
+                <th className="px-3 py-2 text-right font-semibold text-gray-700 bg-purple-50 border border-gray-300">Balance</th>
               </tr>
             </thead>
             <tbody>
               {dataRows.map((record, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-gray-700">{record.trno}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.program}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.project}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.sub_project}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.object}</td>
-                  <td className="px-3 py-2 text-gray-700">{record.subject_name}</td>
-                  <td className="px-3 py-2 text-right text-gray-900">Rs{formatNumber(record.allocation)}</td>
-                  <td className="px-3 py-2 text-right text-gray-600">Rs{formatNumber(record.expenditure)}</td>
-                  <td className={`px-3 py-2 text-right font-medium ${parseFloat(record.balance) >= 0 ? 'text-gray-600' : 'text-gray-600'}`}>
+                  <td className="px-3 py-2 text-gray-700 border border-gray-300">{record.trno}</td>
+                  <td className="px-3 py-2 text-gray-700 border border-gray-300">{record.program}</td>
+                  <td className="px-3 py-2 text-gray-700 border border-gray-300">{record.project}</td>
+                  <td className="px-3 py-2 text-gray-700 border border-gray-300">{record.sub_project}</td>
+                  <td className="px-3 py-2 text-gray-700 border border-gray-300">{record.object}</td>
+                  <td className="px-3 py-2 text-gray-700 border border-gray-300">{record.subject_name}</td>
+                  <td className="px-3 py-2 text-right text-gray-900 border border-gray-300">Rs{formatNumber(record.allocation)}</td>
+                  <td className="px-3 py-2 text-right text-gray-600 border border-gray-300">Rs{formatNumber(record.expenditure)}</td>
+                  <td className={`px-3 py-2 text-right font-medium border border-gray-300 ${parseFloat(record.balance) >= 0 ? 'text-gray-600' : 'text-gray-600'}`}>
                     Rs{formatNumber(record.balance)}
                   </td>
                 </tr>
@@ -841,9 +871,9 @@ const UpkeepPanel = () => {
               {totalRow && (
                 <tr className="bg-gray-100 font-bold border-t-2 border-gray-300">
                   <td colSpan="6" className="px-3 py-2 text-right text-gray-700">TOTAL:</td>
-                  <td className="px-3 py-2 text-right text-gray-900">Rs{formatNumber(totalRow.allocation)}</td>
-                  <td className="px-3 py-2 text-right text-gray-700">Rs{formatNumber(totalRow.expenditure)}</td>
-                  <td className="px-3 py-2 text-right text-gray-700">Rs{formatNumber(totalRow.balance)}</td>
+                  <td className="px-3 py-2 text-right text-gray-900 border border-gray-300">Rs{formatNumber(totalRow.allocation)}</td>
+                  <td className="px-3 py-2 text-right text-gray-700 border border-gray-300">Rs{formatNumber(totalRow.expenditure)}</td>
+                  <td className="px-3 py-2 text-right text-gray-700 border border-gray-300">Rs{formatNumber(totalRow.balance)}</td>
                 </tr>
               )}
             </tbody>
@@ -854,422 +884,280 @@ const UpkeepPanel = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <>
+      {/* Loading Overlay */}
       {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6">
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 shadow-xl">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading...</p>
           </div>
         </div>
       )}
 
-      {/* Page Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Maintenance</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Allocation, expenditure and balance summary by program, project, sub project and object
-            </p>
-          </div>
-          {appliedFilters.year && appliedFilters.month && (
-            <div className="bg-blue-50 rounded-lg px-3 py-2">
-              <p className="text-sm text-blue-700">
-                <span className="font-medium">Year:</span> {appliedFilters.year} |
-                <span className="font-medium ml-2">Month:</span> {monthNames[appliedFilters.month]}
-                <span className="font-medium ml-2">| View:</span> {appliedFilters.view_type === 'cumulative' ? 'Cumulative' : 'Monthly'}
+      <div className="space-y-6">
+
+
+        {/* Page Header */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">Maintenance</h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Allocation, expenditure and balance summary by program, project, sub project and object
               </p>
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* View Type Indicator */}
-      {appliedFilters.month && (
-        <div className={`rounded-lg p-3 border ${appliedFilters.view_type === 'cumulative' ? 'bg-purple-50 border-purple-200' : 'bg-orange-50 border-orange-200'}`}>
-          <div className="flex items-center gap-2">
-            {appliedFilters.view_type === 'cumulative' ? (
-              <LineChart size={18} className="text-purple-600" />
-            ) : (
-              <TableIcon size={18} className="text-orange-600" />
+            {appliedFilters.year && appliedFilters.month && (
+              <div className="bg-blue-50 rounded-lg px-3 py-2">
+                <p className="text-sm text-blue-700">
+                  <span className="font-medium">Year:</span> {appliedFilters.year} |
+                  <span className="font-medium ml-2">Month:</span> {monthNames[appliedFilters.month]}
+                  <span className="font-medium ml-2">| View:</span> {appliedFilters.view_type === 'cumulative' ? 'Cumulative' : 'Monthly'}
+                </p>
+              </div>
             )}
-            <span className={`text-sm ${appliedFilters.view_type === 'cumulative' ? 'text-purple-700' : 'text-orange-700'}`}>
-              <strong>View Type:</strong> {getMonthRangeDisplay()}
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Summary Cards - 9 categories */}
-      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-9 gap-2">
-       
-        <div className="space-y-1">
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">Edu - Allocation</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.edu_total_allocation)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">Edu - Expenditure</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.edu_total_expenditure)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">Edu - Balance</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.edu_total_balance)}</p>
           </div>
         </div>
 
-       
-        <div className="space-y-1">
-          <div className="bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">WM - Allocation</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.wm_total_allocation)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">WM - Expenditure</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.wm_total_expenditure)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">WM - Balance</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.wm_total_balance)}</p>
-          </div>
-        </div>
-
-       
-        <div className="space-y-1">
-          <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">IM - Allocation</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.im_total_allocation)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-violet-500 to-violet-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">IM - Expenditure</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.im_total_expenditure)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-fuchsia-500 to-fuchsia-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">IM - Balance</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.im_total_balance)}</p>
-          </div>
-        </div>
-
-      
-        <div className="space-y-1">
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">RI - Allocation</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.ri_total_allocation)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">RI - Expenditure</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.ri_total_expenditure)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">RI - Balance</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.ri_total_balance)}</p>
-          </div>
-        </div>
-
-      
-        <div className="space-y-1">
-          <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">Agri - Allocation</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.agri_total_allocation)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-lime-500 to-lime-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">Agri - Expenditure</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.agri_total_expenditure)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">Agri - Balance</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.agri_total_balance)}</p>
-          </div>
-        </div>
-
-       
-        <div className="space-y-1">
-          <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">PC - Allocation</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.pc_total_allocation)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-rose-500 to-rose-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">PC - Expenditure</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.pc_total_expenditure)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-pink-600 to-pink-700 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">PC - Balance</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.pc_total_balance)}</p>
-          </div>
-        </div>
-
-       
-        <div className="space-y-1">
-          <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">SS - Allocation</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.ss_total_allocation)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-violet-600 to-violet-700 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">SS - Expenditure</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.ss_total_expenditure)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-purple-700 to-purple-800 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">SS - Balance</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.ss_total_balance)}</p>
-          </div>
-        </div>
-
-      
-        <div className="space-y-1">
-          <div className="bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">LG - Allocation</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.lg_total_allocation)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">LG - Expenditure</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.lg_total_expenditure)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">LG - Balance</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.lg_total_balance)}</p>
-          </div>
-        </div>
-
-       
-        <div className="space-y-1">
-          <div className="bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">LS - Allocation</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.livestock_total_allocation)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">LS - Expenditure</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.livestock_total_expenditure)}</p>
-          </div>
-          <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-lg p-1.5 text-white shadow">
-            <p className="text-[7px] opacity-90">LS - Balance</p>
-            <p className="text-[10px] font-bold">Rs{formatNumber(totals.livestock_total_balance)}</p>
-          </div>
-        </div>
-      </div> */}
-
-      {(appliedFilters.year || appliedFilters.month) && (
-        <div className="bg-blue-50 rounded-lg p-3 flex flex-wrap items-center justify-between">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium text-blue-700">Applied Filters:</span>
-            {appliedFilters.year && (
-              <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
-                <Calendar size={12} className="mr-1" />
-                Year: {appliedFilters.year}
+        {/* View Type Indicator */}
+        {appliedFilters.month && (
+          <div className={`rounded-lg p-3 border ${appliedFilters.view_type === 'cumulative' ? 'bg-purple-50 border-purple-200' : 'bg-orange-50 border-orange-200'}`}>
+            <div className="flex items-center gap-2">
+              {appliedFilters.view_type === 'cumulative' ? (
+                <LineChart size={18} className="text-purple-600" />
+              ) : (
+                <TableIcon size={18} className="text-orange-600" />
+              )}
+              <span className={`text-sm ${appliedFilters.view_type === 'cumulative' ? 'text-purple-700' : 'text-orange-700'}`}>
+                <strong>View Type:</strong> {getMonthRangeDisplay()}
               </span>
-            )}
-            {appliedFilters.month && (
-              <span className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-md text-sm">
-                Month: {monthNames[appliedFilters.month]}
-              </span>
-            )}
+            </div>
           </div>
+        )}
+
+        {(appliedFilters.year || appliedFilters.month) && (
+          <div className="bg-blue-50 rounded-lg p-3 flex flex-wrap items-center justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium text-blue-700">Applied Filters:</span>
+              {appliedFilters.year && (
+                <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
+                  <Calendar size={12} className="mr-1" />
+                  Year: {appliedFilters.year}
+                </span>
+              )}
+              {appliedFilters.month && (
+                <span className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-md text-sm">
+                  Month: {monthNames[appliedFilters.month]}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={clearFilters}
+              className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
+            >
+              <X size={14} /> Clear All
+            </button>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-3">
           <button
-            onClick={clearFilters}
-            className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
+            onClick={() => setShowFilterModal(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
           >
-            <X size={14} /> Clear All
+            <Filter size={16} />
+            <span>Filter</span>
+          </button>
+          <button
+            onClick={handleExportPDF}
+            className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm shadow-sm"
+          >
+            <FileText size={16} />
+            <span>Export PDF</span>
+          </button>
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm shadow-sm"
+          >
+            <Download size={16} />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={refreshData}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
+          >
+            <RefreshCw size={16} />
+            <span>Refresh</span>
           </button>
         </div>
-      )}
 
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={() => setShowFilterModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
-        >
-          <Filter size={16} />
-          <span>Filter</span>
-        </button>
-        <button
-          onClick={handleExportPDF}
-          className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm shadow-sm"
-        >
-          <FileText size={16} />
-          <span>Export PDF</span>
-        </button>
-        <button
-          onClick={handleExportCSV}
-          className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm shadow-sm"
-        >
-          <Download size={16} />
-          <span>Export CSV</span>
-        </button>
-        <button
-          onClick={refreshData}
-          className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
-        >
-          <RefreshCw size={16} />
-          <span>Refresh</span>
-        </button>
-      </div>
+        {/* Tables */}
+        {!appliedFilters.year || !appliedFilters.month ? (
+          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+            <Filter size={48} className="text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500">Please select Year and Month to view data</p>
+          </div>
+        ) : (
+          <>
+            {renderTable(
+              educationData,
+              'Education',
+              <BookOpen size={20} className="text-blue-600" />,
+              '310'
+            )}
+            {renderTable(
+              westernMedicineData,
+              'Western Medicine',
+              <Heart size={20} className="text-teal-600" />,
+              '305'
+            )}
+            {renderTable(
+              indigenousMedicineData,
+              'Indigenous Medicine',
+              <Leaf size={20} className="text-indigo-600" />,
+              '307'
+            )}
+            {renderTable(
+              roadsIrrigationData,
+              'Roads & Irrigation',
+              <Road size={20} className="text-orange-600" />,
+              '308, 316'
+            )}
+            {renderTable(
+              agricultureData,
+              'Agriculture',
+              <Sprout size={20} className="text-green-600" />,
+              '315'
+            )}
+            {renderTable(
+              probationChildcareData,
+              'Probation & Childcare Social Services',
+              <Users size={20} className="text-red-600" />,
+              '319'
+            )}
+            {renderTable(
+              socialServicesData,
+              'Local Government',
+              <HeartHandshake size={20} className="text-purple-600" />,
+              '306'
+            )}
+            {renderTable(
+              localGovernmentData,
+              'Livestock',
+              <Building size={20} className="text-blue-500" />,
+              '312'
+            )}
+            {renderTable(
+              livestockData,
+              'Others',
+              <PawPrint size={20} className="text-emerald-600" />,
+              '300-325'
+            )}
+          </>
+        )}
 
-      {/* Tables */}
-      {!appliedFilters.year || !appliedFilters.month ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <Filter size={48} className="text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">Please select Year and Month to view data</p>
-        </div>
-      ) : (
-        <>
-          {renderTable(
-            educationData,
-            'Education',
-            <BookOpen size={20} className="text-blue-600" />,
-            '310'
-          )}
-          {renderTable(
-            westernMedicineData,
-            'Western Medicine',
-            <Heart size={20} className="text-teal-600" />,
-            '305'
-          )}
-          {renderTable(
-            indigenousMedicineData,
-            'Indigenous Medicine',
-            <Leaf size={20} className="text-indigo-600" />,
-            '307'
-          )}
-          {renderTable(
-            roadsIrrigationData,
-            'Roads & Irrigation',
-            <Road size={20} className="text-orange-600" />,
-            '308, 316'
-          )}
-          {renderTable(
-            agricultureData,
-            'Agriculture',
-            <Sprout size={20} className="text-green-600" />,
-            '315'
-          )}
-          {renderTable(
-            probationChildcareData,
-            'Probation & Childcare Social Services',
-            <Users size={20} className="text-red-600" />,
-            '319'
-          )}
-          {renderTable(
-            socialServicesData,
-            'Local Government',
-            <HeartHandshake size={20} className="text-purple-600" />,
-            '306'
-          )}
-          {renderTable(
-            localGovernmentData,
-            'Livestock',
-            <Building size={20} className="text-blue-500" />,
-            '312'
-          )}
-          {renderTable(
-            livestockData,
-            'Others',
-            <PawPrint size={20} className="text-emerald-600" />,
-            '300-325'
-          )}
-        </>
-      )}
-
-      {/* Filter Modal */}
-      {showFilterModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Filter Upkeep Report</h3>
-              <button
-                onClick={() => setShowFilterModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Year <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="year"
-                  value={filters.year}
-                  onChange={handleFilterChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        {/* Filter Modal */}
+        {showFilterModal && (
+          <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Filter Upkeep Report</h3>
+                <button
+                  onClick={() => setShowFilterModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition"
                 >
-                  <option value="">Select Year</option>
-                  {filterOptions.years.map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
+                  <X size={20} />
+                </button>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Month <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="month"
-                  value={filters.month}
-                  onChange={handleFilterChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Year <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="year"
+                    value={filters.year}
+                    onChange={handleFilterChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select Year</option>
+                    {filterOptions.years.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Month <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="month"
+                    value={filters.month}
+                    onChange={handleFilterChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select Month</option>
+                    {filterOptions.months.map(month => (
+                      <option key={month} value={month}>
+                        {monthNames[month]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    View Type
+                  </label>
+                  <select
+                    name="view_type"
+                    value={filters.view_type}
+                    onChange={handleFilterChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="cumulative">Cumulative (Jan - Month)</option>
+                    <option value="monthly">Monthly (Month only)</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {filters.view_type === 'cumulative'
+                      ? 'Shows cumulative expenditure from January to selected month'
+                      : 'Shows expenditure for the selected month only'}
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-3">
+                  <p className="text-xs text-blue-700">
+                    <strong>Note:</strong> This report shows allocation, expenditure and balance for all mantenance categories.
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    <strong>Allocation:</strong> From Budget table | <strong>Expenditure:</strong> DR(1000) - CR(2000)
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
+                <button
+                  onClick={() => setShowFilterModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
                 >
-                  <option value="">Select Month</option>
-                  {filterOptions.months.map(month => (
-                    <option key={month} value={month}>
-                      {monthNames[month]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  View Type
-                </label>
-                <select
-                  name="view_type"
-                  value={filters.view_type}
-                  onChange={handleFilterChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  Cancel
+                </button>
+                <button
+                  onClick={applyFilters}
+                  disabled={!filters.year || !filters.month}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <option value="cumulative">Cumulative (Jan - Month)</option>
-                  <option value="monthly">Monthly (Month only)</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  {filters.view_type === 'cumulative'
-                    ? 'Shows cumulative expenditure from January to selected month'
-                    : 'Shows expenditure for the selected month only'}
-                </p>
+                  Apply Filters
+                </button>
               </div>
-
-              <div className="bg-blue-50 rounded-lg p-3">
-                <p className="text-xs text-blue-700">
-                  <strong>Note:</strong> This report shows allocation, expenditure and balance for all mantenance categories.
-                </p>
-                <p className="text-xs text-blue-700 mt-1">
-                  <strong>Allocation:</strong> From Budget table | <strong>Expenditure:</strong> DR(1000) - CR(2000)
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-              <button
-                onClick={() => setShowFilterModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={applyFilters}
-                disabled={!filters.year || !filters.month}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Apply Filters
-              </button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 

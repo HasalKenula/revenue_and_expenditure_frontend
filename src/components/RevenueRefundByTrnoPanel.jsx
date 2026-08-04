@@ -15,6 +15,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -160,7 +161,7 @@ const RevenueRefundByTrnoPanel = () => {
     } catch (error) {
       console.error('Error fetching records:', error);
       if (error.response?.status !== 401) {
-        alert('Failed to fetch records: ' + (error.response?.data?.message || error.message));
+        toast.error('Failed to fetch records: ' + (error.response?.data?.message || error.message));
       }
     } finally {
       setLoading(false);
@@ -202,7 +203,7 @@ const RevenueRefundByTrnoPanel = () => {
 
   const applyFilters = () => {
     if (!filters.year) {
-      alert('Please select a Year');
+      toast.error('Please select a Year');
       return;
     }
     setAppliedFilters({ ...filters });
@@ -222,7 +223,7 @@ const RevenueRefundByTrnoPanel = () => {
   // Generate PDF Report
   const handleExportPDF = () => {
     if (records.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -244,7 +245,7 @@ const RevenueRefundByTrnoPanel = () => {
 
       // Set text color to black for header
       doc.setTextColor(0, 0, 0);
-      
+
       // Add Header
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
@@ -323,7 +324,7 @@ const RevenueRefundByTrnoPanel = () => {
         alternateRowStyles: { fillColor: [245, 245, 245] },
         margin: { top: 35, left: 15, right: 15 },
         tableWidth: 180,
-        didParseCell: function(data) {
+        didParseCell: function (data) {
           // Check if this is a subtotal row (Revenue Code Name is 'SUB TOTAL')
           if (data.section === 'body' && data.row.raw && data.row.raw[1] === 'SUB TOTAL') {
             data.cell.styles.fontStyle = 'bold';
@@ -344,7 +345,7 @@ const RevenueRefundByTrnoPanel = () => {
             data.cell.styles.fontSize = 8;
           }
         },
-        didDrawPage: function(data) {
+        didDrawPage: function (data) {
           // Footer is added after table generation
         }
       });
@@ -363,11 +364,11 @@ const RevenueRefundByTrnoPanel = () => {
 
       // Save PDF
       doc.save(`revenue_refund_by_trno_${appliedFilters.year}.pdf`);
-      alert('PDF exported successfully!');
+      toast.success('PDF exported successfully!');
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error('Failed to generate PDF: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -376,7 +377,7 @@ const RevenueRefundByTrnoPanel = () => {
   // Export CSV
   const handleExportCSV = async () => {
     if (records.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -396,11 +397,11 @@ const RevenueRefundByTrnoPanel = () => {
         a.download = `revenue_refund_by_trno_${appliedFilters.year}.csv`;
         a.click();
         window.URL.revokeObjectURL(url);
-        alert('CSV exported successfully!');
+        toast.success('CSV exported successfully!');
       }
     } catch (error) {
       console.error('Error exporting CSV:', error);
-      alert('Failed to export CSV: ' + (error.response?.data?.message || error.message));
+      toast.error('Failed to export CSV: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -420,337 +421,319 @@ const RevenueRefundByTrnoPanel = () => {
   );
 
   return (
-    <div className="space-y-6">
+
+    <>
       {/* Loading Overlay */}
       {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6">
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 shadow-xl">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading...</p>
           </div>
         </div>
       )}
 
-      {/* Page Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Revenue Refund (Categorized by Head) Report</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              View revenue refund grouped by TRNO with month-wise breakdown and subtotals
-            </p>
-          </div>
-          {appliedFilters.year && (
-            <div className="bg-blue-50 rounded-lg px-3 py-2">
-              <p className="text-sm text-blue-700">
-                <span className="font-medium">Selected:</span> {appliedFilters.year}
+      <div className="space-y-6">
+
+        {/* Page Header */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">Revenue Refund (Categorized by Head) Report</h1>
+              <p className="text-sm text-gray-500 mt-1">
+                View revenue refund grouped by TRNO with month-wise breakdown and subtotals
               </p>
+            </div>
+            {appliedFilters.year && (
+              <div className="bg-blue-50 rounded-lg px-3 py-2">
+                <p className="text-sm text-blue-700">
+                  <span className="font-medium">Selected:</span> {appliedFilters.year}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Active Filters Display */}
+        {appliedFilters.year && (
+          <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium text-blue-700">Applied Filters:</span>
+              {appliedFilters.year && (
+                <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
+                  <Calendar size={12} className="mr-1" />
+                  Year: {appliedFilters.year}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={clearFilters}
+              className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
+            >
+              <X size={14} /> Clear All
+            </button>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={() => setShowFilterModal(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
+          >
+            <Filter size={16} />
+            <span>Filter</span>
+          </button>
+          <button
+            onClick={handleExportPDF}
+            disabled={records.length === 0}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+              ? 'bg-red-600 text-white hover:bg-red-700'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+          >
+            <FileText size={16} />
+            <span>Export PDF</span>
+          </button>
+          <button
+            onClick={handleExportCSV}
+            disabled={records.length === 0}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${records.length > 0
+              ? 'bg-green-600 text-white hover:bg-green-700'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+          >
+            <Download size={16} />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={refreshData}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
+          >
+            <RefreshCw size={16} />
+            <span>Refresh</span>
+          </button>
+        </div>
+
+        {/* Records Table */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-700 min-w-[80px] border border-gray-300">
+                    Head
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[150px] border border-gray-300">
+                    Revenue Code Name
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[200px] border border-gray-300">
+                    Revenue Code (Head-Program-Project-SubProject-Object)
+                  </th>
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px] border border-gray-300">
+                    Refund Amount (Rs)
+                  </th>
+                  <th className="px-4 py-3 text-center font-semibold text-gray-700 min-w-[100px] border border-gray-300">
+                    Month
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {!appliedFilters.year ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-12 text-gray-500">
+                      <div className="flex flex-col items-center gap-2">
+                        <Filter size={40} className="text-gray-300" />
+                        <p>Please select a Year to view data</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : paginatedRecords.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-12 text-gray-500">
+                      <div className="flex flex-col items-center gap-2">
+                        <p>No records found for the selected year.</p>
+                        <button
+                          onClick={clearFilters}
+                          className="text-blue-600 hover:text-blue-800 text-sm"
+                        >
+                          Clear filters and try again
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedRecords.map((record, index) => {
+                    const isSubtotal = record.is_subtotal === true;
+                    const isGrandTotal = record.revenue_code_name === 'GRAND TOTAL';
+
+                    return (
+                      <tr
+                        key={index}
+                        className={`border-b border-gray-100 border border-gray-300 ${isSubtotal ? 'bg-gray-50' :
+                          isGrandTotal ? 'bg-gray-100' :
+                            'hover:bg-gray-50'
+                          }`}
+                      >
+                        <td className={`px-4 py-3 text-center font-medium border border-gray-300 ${isSubtotal || isGrandTotal ? 'font-bold' : 'text-gray-900'
+                          }`}>
+                          {record.trno || '-'}
+                        </td>
+                        <td className={`px-4 py-3 border border-gray-300 ${isSubtotal || isGrandTotal ? 'font-bold text-gray-700' : 'text-gray-600'
+                          }`}>
+                          {record.revenue_code_name || '-'}
+                        </td>
+                        <td className={`px-4 py-3 border border-gray-300 ${isSubtotal || isGrandTotal ? 'font-bold text-gray-700' : 'text-gray-700 font-medium'
+                          }`}>
+                          {isSubtotal || isGrandTotal ? '-' : formatCombinedCode(record)}
+                        </td>
+                        <td className={`px-4 py-3 text-right font-bold border border-gray-300 ${isSubtotal ? 'text-gray-700' :
+                          isGrandTotal ? 'text-gray-700 bg-gray-50' :
+                            'text-gray-600'
+                          }`}>
+                          {formatNumber(record.refund_amount || 0)}
+                        </td>
+                        <td className={`px-4 py-3 text-center border border-gray-300 ${isSubtotal || isGrandTotal ? 'text-gray-500' : 'text-gray-600'
+                          }`}>
+                          {record.month_name || '-'}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+              {paginatedRecords.length > 0 && (
+                <tfoot className="bg-gray-50 border-t border-gray-200">
+                  <tr className="font-semibold">
+                    <td className="px-4 py-3 text-center text-gray-700 border border-gray-300" colSpan="3">
+                      GRAND TOTAL
+                    </td>
+                    <td className="px-4 py-3 text-right text-gray-700 border border-gray-300">
+                      {formatNumber(totals.total_refund || 0)}
+                    </td>
+                    <td className="px-4 py-3 text-center text-gray-500 border border-gray-300">
+                      -
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {records.length > 0 && (
+            <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3 bg-white">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">Show</span>
+                <select
+                  value={entriesPerPage}
+                  onChange={(e) => {
+                    setEntriesPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <span className="text-sm text-gray-600">entries</span>
+                <span className="text-sm text-gray-500 ml-2">
+                  Showing {(currentPage - 1) * entriesPerPage + 1} to {Math.min(currentPage * entriesPerPage, totalRecords)} of {totalRecords}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <span className="text-sm text-gray-600">
+                  Page {currentPage} of {lastPage || 1}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
+                  disabled={currentPage === lastPage || lastPage === 0}
+                  className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
             </div>
           )}
         </div>
-      </div>
 
-      {/* Summary Cards */}
-      {appliedFilters.year && records.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Total Refund Records</p>
-            <p className="text-xl font-bold mt-1">{totals.total_records || 0}</p>
-          </div>
-          <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
-            <p className="text-sm opacity-90">Total Refund Amount</p>
-            <p className="text-xl font-bold mt-1">Rs{formatNumber(totals.total_refund || 0)}</p>
-          </div>
-        </div>
-      )}
+        {/* Filter Modal */}
+        {showFilterModal && (
+          <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Filter Revenue Refund By TRNO</h3>
+                <button
+                  onClick={() => setShowFilterModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition"
+                >
+                  <X size={20} />
+                </button>
+              </div>
 
-      {/* Active Filters Display */}
-      {appliedFilters.year && (
-        <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium text-blue-700">Applied Filters:</span>
-            {appliedFilters.year && (
-              <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
-                <Calendar size={12} className="mr-1" />
-                Year: {appliedFilters.year}
-              </span>
-            )}
-          </div>
-          <button 
-            onClick={clearFilters} 
-            className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
-          >
-            <X size={14} /> Clear All
-          </button>
-        </div>
-      )}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Year <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="year"
+                    value={filters.year}
+                    onChange={handleFilterChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select Year</option>
+                    {filterOptions.years.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Shows revenue refund data grouped by TRNO with subtotals
+                  </p>
+                </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3">
-        <button 
-          onClick={() => setShowFilterModal(true)} 
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm shadow-sm"
-        >
-          <Filter size={16} />
-          <span>Filter</span>
-        </button>
-        <button 
-          onClick={handleExportPDF} 
-          disabled={records.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            records.length > 0 
-              ? 'bg-red-600 text-white hover:bg-red-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          <FileText size={16} />
-          <span>Export PDF</span>
-        </button>
-        <button 
-          onClick={handleExportCSV} 
-          disabled={records.length === 0} 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition text-sm shadow-sm ${
-            records.length > 0 
-              ? 'bg-green-600 text-white hover:bg-green-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          <Download size={16} />
-          <span>Export CSV</span>
-        </button>
-        <button 
-          onClick={refreshData} 
-          className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm bg-white shadow-sm"
-        >
-          <RefreshCw size={16} />
-          <span>Refresh</span>
-        </button>
-      </div>
+                <div className="bg-blue-50 rounded-lg p-3">
+                  <p className="text-xs text-blue-700">
+                    <strong>Data Source:</strong> Monthly Fincances table (dr_cr_code=5000, dr_cr=DR)
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    <strong>Grouped by:</strong> TRNO with subtotals after each TRNO
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    <strong>Revenue Code Format:</strong> Head-Program-Project-SubProject-Object
+                  </p>
+                </div>
+              </div>
 
-      {/* Records Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-center font-semibold text-gray-700 min-w-[80px]">
-                  Head
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[150px]">
-                  Revenue Code Name
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[200px]">
-                  Revenue Code (Head-Program-Project-SubProject-Object)
-                </th>
-                <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px] bg-blue-50">
-                  Refund Amount (Rs)
-                </th>
-                <th className="px-4 py-3 text-center font-semibold text-gray-700 min-w-[100px]">
-                  Month
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {!appliedFilters.year ? (
-                <tr>
-                  <td colSpan="5" className="text-center py-12 text-gray-500">
-                    <div className="flex flex-col items-center gap-2">
-                      <Filter size={40} className="text-gray-300" />
-                      <p>Please select a Year to view data</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : paginatedRecords.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="text-center py-12 text-gray-500">
-                    <div className="flex flex-col items-center gap-2">
-                      <p>No records found for the selected year.</p>
-                      <button 
-                        onClick={clearFilters} 
-                        className="text-blue-600 hover:text-blue-800 text-sm"
-                      >
-                        Clear filters and try again
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                paginatedRecords.map((record, index) => {
-                  const isSubtotal = record.is_subtotal === true;
-                  const isGrandTotal = record.revenue_code_name === 'GRAND TOTAL';
-                  
-                  return (
-                    <tr 
-                      key={index} 
-                      className={`border-b border-gray-100 ${
-                        isSubtotal ? 'bg-blue-50' : 
-                        isGrandTotal ? 'bg-yellow-100' : 
-                        'hover:bg-gray-50'
-                      }`}
-                    >
-                      <td className={`px-4 py-3 text-center font-medium ${
-                        isSubtotal || isGrandTotal ? 'font-bold' : 'text-gray-900'
-                      }`}>
-                        {record.trno || '-'}
-                      </td>
-                      <td className={`px-4 py-3 ${
-                        isSubtotal || isGrandTotal ? 'font-bold text-gray-700' : 'text-gray-600'
-                      }`}>
-                        {record.revenue_code_name || '-'}
-                      </td>
-                      <td className={`px-4 py-3 ${
-                        isSubtotal || isGrandTotal ? 'font-bold text-gray-700' : 'text-gray-700 font-medium'
-                      }`}>
-                        {isSubtotal || isGrandTotal ? '-' : formatCombinedCode(record)}
-                      </td>
-                      <td className={`px-4 py-3 text-right font-bold ${
-                        isSubtotal ? 'text-blue-700 bg-blue-100' : 
-                        isGrandTotal ? 'text-green-700 bg-yellow-50' : 
-                        'text-blue-600 bg-blue-50'
-                      }`}>
-                        {formatNumber(record.refund_amount || 0)}
-                      </td>
-                      <td className={`px-4 py-3 text-center ${
-                        isSubtotal || isGrandTotal ? 'text-gray-500' : 'text-gray-600'
-                      }`}>
-                        {record.month_name || '-'}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-            {paginatedRecords.length > 0 && (
-              <tfoot className="bg-gray-50 border-t border-gray-200">
-                <tr className="font-semibold">
-                  <td className="px-4 py-3 text-center text-gray-700" colSpan="3">
-                    GRAND TOTAL
-                  </td>
-                  <td className="px-4 py-3 text-right text-green-700 bg-green-50">
-                    {formatNumber(totals.total_refund || 0)}
-                  </td>
-                  <td className="px-4 py-3 text-center text-gray-500">
-                    -
-                  </td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {records.length > 0 && (
-          <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3 bg-white">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Show</span>
-              <select 
-                value={entriesPerPage} 
-                onChange={(e) => { 
-                  setEntriesPerPage(Number(e.target.value)); 
-                  setCurrentPage(1); 
-                }} 
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-              <span className="text-sm text-gray-600">entries</span>
-              <span className="text-sm text-gray-500 ml-2">
-                Showing {(currentPage - 1) * entriesPerPage + 1} to {Math.min(currentPage * entriesPerPage, totalRecords)} of {totalRecords}
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-                disabled={currentPage === 1} 
-                className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <span className="text-sm text-gray-600">
-                Page {currentPage} of {lastPage || 1}
-              </span>
-              <button 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))} 
-                disabled={currentPage === lastPage || lastPage === 0} 
-                className="p-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition"
-              >
-                <ChevronRight size={16} />
-              </button>
+              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
+                <button
+                  onClick={() => setShowFilterModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={applyFilters}
+                  disabled={!filters.year}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Apply Filters
+                </button>
+              </div>
             </div>
           </div>
         )}
       </div>
-
-      {/* Filter Modal */}
-      {showFilterModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Filter Revenue Refund By TRNO</h3>
-              <button 
-                onClick={() => setShowFilterModal(false)} 
-                className="text-gray-400 hover:text-gray-600 transition"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Year <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="year"
-                  value={filters.year}
-                  onChange={handleFilterChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select Year</option>
-                  {filterOptions.years.map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  Shows revenue refund data grouped by TRNO with subtotals
-                </p>
-              </div>
-
-              <div className="bg-blue-50 rounded-lg p-3">
-                <p className="text-xs text-blue-700">
-                  <strong>Data Source:</strong> Monthly Fincances table (dr_cr_code=5000, dr_cr=DR)
-                </p>
-                <p className="text-xs text-blue-700 mt-1">
-                  <strong>Grouped by:</strong> TRNO with subtotals after each TRNO
-                </p>
-                <p className="text-xs text-blue-700 mt-1">
-                  <strong>Revenue Code Format:</strong> Head-Program-Project-SubProject-Object
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-              <button 
-                onClick={() => setShowFilterModal(false)} 
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={applyFilters} 
-                disabled={!filters.year}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
