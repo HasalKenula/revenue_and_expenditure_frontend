@@ -10,8 +10,9 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const SupplementaryPanel = () => {
   const navigate = useNavigate();
@@ -75,17 +76,17 @@ const SupplementaryPanel = () => {
         page: currentPage,
         per_page: entriesPerPage,
       };
-      
+
       if (filters.year) params.year = filters.year;
       if (filters.month) params.month = filters.month;
       if (filters.head) params.head = filters.head;
       if (filters.program) params.program = filters.program;
 
-      const response = await axios.get(`${API_BASE_URL}/supplementary/records`, { 
-        params, 
-        headers: getAuthHeaders() 
+      const response = await axios.get(`${API_BASE_URL}/supplementary/records`, {
+        params,
+        headers: getAuthHeaders()
       });
-      
+
       if (response.data.success) {
         setRecords(response.data.data || []);
         setTotalRecords(response.data.pagination?.total || 0);
@@ -97,11 +98,11 @@ const SupplementaryPanel = () => {
     } catch (error) {
       console.error('Error fetching records:', error);
       if (error.response?.status === 401) {
-        alert('Session expired. Please login again.');
+        toast.error('Session expired. Please login again.');
         localStorage.removeItem('token');
         navigate('/login');
       } else {
-        alert('Failed to fetch records');
+        toast.error('Failed to fetch records');
       }
     } finally {
       setLoading(false);
@@ -155,7 +156,7 @@ const SupplementaryPanel = () => {
   // Create new record
   const handleAddRecord = async () => {
     if (!newRecord.order_number) {
-      alert('Please fill Order Number');
+      toast.error('Please fill Order Number');
       return;
     }
 
@@ -177,7 +178,7 @@ const SupplementaryPanel = () => {
       }, { headers: getAuthHeaders() });
 
       if (response.data.success) {
-        alert('Record added successfully!');
+        toast.success('Record added successfully!');
         setNewRecord({
           order_number: '',
           year: '',
@@ -199,11 +200,11 @@ const SupplementaryPanel = () => {
     } catch (error) {
       console.error('Error adding record:', error);
       if (error.response?.status === 401) {
-        alert('Session expired. Please login again.');
+        toast.error('Session expired. Please login again.');
         localStorage.removeItem('token');
         navigate('/login');
       } else {
-        alert(error.response?.data?.message || 'Failed to add record');
+        toast.error(error.response?.data?.message || 'Failed to add record');
       }
     } finally {
       setLoading(false);
@@ -232,7 +233,7 @@ const SupplementaryPanel = () => {
       }, { headers: getAuthHeaders() });
 
       if (response.data.success) {
-        alert('Record updated successfully!');
+        toast.success('Record updated successfully!');
         setShowEditModal(false);
         setEditingRecord(null);
         fetchRecords();
@@ -241,11 +242,11 @@ const SupplementaryPanel = () => {
     } catch (error) {
       console.error('Error updating record:', error);
       if (error.response?.status === 401) {
-        alert('Session expired. Please login again.');
+        toast.error('Session expired. Please login again.');
         localStorage.removeItem('token');
         navigate('/login');
       } else {
-        alert(error.response?.data?.message || 'Failed to update record');
+        toast.error(error.response?.data?.message || 'Failed to update record');
       }
     } finally {
       setLoading(false);
@@ -255,7 +256,7 @@ const SupplementaryPanel = () => {
   // Delete selected records
   const handleDelete = async () => {
     if (selectedRows.length === 0) return;
-    if (!confirm(`Delete ${selectedRows.length} record(s)?`)) return;
+   // if (!confirm(`Delete ${selectedRows.length} record(s)?`)) return;
 
     setLoading(true);
     try {
@@ -264,18 +265,18 @@ const SupplementaryPanel = () => {
           headers: getAuthHeaders()
         });
       }
-      alert(`${selectedRows.length} record(s) deleted successfully`);
+      toast.success(`${selectedRows.length} record(s) deleted successfully`);
       setSelectedRows([]);
       fetchRecords();
       fetchSummary();
     } catch (error) {
       console.error('Error deleting records:', error);
       if (error.response?.status === 401) {
-        alert('Session expired. Please login again.');
+        toast.error('Session expired. Please login again.');
         localStorage.removeItem('token');
         navigate('/login');
       } else {
-        alert('Failed to delete records');
+        toast.error('Failed to delete records');
       }
     } finally {
       setLoading(false);
@@ -320,514 +321,497 @@ const SupplementaryPanel = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <>
       {/* Loading Overlay */}
       {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6">
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 shadow-xl">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Processing...</p>
+            <p className="mt-4 text-gray-600">Loading...</p>
           </div>
         </div>
       )}
 
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Supplementary Budget Management</h1>
-        <p className="text-sm text-gray-500 mt-1">Record and manage supplementary budget allocations (FR66P/FR66M)</p>
-      </div>
+      <div className="space-y-6">
 
-      {/* Summary Cards */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-5 text-white">
-          <p className="text-sm opacity-90">Total FR66P</p>
-          <p className="text-2xl font-bold mt-1">Rs{formatNumber(totals?.fr66p || 0)}</p>
-        </div>
-        <div className="bg-gradient-to-r from-orange-600 to-orange-700 rounded-xl p-5 text-white">
-          <p className="text-sm opacity-90">Total FR66M</p>
-          <p className="text-2xl font-bold mt-1">Rs{formatNumber(totals?.fr66m || 0)}</p>
-        </div>
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-5 text-white">
-          <p className="text-sm opacity-90">Total Supplementary</p>
-          <p className="text-2xl font-bold mt-1">Rs{formatNumber(totals?.supplementary || 0)}</p>
-        </div>
-        <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl p-5 text-white">
-          <p className="text-sm opacity-90">Total Records</p>
-          <p className="text-2xl font-bold mt-1">{totalRecords}</p>
-        </div>
-      </div> */}
 
-      {/* Action Buttons */}
-      <div className="flex gap-3">
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
-        >
-          <Plus size={16} />
-          <span>Add Supplementary Record</span>
-        </button>
-        <button
-          onClick={handleDelete}
-          disabled={selectedRows.length === 0}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm ${
-            selectedRows.length > 0 
-              ? 'bg-red-600 text-white hover:bg-red-700' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          <Trash2 size={16} />
-          <span>Delete ({selectedRows.length})</span>
-        </button>
-        <button
-          onClick={fetchRecords}
-          className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
-        >
-          <RefreshCw size={16} />
-          <span>Refresh</span>
-        </button>
-      </div>
+        {/* Page Header */}
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Supplementary Budget Management</h1>
+          <p className="text-sm text-gray-500 mt-1">Record and manage supplementary budget allocations (FR66P/FR66M)</p>
+        </div>
 
-      {/* Filter Section */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Filters</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <select
-            name="year"
-            value={filters.year}
-            onChange={handleFilterChange}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
           >
-            <option value="">All Years</option>
-            {years.map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-          <select
-            name="month"
-            value={filters.month}
-            onChange={handleFilterChange}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-          >
-            <option value="">All Months</option>
-            {months.map(month => (
-              <option key={month.value} value={month.value}>{month.label}</option>
-            ))}
-          </select>
-          <input
-            type="text"
-            name="head"
-            placeholder="Head Code"
-            value={filters.head}
-            onChange={handleFilterChange}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-          />
-          <input
-            type="text"
-            name="program"
-            placeholder="Program Code"
-            value={filters.program}
-            onChange={handleFilterChange}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-          />
-        </div>
-        <div className="flex gap-2 mt-3">
-          <button onClick={applyFilters} className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
-            Apply Filters
+            <Plus size={16} />
+            <span>Add Supplementary Record</span>
           </button>
-          <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-700">
-            Clear Filters
+          <button
+            onClick={handleDelete}
+            disabled={selectedRows.length === 0}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm ${selectedRows.length > 0
+                ? 'bg-red-600 text-white hover:bg-red-700'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+          >
+            <Trash2 size={16} />
+            <span>Delete ({selectedRows.length})</span>
+          </button>
+          <button
+            onClick={fetchRecords}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+          >
+            <RefreshCw size={16} />
+            <span>Refresh</span>
           </button>
         </div>
-      </div>
 
-      {/* Records Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3 w-8">
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.length === records.length && records.length > 0}
-                    onChange={handleSelectAll}
-                    className="rounded border-gray-300"
-                  />
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Order #</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Year/Month</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Head</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Program</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Project</th>
-                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Object</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR30P</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR30M</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Supplementary</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {records.length === 0 ? (
+        {/* Filter Section */}
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Filters</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <select
+              name="year"
+              value={filters.year}
+              onChange={handleFilterChange}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="">All Years</option>
+              {years.map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+            <select
+              name="month"
+              value={filters.month}
+              onChange={handleFilterChange}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="">All Months</option>
+              {months.map(month => (
+                <option key={month.value} value={month.value}>{month.label}</option>
+              ))}
+            </select>
+            <input
+              type="text"
+              name="head"
+              placeholder="Head Code"
+              value={filters.head}
+              onChange={handleFilterChange}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            />
+            <input
+              type="text"
+              name="program"
+              placeholder="Program Code"
+              value={filters.program}
+              onChange={handleFilterChange}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            />
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button onClick={applyFilters} className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+              Apply Filters
+            </button>
+            <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-700">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+
+        {/* Records Table */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <td colSpan="10" className="text-center py-8 text-gray-500">
-                    No records found. Add a supplementary record.
-                  </td>
+                  <th className="px-4 py-3 w-8">
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.length === records.length && records.length > 0}
+                      onChange={handleSelectAll}
+                      className="rounded border-gray-300"
+                    />
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Order #</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Year/Month</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Head</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Program</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Project</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Object</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR30P</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">FR30M</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Supplementary</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Actions</th>
                 </tr>
-              ) : (
-                records.map((record) => (
-                  <tr key={record.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-4 py-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedRows.includes(record.id)}
-                        onChange={() => handleSelectRow(record.id)}
-                        className="rounded border-gray-300"
-                      />
-                    </td>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{record.order_number || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {months.find(m => m.value === record.month)?.label || record.month} {record.year}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{record.head || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{record.program || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{record.project || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{record.object || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-right">Rs{formatNumber(record.fr66p)}</td>
-                    <td className="px-4 py-3 text-sm text-right">Rs{formatNumber(record.fr66m)}</td>
-                    <td className="px-4 py-3 text-sm text-right font-semibold text-blue-600">
-                      Rs{formatNumber(record.supplementary_amount)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => handleEdit(record)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        <Edit size={16} />
-                      </button>
+              </thead>
+              <tbody>
+                {records.length === 0 ? (
+                  <tr>
+                    <td colSpan="10" className="text-center py-8 text-gray-500">
+                      No records found. Add a supplementary record.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  records.map((record) => (
+                    <tr key={record.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.includes(record.id)}
+                          onChange={() => handleSelectRow(record.id)}
+                          className="rounded border-gray-300"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{record.order_number || '-'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {months.find(m => m.value === record.month)?.label || record.month} {record.year}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{record.head || '-'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{record.program || '-'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{record.project || '-'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{record.object || '-'}</td>
+                      <td className="px-4 py-3 text-sm text-right">Rs{formatNumber(record.fr66p)}</td>
+                      <td className="px-4 py-3 text-sm text-right">Rs{formatNumber(record.fr66m)}</td>
+                      <td className="px-4 py-3 text-sm text-right font-semibold text-blue-600">
+                        Rs{formatNumber(record.supplementary_amount)}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => handleEdit(record)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <Edit size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">Show</span>
+              <select
+                value={entriesPerPage}
+                onChange={(e) => {
+                  setEntriesPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+              <span className="text-sm text-gray-600">records</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="text-sm text-gray-600">
+                Page {currentPage} of {lastPage}
+              </span>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
+                disabled={currentPage === lastPage}
+                className="px-3 py-1 border rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Pagination */}
-        <div className="px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">Show</span>
-            <select
-              value={entriesPerPage}
-              onChange={(e) => {
-                setEntriesPerPage(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="border border-gray-300 rounded-md px-2 py-1 text-sm"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-            <span className="text-sm text-gray-600">records</span>
+        {/* Add Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Add Supplementary Record</h3>
+                <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {/* Add Modal Fields - Same as before */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Order Number *</label>
+                  <input
+                    type="text"
+                    value={newRecord.order_number}
+                    onChange={(e) => setNewRecord({ ...newRecord, order_number: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                  <select
+                    value={newRecord.year}
+                    onChange={(e) => setNewRecord({ ...newRecord, year: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select Year</option>
+                    {years.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
+                  <select
+                    value={newRecord.month}
+                    onChange={(e) => setNewRecord({ ...newRecord, month: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select Month</option>
+                    {months.map(month => (
+                      <option key={month.value} value={month.value}>{month.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Head Code</label>
+                  <input
+                    type="number"
+                    value={newRecord.head}
+                    onChange={(e) => setNewRecord({ ...newRecord, head: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Program Code</label>
+                  <input
+                    type="number"
+                    value={newRecord.program}
+                    onChange={(e) => setNewRecord({ ...newRecord, program: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Project Code</label>
+                  <input
+                    type="number"
+                    value={newRecord.project}
+                    onChange={(e) => setNewRecord({ ...newRecord, project: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Subproject Code</label>
+                  <input
+                    type="number"
+                    value={newRecord.subproject}
+                    onChange={(e) => setNewRecord({ ...newRecord, subproject: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Object Code</label>
+                  <input
+                    type="number"
+                    value={newRecord.object}
+                    onChange={(e) => setNewRecord({ ...newRecord, object: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Subobject Code</label>
+                  <input
+                    type="number"
+                    value={newRecord.subobject}
+                    onChange={(e) => setNewRecord({ ...newRecord, subobject: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">FR30P (Rs)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={newRecord.fr66p}
+                    onChange={(e) => setNewRecord({ ...newRecord, fr66p: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">FR30M (Rs)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={newRecord.fr66m}
+                    onChange={(e) => setNewRecord({ ...newRecord, fr66m: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Supplementary Amount (Rs)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={newRecord.supplementary_amount}
+                    onChange={(e) => setNewRecord({ ...newRecord, supplementary_amount: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddRecord}
+                  disabled={loading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {loading ? 'Adding...' : 'Add Record'}
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 border rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <span className="text-sm text-gray-600">
-              Page {currentPage} of {lastPage}
-            </span>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
-              disabled={currentPage === lastPage}
-              className="px-3 py-1 border rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            >
-              <ChevronRight size={16} />
-            </button>
+        )}
+
+        {/* Edit Modal */}
+        {showEditModal && editingRecord && (
+          <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Edit Supplementary Record</h3>
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingRecord(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Order Number</label>
+                  <input
+                    type="text"
+                    value={editingRecord.order_number || ''}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, order_number: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                  <select
+                    value={editingRecord.year || ''}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, year: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select Year</option>
+                    {years.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
+                  <select
+                    value={editingRecord.month || ''}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, month: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select Month</option>
+                    {months.map(month => (
+                      <option key={month.value} value={month.value}>{month.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Head Code</label>
+                  <input
+                    type="number"
+                    value={editingRecord.head || ''}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, head: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Program Code</label>
+                  <input
+                    type="number"
+                    value={editingRecord.program || ''}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, program: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">FR30P (Rs)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editingRecord.fr66p || 0}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, fr66p: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">FR30M (Rs)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editingRecord.fr66m || 0}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, fr66m: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Supplementary Amount (Rs)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editingRecord.supplementary_amount || 0}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, supplementary_amount: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingRecord(null);
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUpdateRecord}
+                  disabled={loading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {loading ? 'Updating...' : 'Update Record'}
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
-
-      {/* Add Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Add Supplementary Record</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600">
-                <X size={20} />
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {/* Add Modal Fields - Same as before */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Order Number *</label>
-                <input
-                  type="text"
-                  value={newRecord.order_number}
-                  onChange={(e) => setNewRecord({...newRecord, order_number: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                <select
-                  value={newRecord.year}
-                  onChange={(e) => setNewRecord({...newRecord, year: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Year</option>
-                  {years.map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
-                <select
-                  value={newRecord.month}
-                  onChange={(e) => setNewRecord({...newRecord, month: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Month</option>
-                  {months.map(month => (
-                    <option key={month.value} value={month.value}>{month.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Head Code</label>
-                <input
-                  type="number"
-                  value={newRecord.head}
-                  onChange={(e) => setNewRecord({...newRecord, head: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Program Code</label>
-                <input
-                  type="number"
-                  value={newRecord.program}
-                  onChange={(e) => setNewRecord({...newRecord, program: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Project Code</label>
-                <input
-                  type="number"
-                  value={newRecord.project}
-                  onChange={(e) => setNewRecord({...newRecord, project: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subproject Code</label>
-                <input
-                  type="number"
-                  value={newRecord.subproject}
-                  onChange={(e) => setNewRecord({...newRecord, subproject: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Object Code</label>
-                <input
-                  type="number"
-                  value={newRecord.object}
-                  onChange={(e) => setNewRecord({...newRecord, object: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subobject Code</label>
-                <input
-                  type="number"
-                  value={newRecord.subobject}
-                  onChange={(e) => setNewRecord({...newRecord, subobject: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">FR30P (Rs)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={newRecord.fr66p}
-                  onChange={(e) => setNewRecord({...newRecord, fr66p: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">FR30M (Rs)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={newRecord.fr66m}
-                  onChange={(e) => setNewRecord({...newRecord, fr66m: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Supplementary Amount (Rs)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={newRecord.supplementary_amount}
-                  onChange={(e) => setNewRecord({...newRecord, supplementary_amount: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddRecord}
-                disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {loading ? 'Adding...' : 'Add Record'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Modal */}
-      {showEditModal && editingRecord && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Edit Supplementary Record</h3>
-              <button
-                onClick={() => {
-                  setShowEditModal(false);
-                  setEditingRecord(null);
-                }}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Order Number</label>
-                <input
-                  type="text"
-                  value={editingRecord.order_number || ''}
-                  onChange={(e) => setEditingRecord({...editingRecord, order_number: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                <select
-                  value={editingRecord.year || ''}
-                  onChange={(e) => setEditingRecord({...editingRecord, year: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Year</option>
-                  {years.map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
-                <select
-                  value={editingRecord.month || ''}
-                  onChange={(e) => setEditingRecord({...editingRecord, month: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Month</option>
-                  {months.map(month => (
-                    <option key={month.value} value={month.value}>{month.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Head Code</label>
-                <input
-                  type="number"
-                  value={editingRecord.head || ''}
-                  onChange={(e) => setEditingRecord({...editingRecord, head: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Program Code</label>
-                <input
-                  type="number"
-                  value={editingRecord.program || ''}
-                  onChange={(e) => setEditingRecord({...editingRecord, program: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">FR30P (Rs)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={editingRecord.fr66p || 0}
-                  onChange={(e) => setEditingRecord({...editingRecord, fr66p: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">FR30M (Rs)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={editingRecord.fr66m || 0}
-                  onChange={(e) => setEditingRecord({...editingRecord, fr66m: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Supplementary Amount (Rs)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={editingRecord.supplementary_amount || 0}
-                  onChange={(e) => setEditingRecord({...editingRecord, supplementary_amount: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowEditModal(false);
-                  setEditingRecord(null);
-                }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleUpdateRecord}
-                disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {loading ? 'Updating...' : 'Update Record'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
