@@ -58,6 +58,7 @@ import RevenueCollectionAccountNumberPage from "./pages/RevenueCollectionAccount
 import RevenueReceiptsInCashPage from "./pages/RevenueReceiptsInCashPage";
 import RevenueReceiptsInCashSummaryPage from "./pages/RevenueReceiptsInCashSummaryPage";
 import RevenueReceiptsPage from "./pages/RevenueReceiptsPage";
+import RevenueOpeningBalancesPage from "./pages/RevenueOpeningBalancesPage";
 
 
 
@@ -541,6 +542,15 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="revenue_manager">
                             <RevenueReceiptsPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue-openningbalance"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueOpeningBalancesPage />
                         </RoleProtectedRoute>
                     }
                 />

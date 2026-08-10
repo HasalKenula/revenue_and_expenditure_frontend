@@ -218,6 +218,14 @@ const Sidebar = () => {
             </div>
 
 
+            <div>
+              <Link to="/revenue-openningbalance" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <DollarSign size={18} />
+                <span className="text-sm"> Revenue Opening Balance </span>
+              </Link>
+            </div>
+
+
             {/*  revenue_reports */}
             <div>
               <Link to="/revenue_reports" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
