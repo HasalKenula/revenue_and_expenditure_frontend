@@ -234,6 +234,34 @@ const Sidebar = () => {
               </Link>
             </div>
 
+            <div>
+              <Link to="/money-transist" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <DollarSign size={18} />
+                <span className="text-sm"> money </span>
+              </Link>
+            </div>
+            <div>
+              <Link to="/nature-revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <DollarSign size={18} />
+                <span className="text-sm"> nature_of _revenue </span>
+              </Link>
+            </div>
+
+            <div>
+              <Link to="/actual-revenue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <DollarSign size={18} />
+                <span className="text-sm"> actual_revenue </span>
+              </Link>
+            </div>
+
+            <div>
+              <Link to="/cash-transist" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <DollarSign size={18} />
+                <span className="text-sm"> Cash In Transist </span>
+              </Link>
+            </div>
+
+
 
           </>
         )}
