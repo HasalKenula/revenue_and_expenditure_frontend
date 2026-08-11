@@ -27,7 +27,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ;
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -124,7 +124,7 @@ const Sidebar = () => {
       <div className="p-4 border-b border-gray-200">
         <h1 className="text-xl font-bold text-gray-800">FinSystem</h1>
         <p className="text-xs text-gray-500 mt-1">Southern Province</p>
-       
+
       </div>
 
       {/* Navigation */}
@@ -150,17 +150,19 @@ const Sidebar = () => {
             <div className="px-4 py-1 text-xs text-gray-400 font-semibold uppercase tracking-wider">
               User Menu
             </div>
-            <div>
-              <Link to="/head" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <Upload size={18} />
-                <span className="text-sm">Head Upload</span>
-              </Link>
-            </div>
+
 
             <div>
               <Link to="/user_upload" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <Upload size={18} />
-                <span className="text-sm">User Upload</span>
+                <span className="text-sm">Finance Summary Upload</span>
+              </Link>
+            </div>
+
+            <div>
+              <Link to="/head" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <Upload size={18} />
+                <span className="text-sm">Head Reports</span>
               </Link>
             </div>
           </>
@@ -207,23 +209,6 @@ const Sidebar = () => {
                 <span className="text-sm">Account data</span>
               </Link>
             </div>
-
-            {/* Head Info - Both */}
-            {/* <div>
-              <Link to="/headinfo" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <BookOpen size={18} />
-                <span className="text-sm">Head Info</span>
-              </Link>
-            </div> */}
-
-            {/* Item Code - Both */}
-            {/* <div>
-              <Link to="/itemcode" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                <Grid size={18} />
-                <span className="text-sm">Item Code</span>
-              </Link>
-            </div> */}
-
 
 
             {/*  revenue_reports */}
