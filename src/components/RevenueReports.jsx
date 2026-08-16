@@ -60,7 +60,10 @@ const RevenueReports = () => {
         { id: 'revenue_refundByHead', name: 'Revenue Refund EntryBy Head', path: '/revenue_refundByHead', icon: FileText },
         { id: 'revenue-collection-account-number', name: 'Revenue Collection by Account', path: '/revenue-collection-account-number', icon: FileText },
         { id: 'revenue-receipts-in-cash', name: 'Revenue Receipts In Cash', path: '/revenue-receipts-in-cash', icon: FileSpreadsheet },
-
+        { id: 'money-transist', name: 'Money Transist', path: '/money-transist', icon: FileSpreadsheet },
+        { id: 'nature-revenue', name: 'Nature Revenue', path: '/nature-revenue', icon: FileText },
+        { id: 'actual-revenue', name: 'Actual Revenue', path: '/actual-revenue', icon: FileText },
+        { id: 'cash-transist', name: 'Cash In Transist', path: '/cash-transist', icon: FileSpreadsheet },
 
       ]
     },
