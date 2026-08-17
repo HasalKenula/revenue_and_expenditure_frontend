@@ -63,6 +63,7 @@ import ActualRevenueReportPage from "./pages/ActualRevenueReportPage";
 import NatureOfRevenuePage from "./pages/NatureOfRevenuePage";
 import CashInTransactionPage from "./pages/CashInTransactionPage";
 import MoneyTransistsPage from "./pages/MoneyTransistsPage";
+import NetExpenditurePercentagePage from "./pages/NetExpenditurePercentagePage";
 
 
 
@@ -592,6 +593,15 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="revenue_manager">
                             <ActualRevenueReportPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                 <Route
+                    path="/net-expenditure-percentage"
+                    element={
+                        <RoleProtectedRoute requiredRoles="expenditure_manager">
+                            <NetExpenditurePercentagePage />
                         </RoleProtectedRoute>
                     }
                 />

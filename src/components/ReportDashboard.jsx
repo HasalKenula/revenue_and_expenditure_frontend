@@ -62,6 +62,8 @@ const ReportDashboard = () => {
         { id: 'upkeep', name: 'Mainteneance', path: '/upkeep', icon: FileSpreadsheet },
         { id: 'stamp-month', name: 'Stamp Monthly', path: '/stamp-month', icon: FileSpreadsheet },
         { id: 'transfer-monthly', name: 'Transfer Monthly', path: '/transfer-monthly', icon: FileSpreadsheet },
+           { id: 'net-expenditure-percentage', name: 'Net Expenditure Percentage', path: '/net-expenditure-percentage', icon: FileSpreadsheet },
+       
       ]
     },
     {
