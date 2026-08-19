@@ -288,7 +288,7 @@ const CashInTransaction = () => {
 
     try {
       const doc = new jsPDF({
-        orientation: 'landscape',
+        orientation: 'portrate',
         unit: 'mm',
         format: 'a4'
       });
@@ -359,13 +359,13 @@ const CashInTransaction = () => {
           textColor: [0, 0, 0],
         },
         columnStyles: {
-          0: { cellWidth: 40, halign: 'left' },
-          1: { cellWidth: 50, halign: 'left' },
-          2: { cellWidth: 28, halign: 'right' },
-          3: { cellWidth: 28, halign: 'right' },
-          4: { cellWidth: 28, halign: 'right' },
-          5: { cellWidth: 28, halign: 'right' },
-          6: { cellWidth: 28, halign: 'right', fontStyle: 'bold', fillColor: [255, 215, 0] }
+          0: { cellWidth: 25, halign: 'left' },
+          1: { cellWidth: 40, halign: 'left' },
+          2: { cellWidth: 25, halign: 'right' },
+          3: { cellWidth: 25, halign: 'right' },
+          4: { cellWidth: 25, halign: 'right' },
+          5: { cellWidth: 25, halign: 'right' },
+          6: { cellWidth: 25, halign: 'right', fontStyle: 'bold'}
         },
         alternateRowStyles: { fillColor: [245, 245, 245] },
         margin: { top: 40, left: 10, right: 10 },
