@@ -559,10 +559,10 @@ const RevenueReceiptsInCashSummary = () => {
                                 ) : (
                                     paginatedRecords.map((record, index) => {
                                         const isOther = record.account_number === 'Repop & Fixed';
-                                        const bgColor = isOther ? 'bg-yellow-50' : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50');
+                                        const bgColor = isOther ? 'bg-white' : (index % 2 === 0 ? 'bg-white' : 'bg-white');
 
                                         return (
-                                            <tr key={index} className={`border-b border-gray-100 hover:bg-gray-50 transition ${bgColor}`}>
+                                            <tr key={index} className={`border-b   transition ${bgColor}`}>
                                                 <td className={`px-6 py-3 font-medium border border-gray-300 ${isOther ? 'text-gray-700' : 'text-gray-700'}`}>
                                                     {record.account_number}
                                                 </td>
