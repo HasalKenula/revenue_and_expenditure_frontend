@@ -498,32 +498,6 @@ const CashInTransaction = () => {
           </div>
         </div>
 
-        {/* Summary Cards */}
-        {appliedFilters.year && records.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Opening Balance (Jan)</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(grandTotals.opening_balance)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Revenue Collection</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(grandTotals.revenue_collection)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Revenue Receipt</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(grandTotals.revenue_receipt)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Adjustment</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(grandTotals.adjustment)}</p>
-            </div>
-            <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-sm opacity-90">Total Cash IN Transist (Dec)</p>
-              <p className="text-xl font-bold mt-1">Rs{formatNumber(grandTotals.cash_in_transist)}</p>
-            </div>
-          </div>
-        )}
-
         {/* Active Filters Display */}
         {appliedFilters.year && appliedFilters.selected_accounts.length > 0 && (
           <div className="bg-blue-50 rounded-lg p-4 flex flex-wrap items-center justify-between">
@@ -537,7 +511,6 @@ const CashInTransaction = () => {
               )}
               {appliedFilters.selected_accounts.length > 0 && (
                 <span className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-md text-sm">
-                  <DollarSign size={12} className="mr-1" />
                   {appliedFilters.selected_accounts.length} Account(s) Selected
                 </span>
               )}
@@ -604,19 +577,19 @@ const CashInTransaction = () => {
                   <th className="px-4 py-3 text-left font-semibold text-gray-700 min-w-[200px]">
                     Account Name
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-white bg-blue-600 min-w-[130px]">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px]">
                     Opening Balance (Jan)
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-white bg-green-600 min-w-[130px]">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px]">
                     Revenue Collection (Total)
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-white bg-red-600 min-w-[130px]">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px]">
                     Revenue Receipt (Total)
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-white bg-purple-600 min-w-[130px]">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px]">
                     Adjustment (Total Transists)
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-white bg-yellow-600 min-w-[130px]">
+                  <th className="px-4 py-3 text-right font-semibold text-gray-700 min-w-[130px]">
                     Cash IN Transist (Dec)
                   </th>
                 </tr>
@@ -649,26 +622,26 @@ const CashInTransaction = () => {
                   paginatedRecords.map((record, index) => {
                     const isEven = index % 2 === 0;
                     return (
-                      <tr key={index} className={`border-b border-gray-100 hover:bg-gray-50 transition ${isEven ? 'bg-white' : 'bg-gray-50'}`}>
+                      <tr key={index} className={`border-b border-gray-100  transition ${isEven ? 'bg-white' : 'bg-white'}`}>
                         <td className="px-4 py-3 font-medium text-blue-700">
                           {record.account_number}
                         </td>
                         <td className="px-4 py-3 text-gray-600">
                           {record.account_name || '-'}
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-blue-700">
+                        <td className="px-4 py-3 text-right text-gray-700">
                           {formatNumber(record.opening_balance)}
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-green-700">
+                        <td className="px-4 py-3 text-right text-gray-700">
                           {formatNumber(record.revenue_collection)}
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-red-700">
+                        <td className="px-4 py-3 text-right text-gray-700">
                           {formatNumber(record.revenue_receipt)}
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-purple-700">
+                        <td className="px-4 py-3 text-right text-gray-700">
                           {formatNumber(record.adjustment)}
                         </td>
-                        <td className="px-4 py-3 text-right font-mono font-bold text-yellow-800 bg-yellow-50">
+                        <td className="px-4 py-3 text-right font-bold text-gray-800">
                           {formatNumber(record.cash_in_transist)}
                         </td>
                       </tr>
@@ -677,24 +650,24 @@ const CashInTransaction = () => {
                 )}
               </tbody>
               {paginatedRecords.length > 0 && (
-                <tfoot className="bg-gray-800 border-t border-gray-700">
+                <tfoot className="border-t border-gray-700">
                   <tr>
                     <td className="px-4 py-3 text-right font-bold text-white" colSpan="2">
                       GRAND TOTAL
                     </td>
-                    <td className="px-4 py-3 text-right font-bold text-white font-mono bg-blue-700">
+                    <td className="px-4 py-3 text-right font-bold text-gray">
                       {formatNumber(grandTotals.opening_balance)}
                     </td>
-                    <td className="px-4 py-3 text-right font-bold text-white font-mono bg-green-700">
+                    <td className="px-4 py-3 text-right font-bold text-gray">
                       {formatNumber(grandTotals.revenue_collection)}
                     </td>
-                    <td className="px-4 py-3 text-right font-bold text-white font-mono bg-red-700">
+                    <td className="px-4 py-3 text-right font-bold text-gray">
                       {formatNumber(grandTotals.revenue_receipt)}
                     </td>
-                    <td className="px-4 py-3 text-right font-bold text-white font-mono bg-purple-700">
+                    <td className="px-4 py-3 text-right font-bold text-gray">
                       {formatNumber(grandTotals.adjustment)}
                     </td>
-                    <td className="px-4 py-3 text-right font-bold text-white font-mono bg-yellow-600">
+                    <td className="px-4 py-3 text-right font-bold text-gray">
                       {formatNumber(grandTotals.cash_in_transist)}
                     </td>
                   </tr>
