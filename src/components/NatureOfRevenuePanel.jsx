@@ -246,20 +246,12 @@ const NatureOfRevenuePanel = () => {
 
       // ===== HEADER with Decoration =====
 
-      // Top color bar
-      doc.setFillColor(26, 86, 219);
-      doc.rect(10, 10, pageWidth - 20, 3, 'F');
-
-      doc.setFillColor(59, 130, 246);
-      doc.rect(10, 13, pageWidth - 20, 2, 'F');
-
-      doc.setFillColor(147, 197, 253);
-      doc.rect(10, 15, pageWidth - 20, 1, 'F');
+      
 
       // Title
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(26, 86, 219);
+      doc.setTextColor(0, 0, 0);
       doc.text('NATURE OF REVENUE REPORT', pageWidth / 2, 30, { align: 'center' });
 
       // Subtitle
@@ -280,8 +272,7 @@ const NatureOfRevenuePanel = () => {
       doc.setTextColor(156, 163, 175);
       doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth - 20, 52, { align: 'right' });
 
-      // Bottom border line
-      doc.setDrawColor(26, 86, 219);
+     
       doc.setLineWidth(0.5);
       doc.line(10, 56, pageWidth - 10, 56);
 
@@ -292,11 +283,11 @@ const NatureOfRevenuePanel = () => {
 
       // Define category colors
       const categoryColors = {
-        'Taxes on Local Goods and services': [219, 234, 254],
-        'Licence Fees & others': [209, 250, 229],
-        'Revenue on Government Assets': [254, 243, 199],
-        'Sales and Charges': [252, 228, 236],
-        'Sales of Capital Assets': [224, 231, 255]
+        'Taxes on Local Goods and services': [255, 255, 255],
+        'Licence Fees & others': [255, 255, 255],
+        'Revenue on Government Assets': [255, 255, 255],
+        'Sales and Charges': [255, 255, 255],
+        'Sales of Capital Assets': [255, 255, 255]
       };
 
       // Build table data
@@ -309,9 +300,9 @@ const NatureOfRevenuePanel = () => {
 
         // Category header row
         tableBody.push([
-          { content: category, colSpan: 1, styles: { fontStyle: 'bold', fillColor: bgColor, textColor: [30, 64, 175] } },
+          { content: category, colSpan: 1, styles: { fontStyle: 'bold', fillColor: bgColor, textColor: [0, 0, 0] } },
           { content: '', styles: { fillColor: bgColor } },
-          { content: formatNumberCompact(total), styles: { halign: 'right', fontStyle: 'bold', fillColor: bgColor, textColor: [30, 64, 175] } }
+          { content: formatNumberCompact(total), styles: { halign: 'right', fontStyle: 'bold', fillColor: bgColor, textColor: [0, 0, 0] } }
         ]);
 
         // Items
@@ -321,7 +312,7 @@ const NatureOfRevenuePanel = () => {
           const netRevenue = item.net_revenue || 0;
 
           tableBody.push([
-            { content: code, styles: { font: 'courier', fontSize: 8, textColor: [75, 85, 99] } },
+            { content: code, styles: { fontSize: 8, textColor: [0, 0, 0] } },
             name,
             { content: formatNumberCompact(netRevenue), styles: { halign: 'right' } }
           ]);
@@ -329,16 +320,16 @@ const NatureOfRevenuePanel = () => {
 
         // Spacing row
         tableBody.push([
-          { content: '', styles: { fillColor: [249, 250, 251] } },
-          { content: '', styles: { fillColor: [249, 250, 251] } },
-          { content: '', styles: { fillColor: [249, 250, 251] } }
+          { content: '', styles: {  } },
+          { content: '', styles: {  } },
+          { content: '', styles: {  } }
         ]);
       });
 
       // Grand Total row
       tableBody.push([
-        { content: 'GRAND TOTAL', colSpan: 2, styles: { fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } },
-        { content: formatNumberCompact(grandTotal), styles: { halign: 'right', fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } }
+        { content: 'GRAND TOTAL', colSpan: 2, styles: { fontStyle: 'bold', fillColor: [255, 255, 255], textColor: [0, 0, 0] } },
+        { content: formatNumberCompact(grandTotal), styles: { halign: 'right', fontStyle: 'bold', fillColor: [255, 255, 255], textColor: [0, 0, 0] } }
       ]);
 
       autoTable(doc, {
@@ -347,7 +338,7 @@ const NatureOfRevenuePanel = () => {
         startY: 62,
         theme: 'grid',
         headStyles: {
-          fillColor: [26, 86, 219],
+          fillColor: [41, 128, 185],
           textColor: [255, 255, 255],
           fontSize: 9,
           fontStyle: 'bold',
@@ -356,7 +347,8 @@ const NatureOfRevenuePanel = () => {
         },
         bodyStyles: {
           fontSize: 8,
-          cellPadding: 3
+          cellPadding: 3,
+          textColor: [0, 0, 0],
         },
         columnStyles: {
           0: { cellWidth: 45 },

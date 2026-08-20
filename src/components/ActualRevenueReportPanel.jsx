@@ -208,22 +208,12 @@ const ActualRevenueReportPanel = () => {
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
 
-      // ===== HEADER with Decoration =====
-
-      // Top color bar
-      doc.setFillColor(26, 86, 219);
-      doc.rect(10, 8, pageWidth - 20, 3, 'F');
-
-      doc.setFillColor(59, 130, 246);
-      doc.rect(10, 11, pageWidth - 20, 2, 'F');
-
-      doc.setFillColor(147, 197, 253);
-      doc.rect(10, 13, pageWidth - 20, 1, 'F');
+      
 
       // Title
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(26, 86, 219);
+      doc.setTextColor(0, 0, 0);
       doc.text('MONTHLY REVENUE REPORT', pageWidth / 2, 28, { align: 'center' });
 
       // Subtitle
@@ -232,15 +222,14 @@ const ActualRevenueReportPanel = () => {
       doc.setTextColor(55, 65, 81);
       const monthText = selectedMonthName || monthNames[appliedFilters.month] || '';
       const yearText = selectedYear || appliedFilters.year || '';
-      doc.text(`Year: ${yearText}  |  Month: ${monthText}  |  Province: ${province}  |  (Rs.'000)`, pageWidth / 2, 36, { align: 'center' });
+      doc.text(`Year: ${yearText}  |  Month: ${monthText}  |  Province: ${province}`, pageWidth / 2, 36, { align: 'center' });
 
       // Generation date
       doc.setFontSize(8);
       doc.setTextColor(156, 163, 175);
       doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth - 20, 43, { align: 'right' });
 
-      // Bottom border line
-      doc.setDrawColor(26, 86, 219);
+      
       doc.setLineWidth(0.5);
       doc.line(10, 47, pageWidth - 10, 47);
 
@@ -264,12 +253,12 @@ const ActualRevenueReportPanel = () => {
 
       // Define section colors
       const sectionColors = {
-        'A': [219, 234, 254],
-        'B': [209, 250, 229],
-        'C': [254, 243, 199],
-        'D': [252, 228, 236],
-        'E': [224, 231, 255],
-        'F': [243, 244, 246]
+        'A': [255, 255, 255],
+        'B': [255, 255, 255],
+        'C': [255, 255, 255],
+        'D': [255, 255, 255],
+        'E': [255, 255, 255],
+        'F': [255, 255, 255]
       };
 
       Object.keys(reportData).forEach(sectionKey => {
@@ -285,8 +274,8 @@ const ActualRevenueReportPanel = () => {
 
         // Section header
         tableBody.push([
-          { content: sectionKey, styles: { fontStyle: 'bold', fillColor: bgColor, textColor: [30, 64, 175] } },
-          { content: section.title, colSpan: 2, styles: { fontStyle: 'bold', fillColor: bgColor, textColor: [30, 64, 175] } },
+          { content: sectionKey, styles: { fontStyle: 'bold', fillColor: bgColor, textColor: [0, 0, 0] } },
+          { content: section.title, colSpan: 2, styles: { fontStyle: 'bold', fillColor: bgColor, textColor: [0, 0, 0] } },
           { content: '', styles: { fillColor: bgColor } },
           { content: '', styles: { fillColor: bgColor } },
           { content: '', styles: { fillColor: bgColor } },
@@ -320,7 +309,7 @@ const ActualRevenueReportPanel = () => {
             tableBody.push([
               itemCounter,
               name,
-              { content: code, styles: { font: 'courier', fontSize: 7, textColor: [75, 85, 99] } },
+              { content: code, styles: {fontSize: 7, textColor: [0, 0, 0] } },
               { content: formatNumber(item.scheduled_target || 0), styles: { halign: 'right' } },
               { content: formatNumber(item.previous_month || 0), styles: { halign: 'right' } },
               { content: formatNumber(item.revenue_value || 0), styles: { halign: 'right' } },
@@ -336,14 +325,14 @@ const ActualRevenueReportPanel = () => {
       // Grand Total
       if (grandTotalData) {
         tableBody.push([
-          { content: '', colSpan: 3, styles: { fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } },
-          { content: 'Grand Total (E+F)', colSpan: 1, styles: { fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } },
-          { content: formatNumber(grandTotalData.total_revenue || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } },
-          { content: formatNumber(grandTotalData.total_revenue || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } },
-          { content: formatNumber(grandTotalData.total_cumulative || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } },
-          { content: formatNumber(grandTotalData.total_scheduled || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } },
-          { content: formatNumber(grandTotalData.total_scheduled || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } },
-          { content: formatNumber(grandTotalData.total_cumulative_scheduled || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [26, 86, 219], textColor: [255, 255, 255] } }
+          { content: '', colSpan: 3, styles: { fontStyle: 'bold', fillColor: [255, 255, 255], textColor: [0, 0, 0] } },
+          { content: 'Grand Total (E+F)', colSpan: 1, styles: { fontStyle: 'bold', fillColor: [255, 255, 255], textColor: [0, 0, 0] } },
+          { content: formatNumber(grandTotalData.total_revenue || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [255, 255, 255], textColor: [0, 0, 0] } },
+          { content: formatNumber(grandTotalData.total_revenue || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [255, 255, 255], textColor: [0, 0, 0] } },
+          { content: formatNumber(grandTotalData.total_cumulative || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [255, 255, 255], textColor: [0, 0, 0] } },
+          { content: formatNumber(grandTotalData.total_scheduled || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [255, 255, 255], textColor:[0, 0, 0] } },
+          { content: formatNumber(grandTotalData.total_scheduled || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [255, 255, 255], textColor: [0, 0, 0] } },
+          { content: formatNumber(grandTotalData.total_cumulative_scheduled || 0), styles: { halign: 'right', fontStyle: 'bold', fillColor: [255, 255, 255], textColor:[0, 0, 0]} }
         ]);
       }
 
@@ -353,7 +342,7 @@ const ActualRevenueReportPanel = () => {
         startY: 53,
         theme: 'grid',
         headStyles: {
-          fillColor: [26, 86, 219],
+          fillColor: [41, 128, 185],
           textColor: [255, 255, 255],
           fontSize: 7,
           fontStyle: 'bold',
@@ -362,22 +351,23 @@ const ActualRevenueReportPanel = () => {
         },
         bodyStyles: {
           fontSize: 7,
-          cellPadding: 2
+          cellPadding: 2,
+          textColor: [0, 0, 0]
         },
         columnStyles: {
           0: { cellWidth: 10, halign: 'center' },
           1: { cellWidth: 65 },
-          2: { cellWidth: 28, halign: 'center' },
-          3: { cellWidth: 28, halign: 'right' },
-          4: { cellWidth: 32, halign: 'right' },
-          5: { cellWidth: 28, halign: 'right' },
-          6: { cellWidth: 32, halign: 'right' },
-          7: { cellWidth: 32, halign: 'right' },
-          8: { cellWidth: 28, halign: 'right' },
-          9: { cellWidth: 32, halign: 'right' }
+          2: { cellWidth: 38, halign: 'center' },
+          3: { cellWidth: 38, halign: 'right' },
+          4: { cellWidth: 38, halign: 'right' },
+          5: { cellWidth: 38, halign: 'right' },
+          6: { cellWidth: 38, halign: 'right' },
+          7: { cellWidth: 38, halign: 'right' },
+          8: { cellWidth: 38, halign: 'right' },
+          9: { cellWidth: 38, halign: 'right' }
         },
         alternateRowStyles: { fillColor: [249, 250, 251] },
-        margin: { top: 53, left: 10, right: 10, bottom: 15 },
+        margin: { top: 53, left: 20, right: 20, bottom: 15 },
         didDrawPage: function (data) {
           const pageCount = doc.internal.getNumberOfPages();
           for (let i = 1; i <= pageCount; i++) {
