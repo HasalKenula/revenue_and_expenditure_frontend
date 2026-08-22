@@ -17,8 +17,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -167,7 +168,7 @@ const NatureOfRevenuePanel = () => {
     } catch (error) {
       console.error('Error fetching records:', error);
       if (error.response?.status !== 401) {
-        alert('Failed to fetch records: ' + (error.response?.data?.message || error.message));
+        toast.error('Failed to fetch records: ' + (error.response?.data?.message || error.message));
       }
     } finally {
       setLoading(false);
@@ -206,7 +207,7 @@ const NatureOfRevenuePanel = () => {
 
   const applyFilters = () => {
     if (!filters.year || !filters.month) {
-      alert('Please select both Year and Month');
+      toast.error('Please select both Year and Month');
       return;
     }
     setAppliedFilters({ ...filters });
@@ -228,7 +229,7 @@ const NatureOfRevenuePanel = () => {
 
   const handleExportPDF = () => {
     if (records.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -389,11 +390,11 @@ const NatureOfRevenuePanel = () => {
       });
 
       doc.save(`nature_of_revenue_report_${yearText}_${monthText}.pdf`);
-      alert('PDF exported successfully!');
+      toast.success('PDF exported successfully!');
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error('Failed to generate PDF: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -401,7 +402,7 @@ const NatureOfRevenuePanel = () => {
 
   const handleExportCSV = async () => {
     if (records.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -427,11 +428,11 @@ const NatureOfRevenuePanel = () => {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-        alert('CSV exported successfully!');
+        toast.success('CSV exported successfully!');
       }
     } catch (error) {
       console.error('Error exporting CSV:', error);
-      alert('Failed to export CSV: ' + (error.response?.data?.message || error.message));
+      toast.error('Failed to export CSV: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
