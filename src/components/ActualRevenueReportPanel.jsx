@@ -14,8 +14,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -133,7 +134,7 @@ const ActualRevenueReportPanel = () => {
     } catch (error) {
       console.error('Error fetching records:', error);
       if (error.response?.status !== 401) {
-        alert('Failed to fetch records: ' + (error.response?.data?.message || error.message));
+        toast.error('Failed to fetch records: ' + (error.response?.data?.message || error.message));
       }
     } finally {
       setLoading(false);
@@ -172,7 +173,7 @@ const ActualRevenueReportPanel = () => {
 
   const applyFilters = () => {
     if (!filters.year || !filters.month) {
-      alert('Please select both Year and Month');
+      toast.error('Please select both Year and Month');
       return;
     }
     setAppliedFilters({ ...filters });
@@ -192,7 +193,7 @@ const ActualRevenueReportPanel = () => {
 
   const handleExportPDF = () => {
     if (Object.keys(reportData).length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -399,11 +400,11 @@ const ActualRevenueReportPanel = () => {
       });
 
       doc.save(`Monthly_Revenue_Report_${yearText}_${monthText}.pdf`);
-      alert('PDF exported successfully!');
+      toast.success('PDF exported successfully!');
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error('Failed to generate PDF: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -412,7 +413,7 @@ const ActualRevenueReportPanel = () => {
 
   const handleExportCSV = () => {
     if (Object.keys(reportData).length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -471,7 +472,7 @@ const ActualRevenueReportPanel = () => {
     a.download = `Monthly_Revenue_Report_${selectedYear}_${selectedMonthName}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
-    alert('CSV exported successfully!');
+    toast.success('CSV exported successfully!');
   };
 
   const refreshData = () => {
