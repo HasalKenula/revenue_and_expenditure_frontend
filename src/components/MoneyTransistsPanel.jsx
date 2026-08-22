@@ -15,6 +15,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -169,7 +170,7 @@ const MoneyTransists = () => {
     } catch (error) {
       console.error('Error fetching records:', error);
       if (error.response?.status !== 401) {
-        alert('Failed to fetch records: ' + (error.response?.data?.message || error.message));
+        toast.error('Failed to fetch records: ' + (error.response?.data?.message || error.message));
       }
     } finally {
       setLoading(false);
@@ -213,7 +214,7 @@ const MoneyTransists = () => {
 
   const applyFilters = () => {
     if (!filters.year) {
-      alert('Please select a Year');
+      toast.error('Please select a Year');
       return;
     }
     setAppliedFilters({ ...filters });
@@ -311,7 +312,7 @@ const MoneyTransists = () => {
   // Generate PDF Report with Months as Rows
   const handleExportPDF = () => {
     if (records.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -463,11 +464,11 @@ const MoneyTransists = () => {
       }
 
       doc.save(`money_transists_${appliedFilters.year}.pdf`);
-      alert('PDF exported successfully!');
+      toast.success('PDF exported successfully!');
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF: ' + error.message);
+      toast.error('Failed to generate PDF: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -476,7 +477,7 @@ const MoneyTransists = () => {
   // Export CSV
   const handleExportCSV = async () => {
     if (records.length === 0) {
-      alert('No data to export');
+      toast.error('No data to export');
       return;
     }
 
@@ -495,7 +496,7 @@ const MoneyTransists = () => {
       if (contentType && contentType.includes('application/json')) {
         const text = await response.data.text();
         const errorData = JSON.parse(text);
-        alert('Error: ' + (errorData.message || 'Export failed'));
+        toast.error('Error: ' + (errorData.message || 'Export failed'));
         return;
       }
 
@@ -508,10 +509,10 @@ const MoneyTransists = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      alert('Export completed successfully!');
+      toast.success('Export completed successfully!');
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Error exporting data: ' + (error.response?.data?.message || error.message));
+      toast.error('Error exporting data: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
