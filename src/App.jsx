@@ -57,6 +57,12 @@ import RevenueAccountDataPage from "./pages/RevenueAccountDataPage";
 import RevenueCollectionAccountNumberPage from "./pages/RevenueCollectionAccountNumberPage";
 import RevenueReceiptsInCashPage from "./pages/RevenueReceiptsInCashPage";
 import RevenueReceiptsInCashSummaryPage from "./pages/RevenueReceiptsInCashSummaryPage";
+import RevenueReceiptsPage from "./pages/RevenueReceiptsPage";
+import RevenueOpeningBalancesPage from "./pages/RevenueOpeningBalancesPage";
+import ActualRevenueReportPage from "./pages/ActualRevenueReportPage";
+import NatureOfRevenuePage from "./pages/NatureOfRevenuePage";
+import CashInTransactionPage from "./pages/CashInTransactionPage";
+import MoneyTransistsPage from "./pages/MoneyTransistsPage";
 
 
 
@@ -365,7 +371,7 @@ function Layout() {
                     }
                 />
 
-              
+
                 <Route
                     path="/estimate"
                     element={
@@ -531,6 +537,61 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="revenue_manager">
                             <RevenueReceiptsInCashSummaryPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/receipts-data"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueReceiptsPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/revenue-openningbalance"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <RevenueOpeningBalancesPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/money-transist"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <MoneyTransistsPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/cash-transist"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <CashInTransactionPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+
+                <Route
+                    path="/nature-revenue"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <NatureOfRevenuePage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/actual-revenue"
+                    element={
+                        <RoleProtectedRoute requiredRoles="revenue_manager">
+                            <ActualRevenueReportPage />
                         </RoleProtectedRoute>
                     }
                 />
