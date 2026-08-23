@@ -94,10 +94,9 @@ const NetExpenditurePercentageReport = () => {
         total_net_allocation: 0,
         total_cumulative_expenditure: 0,
         total_balance: 0,
-        total_percentage_with_allocation: 0,
         total_percentage_with_net_allocation: 0,
-        total_perfect_percentage_with_allocation: 0,
-        total_perfect_percentage_with_net_allocation: 0
+        total_perfect_percentage_with_net_allocation: 0,
+        total_expected_percentage: 0
     });
 
     const [filters, setFilters] = useState({
@@ -143,7 +142,22 @@ const NetExpenditurePercentageReport = () => {
 
     // Fetch records
     const fetchRecords = async () => {
-        if (!appliedFilters.head) return;
+        if (!appliedFilters.head) {
+            setRecords([]);
+            setTotals({
+                total_allocation: 0,
+                total_fr66p: 0,
+                total_fr66m: 0,
+                total_supplementary: 0,
+                total_net_allocation: 0,
+                total_cumulative_expenditure: 0,
+                total_balance: 0,
+                total_percentage_with_net_allocation: 0,
+                total_perfect_percentage_with_net_allocation: 0,
+                total_expected_percentage: 0
+            });
+            return;
+        }
 
         setLoading(true);
         try {
@@ -165,10 +179,9 @@ const NetExpenditurePercentageReport = () => {
                     total_net_allocation: 0,
                     total_cumulative_expenditure: 0,
                     total_balance: 0,
-                    total_percentage_with_allocation: 0,
                     total_percentage_with_net_allocation: 0,
-                    total_perfect_percentage_with_allocation: 0,
-                    total_perfect_percentage_with_net_allocation: 0
+                    total_perfect_percentage_with_net_allocation: 0,
+                    total_expected_percentage: 0
                 });
 
                 const total = response.data.data.records?.length || 0;
@@ -232,6 +245,11 @@ const NetExpenditurePercentageReport = () => {
         fetchFilterOptions();
     }, []);
 
+    // Auto-fetch records when appliedFilters changes
+    useEffect(() => {
+        fetchRecords();
+    }, [appliedFilters]);
+
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => {
@@ -253,7 +271,6 @@ const NetExpenditurePercentageReport = () => {
             return;
         }
         setAppliedFilters({ ...filters });
-        setTimeout(() => fetchRecords(), 100);
         setShowFilterModal(false);
     };
 
@@ -269,10 +286,9 @@ const NetExpenditurePercentageReport = () => {
             total_net_allocation: 0,
             total_cumulative_expenditure: 0,
             total_balance: 0,
-            total_percentage_with_allocation: 0,
             total_percentage_with_net_allocation: 0,
-            total_perfect_percentage_with_allocation: 0,
-            total_perfect_percentage_with_net_allocation: 0
+            total_perfect_percentage_with_net_allocation: 0,
+            total_expected_percentage: 0
         });
         setCurrentPage(1);
         setTotalRecords(0);
@@ -280,43 +296,63 @@ const NetExpenditurePercentageReport = () => {
     };
 
     // Generate PDF Report
-    const handleExportPDF = () => {
-        if (records.length === 0) {
-            toast.error('No data to export');
-            return;
-        }
+const handleExportPDF = () => {
+    if (records.length === 0) {
+        toast.error('No data to export');
+        return;
+    }
 
-        setLoading(true);
+    setLoading(true);
 
-        try {
-            const doc = new jsPDF({
-                orientation: 'landscape',
-                unit: 'mm',
-                format: 'a3'
-            });
+    try {
+        // Create PDF in landscape orientation (A4)
+        const doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: 'a4'
+        });
 
-            const currentDate = new Date().toLocaleString();
+        // Get current date
+        const currentDate = new Date().toLocaleString();
 
-            // Add Header
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Net Expenditure with Percentage Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+        // Add Header
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Net Expenditure with Percentage Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
 
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
 
-            let filterText = `Head : ${appliedFilters.head || 'All'}`;
-            if (appliedFilters.program) filterText += ` | Program: ${appliedFilters.program}`;
-            if (appliedFilters.project) filterText += ` | Project: ${appliedFilters.project}`;
-            if (appliedFilters.month) filterText += ` | Month: ${monthNames[appliedFilters.month]} (Cumulative)`;
+        // Add filter information
+        let filterText = `Head : ${appliedFilters.head || 'All'}`;
+        if (appliedFilters.program) filterText += ` | Program: ${appliedFilters.program}`;
+        if (appliedFilters.project) filterText += ` | Project: ${appliedFilters.project}`;
+        if (appliedFilters.month) filterText += ` | Month: ${monthNames[appliedFilters.month]} (Cumulative)`;
 
-            doc.setFontSize(9);
-            doc.text(filterText, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
+        doc.setFontSize(9);
+        doc.text(filterText, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
 
-            // Prepare table data
-            const tableBody = records.map(record => [
-                record.object,
+        // Prepare table headers
+        const tableHeaders = [
+            'Object',
+            'Sub Project',
+            'Allocation',
+            'FR66P',
+            'FR66M',
+            'Supplementary',
+            'Net Allocation',
+            'Cumulative Exp.',
+            'Balance',
+            '% with Net Allocation',
+            'Perfect % with Net Allocation',
+            'Expected %'
+        ];
+
+        // Prepare table data
+        const tableBody = records.map(record => {
+            return [
+                record.object || '',
                 record.subproject || '-',
                 formatNumber(record.allocation),
                 formatNumber(record.fr66p),
@@ -325,109 +361,106 @@ const NetExpenditurePercentageReport = () => {
                 formatNumber(record.net_allocation),
                 formatNumber(record.cumulative_expenditure),
                 formatNumber(record.balance),
-                formatPercentage(record.percentage_with_allocation),
                 formatPercentage(record.percentage_with_net_allocation),
-                formatNumber(record.perfect_percentage_with_allocation),
-                formatNumber(record.perfect_percentage_with_net_allocation)
-            ]);
-
-            // Add totals row
-            tableBody.push([
-                'TOTAL',
-                '',
-                formatNumber(totals.total_allocation),
-                formatNumber(totals.total_fr66p),
-                formatNumber(totals.total_fr66m),
-                formatNumber(totals.total_supplementary),
-                formatNumber(totals.total_net_allocation),
-                formatNumber(totals.total_cumulative_expenditure),
-                formatNumber(totals.total_balance),
-                formatPercentage(totals.total_percentage_with_allocation),
-                formatPercentage(totals.total_percentage_with_net_allocation),
-                formatNumber(totals.total_perfect_percentage_with_allocation),
-                formatNumber(totals.total_perfect_percentage_with_net_allocation)
-            ]);
-
-            // Define table headers
-            const tableHeaders = [
-                'Object',
-                'Sub Project',
-                'Allocation',
-                'FR66P',
-                'FR66M',
-                'Supplementary',
-                'Net Allocation',
-                'Cumulative Exp.',
-                'Balance',
-                '% with Allocation',
-                '% with Net Allocation',
-                'Perfect % with Allocation',
-                'Perfect % with Net Allocation'
+                formatNumber(record.perfect_percentage_with_net_allocation),
+                formatPercentage(record.expected_percentage)
             ];
+        });
 
-            // Generate table
-            autoTable(doc, {
-                head: [tableHeaders],
-                body: tableBody,
-                startY: 35,
-                theme: 'grid',
-                headStyles: {
-                    fillColor: [41, 128, 185],
-                    textColor: [255, 255, 255],
-                    fontSize: 7,
+        // Add totals row
+        const totalRow = [
+            'TOTAL',
+            '',
+            formatNumber(totals.total_allocation),
+            formatNumber(totals.total_fr66p),
+            formatNumber(totals.total_fr66m),
+            formatNumber(totals.total_supplementary),
+            formatNumber(totals.total_net_allocation),
+            formatNumber(totals.total_cumulative_expenditure),
+            formatNumber(totals.total_balance),
+            formatPercentage(totals.total_percentage_with_net_allocation),
+            formatNumber(totals.total_perfect_percentage_with_net_allocation),
+            formatPercentage(totals.total_expected_percentage)
+        ];
+        tableBody.push(totalRow);
+
+        // Column styles
+        const columnStyles = {
+            0: { cellWidth: 18, halign: 'center' },
+            1: { cellWidth: 20, halign: 'center' },
+            2: { cellWidth: 22, halign: 'right' },
+            3: { cellWidth: 18, halign: 'right' },
+            4: { cellWidth: 18, halign: 'right' },
+            5: { cellWidth: 22, halign: 'right' },
+            6: { cellWidth: 22, halign: 'right' },
+            7: { cellWidth: 26, halign: 'right' },
+            8: { cellWidth: 20, halign: 'right' },
+            9: { cellWidth: 22, halign: 'right' },
+            10: { cellWidth: 22, halign: 'right' },
+            11: { cellWidth: 20, halign: 'right' }
+        };
+
+        // Generate table
+        autoTable(doc, {
+            head: [tableHeaders],
+            body: tableBody,
+            startY: 35,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [41, 128, 185],
+                textColor: [255, 255, 255],
+                fontSize: 8,
+                fontStyle: 'bold',
+                halign: 'center',
+                cellPadding: 2
+            },
+            bodyStyles: {
+                fontSize: 7,
+                cellPadding: 2,
+                textColor: [0, 0, 0]
+            },
+            columnStyles: columnStyles,
+            alternateRowStyles: { fillColor: [245, 245, 245] },
+            margin: { top: 35, left:23.5, right: 23.5 },
+            tableWidth: 250,
+            rowStyles: {
+                [tableBody.length - 1]: {
                     fontStyle: 'bold',
-                    halign: 'center',
-                    cellPadding: 2
-                },
-                bodyStyles: {
-                    fontSize: 6,
-                    cellPadding: 2,
-                    textColor: [0, 0, 0]
-                },
-                columnStyles: {
-                    0: { cellWidth: 18 },
-                    1: { cellWidth: 22 },
-                    2: { cellWidth: 24, halign: 'right' },
-                    3: { cellWidth: 20, halign: 'right' },
-                    4: { cellWidth: 20, halign: 'right' },
-                    5: { cellWidth: 24, halign: 'right' },
-                    6: { cellWidth: 24, halign: 'right' },
-                    7: { cellWidth: 28, halign: 'right' },
-                    8: { cellWidth: 22, halign: 'right' },
-                    9: { cellWidth: 28, halign: 'right' },
-                    10: { cellWidth: 32, halign: 'right' },
-                    11: { cellWidth: 34, halign: 'right' },
-                    12: { cellWidth: 38, halign: 'right' }
-                },
-                alternateRowStyles: { fillColor: [245, 245, 245] },
-                margin: { top: 35, left: 10, right: 10 },
-                didDrawPage: function (data) {
-                    const pageCount = doc.internal.getNumberOfPages();
-                    for (let i = 1; i <= pageCount; i++) {
-                        doc.setPage(i);
-                        doc.setFontSize(8);
-                        doc.setTextColor(128, 128, 128);
-                        doc.text(
-                            `Page ${i} of ${pageCount}`,
-                            doc.internal.pageSize.getWidth() / 2,
-                            doc.internal.pageSize.getHeight() - 10,
-                            { align: 'center' }
-                        );
-                    }
+                    fillColor: [220, 235, 245],
+                    textColor: [0, 0, 0],
+                    fontSize: 8
                 }
-            });
+            },
+            didDrawPage: function (data) {
+                // Footer is added after table generation
+            }
+        });
 
-            doc.save(`net_expenditure_percentage_${appliedFilters.head}_${new Date().toISOString().split('T')[0]}.pdf`);
-            toast.success("PDF exported successfully!");
-
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            toast.error("Failed to generate report");
-        } finally {
-            setLoading(false);
+        // Add footer to all pages
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(128, 128, 128);
+            doc.text(
+                `Page ${i} of ${pageCount}`,
+                doc.internal.pageSize.getWidth() / 2,
+                doc.internal.pageSize.getHeight() - 10,
+                { align: 'center' }
+            );
         }
-    };
 
+        // Save PDF
+        doc.save(`net_expenditure_percentage_${appliedFilters.head}_${new Date().toISOString().split('T')[0]}.pdf`);
+        toast.success("PDF exported successfully!");
+
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        toast.error("Failed to generate PDF");
+    } finally {
+        setLoading(false);
+    }
+};
     const handleExportCSV = async () => {
         if (records.length === 0) {
             toast.error('No data to export');
@@ -629,16 +662,15 @@ const NetExpenditurePercentageReport = () => {
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Net Allocation</th>
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Cumulative Exp.</th>
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Balance</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300 bg-blue-50">% with Allocation</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300 bg-green-50">% with Net Allocation</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300 bg-purple-50">Perfect % with Allocation</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300 bg-orange-50">Perfect % with Net Allocation</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">% with Net Allocation</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Perfect % with Net Allocation</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Expected %</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {!appliedFilters.head ? (
                                     <tr>
-                                        <td colSpan="13" className="text-center py-12 text-gray-500">
+                                        <td colSpan="12" className="text-center py-12 text-gray-500">
                                             <div className="flex flex-col items-center gap-2">
                                                 <Filter size={40} className="text-gray-300" />
                                                 <p>Please click the Filter button and select a TR No to view data</p>
@@ -647,7 +679,7 @@ const NetExpenditurePercentageReport = () => {
                                     </tr>
                                 ) : paginatedRecords.length === 0 ? (
                                     <tr>
-                                        <td colSpan="13" className="text-center py-12 text-gray-500">
+                                        <td colSpan="12" className="text-center py-12 text-gray-500">
                                             <div className="flex flex-col items-center gap-2">
                                                 <p>No records found for the selected filters.</p>
                                                 <button
@@ -663,7 +695,7 @@ const NetExpenditurePercentageReport = () => {
                                     paginatedRecords.map((record, index) => (
                                         <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition">
                                             <td className="px-2 py-2 font-medium text-gray-900 border border-gray-300">{record.object}</td>
-                                            <td className="px-2 py-2 text-gray-600 border border-gray-300">{record.subproject || '-'}</td>
+                                            <td className="px-2 py-2 text-gray-600 border border-gray-300">{record.subproject}</td>
                                             <td className="px-2 py-2 text-right text-gray-900 border border-gray-300">{formatNumber(record.allocation)}</td>
                                             <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(record.fr66p)}</td>
                                             <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(record.fr66m)}</td>
@@ -673,17 +705,14 @@ const NetExpenditurePercentageReport = () => {
                                             <td className={`px-2 py-2 text-right font-bold border border-gray-300 ${parseFloat(record.balance) >= 0 ? 'text-gray-600' : 'text-red-600'}`}>
                                                 {formatNumber(record.balance)}
                                             </td>
-                                            <td className="px-2 py-2 text-right font-bold text-blue-600 border border-gray-300 bg-blue-50">
-                                                {formatPercentage(record.percentage_with_allocation)}
-                                            </td>
-                                            <td className="px-2 py-2 text-right font-bold text-green-600 border border-gray-300 bg-green-50">
+                                            <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
                                                 {formatPercentage(record.percentage_with_net_allocation)}
                                             </td>
-                                            <td className="px-2 py-2 text-right font-bold text-purple-600 border border-gray-300 bg-purple-50">
-                                                {formatNumber(record.perfect_percentage_with_allocation)}
-                                            </td>
-                                            <td className="px-2 py-2 text-right font-bold text-orange-600 border border-gray-300 bg-orange-50">
+                                            <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
                                                 {formatNumber(record.perfect_percentage_with_net_allocation)}
+                                            </td>
+                                            <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
+                                                {formatPercentage(record.expected_percentage)}
                                             </td>
                                         </tr>
                                     ))
@@ -702,17 +731,14 @@ const NetExpenditurePercentageReport = () => {
                                         <td className={`px-2 py-2 text-right font-bold border border-gray-300 ${totals.total_balance >= 0 ? 'text-gray-600' : 'text-red-600'}`}>
                                             {formatNumber(totals.total_balance)}
                                         </td>
-                                        <td className="px-2 py-2 text-right font-bold text-blue-600 border border-gray-300 bg-blue-50">
-                                            {formatPercentage(totals.total_percentage_with_allocation)}
-                                        </td>
-                                        <td className="px-2 py-2 text-right font-bold text-green-600 border border-gray-300 bg-green-50">
+                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
                                             {formatPercentage(totals.total_percentage_with_net_allocation)}
                                         </td>
-                                        <td className="px-2 py-2 text-right font-bold text-purple-600 border border-gray-300 bg-purple-50">
-                                            {formatNumber(totals.total_perfect_percentage_with_allocation)}
-                                        </td>
-                                        <td className="px-2 py-2 text-right font-bold text-orange-600 border border-gray-300 bg-orange-50">
+                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
                                             {formatNumber(totals.total_perfect_percentage_with_net_allocation)}
+                                        </td>
+                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
+                                            {formatPercentage(totals.total_expected_percentage)}
                                         </td>
                                     </tr>
                                 </tfoot>
