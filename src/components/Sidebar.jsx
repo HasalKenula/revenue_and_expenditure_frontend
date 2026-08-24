@@ -306,7 +306,7 @@ const Sidebar = () => {
             <div>
               <Link to="/reports" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <PieChart size={18} />
-                <span className="text-sm">Reports</span>
+                <span className="text-sm">Expenditure Reports</span>
               </Link>
             </div>
 

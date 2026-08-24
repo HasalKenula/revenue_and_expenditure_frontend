@@ -62,7 +62,7 @@ const ReportDashboard = () => {
         { id: 'upkeep', name: 'Mainteneance', path: '/upkeep', icon: FileSpreadsheet },
         { id: 'stamp-month', name: 'Stamp Monthly', path: '/stamp-month', icon: FileSpreadsheet },
         { id: 'transfer-monthly', name: 'Transfer Monthly', path: '/transfer-monthly', icon: FileSpreadsheet },
-           { id: 'net-expenditure-percentage', name: 'Net Expenditure Percentage', path: '/net-expenditure-percentage', icon: FileSpreadsheet },
+        { id: 'net-expenditure-percentage', name: 'Net Expenditure Percentage', path: '/net-expenditure-percentage', icon: FileSpreadsheet },
        
       ]
     },
@@ -195,7 +195,7 @@ const ReportDashboard = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               <FileText size={28} className="text-blue-600" />
-              Report Dashboard
+              Expenditure Report Dashboard
             </h1>
             <p className="text-sm text-gray-500 mt-1">
               Access and manage all financial reports from one central location

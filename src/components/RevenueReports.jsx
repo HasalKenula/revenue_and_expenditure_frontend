@@ -195,7 +195,7 @@ const RevenueReports = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               <FileText size={28} className="text-blue-600" />
-              Report Dashboard
+              Revenue Report Dashboard
             </h1>
             <p className="text-sm text-gray-500 mt-1">
               Access and manage all financial reports from one central location
