@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import logo from '../assets/FinLogo.png';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -121,10 +122,17 @@ const Sidebar = () => {
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
       {/* Logo */}
-      <div className="p-4 border-b border-gray-200">
+      {/* <div className="p-4 border-b border-gray-200">
         <h1 className="text-xl font-bold text-gray-800">FinSystem</h1>
         <p className="text-xs text-gray-500 mt-1">Southern Province</p>
 
+      </div> */}
+      <div className="p-4 border-b border-gray-200 flex items-center gap-3">
+        <img src={logo} alt="FinSystem Logo" className="h-15 w-auto" />
+        <div>
+          <h1 className="text-xl font-bold text-gray-800">FinSystem</h1>
+          <p className="text-xs text-gray-500 mt-1">Southern Province</p>
+        </div>
       </div>
 
       {/* Navigation */}
