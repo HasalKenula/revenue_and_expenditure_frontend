@@ -1,11 +1,8 @@
-
-
-
-
 // pages/Login.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../axios";
+import logo from '../assets/FinLogo.png';
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -28,7 +25,7 @@ export default function Login() {
             });
 
             const { token, user } = response.data;
-            
+
             localStorage.setItem("token", token);
             localStorage.setItem("userRole", user.role);
             localStorage.setItem("userName", user.name);
@@ -36,9 +33,9 @@ export default function Login() {
             localStorage.setItem("userId", user.id);
 
             setMessage(response.data.message);
-            
+
             // Redirect based on user role
-            switch(user.role) {
+            switch (user.role) {
                 case 'user':
                     navigate('/user_upload');
                     break;
@@ -51,7 +48,7 @@ export default function Login() {
                 default:
                     navigate('/');
             }
-            
+
         } catch (error) {
             if (error.response && error.response.data.message) {
                 setMessage(error.response.data.message);
@@ -66,29 +63,31 @@ export default function Login() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
             <div className="w-full max-w-6xl flex flex-col lg:flex-row bg-white rounded-2xl shadow-2xl overflow-hidden">
-                
+
                 {/* Left Side - Branding Section */}
                 <div className="lg:w-1/2 bg-gradient-to-br from-blue-700 to-indigo-800 p-8 lg:p-12 text-white flex flex-col justify-between">
                     <div>
                         <div className="flex items-center space-x-3 mb-8">
-                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-                                </svg>
+                            <div className="w-32 h-32  rounded-xl flex items-center justify-center backdrop-blur-sm">
+                                <img
+                                    src={logo}
+                                    alt="REMS Logo"
+                                    className="w-32 h-32 object-contain"
+                                />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold">REMS</h1>
+                                <h1 className="text-2xl font-bold">FinSystem</h1>
                                 <p className="text-blue-200 text-sm">Revenue & Expenditure Management</p>
                             </div>
                         </div>
-                        
+
                         <div className="mt-8">
                             <h2 className="text-3xl font-bold mb-4 leading-tight">
-                               Revenue & Expenditure<br />
+                                Revenue & Expenditure<br />
                                 <span className="text-blue-200">Management System</span>
                             </h2>
                             <p className="text-blue-200 leading-relaxed">
-                                Access your financial dashboard, manage budgets, 
+                                Access your financial dashboard, manage budgets,
                                 track expenses, and generate reports all in one place.
                             </p>
                         </div>
