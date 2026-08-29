@@ -215,7 +215,7 @@ const ODSPanel = () => {
 
     try {
       const doc = new jsPDF({
-        orientation: 'landscape',
+        orientation: 'portrate',
         unit: 'mm',
         format: 'a4'
       });
@@ -234,7 +234,7 @@ const ODSPanel = () => {
       doc.text(`Year: ${appliedFilters.year} | Month: ${monthNames[appliedFilters.month]}`, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
 
       const tableHeaders = [
-        'TR No', 'Head', 'Program', 'Project', 'Object', 'Sub Project', 'Sub Object', 'Surcharge Amount'
+        'TR No', 'Head', 'Program', 'Project', 'Object', 'Sub Project', 'Sub Object', 'Surcharge Amount (Rs)'
       ];
 
       const tableBody = records.map(record => [
@@ -279,11 +279,11 @@ const ODSPanel = () => {
           3: { cellWidth: 25 },
           4: { cellWidth: 25 },
           5: { cellWidth: 25 },
-          6: { cellWidth: 30 },
-          7: { cellWidth: 35, halign: 'right' }
+          6: { cellWidth: 25 },
+          7: { cellWidth: 25, halign: 'right' }
         },
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { top: 30, left: 8, right: 8 },
+        margin: { top: 30, left: 5, right: 5 },
         didDrawPage: function (data) {
           const pageCount = doc.internal.getNumberOfPages();
           for (let i = 1; i <= pageCount; i++) {

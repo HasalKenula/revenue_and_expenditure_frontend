@@ -1,4 +1,3 @@
-// src/components/NetExpenditureReport.jsx
 import React, { useState, useEffect } from 'react';
 import {
     RefreshCw,
@@ -78,7 +77,7 @@ const monthNames = {
     12: 'December'
 };
 
-const NetExpenditureReport = () => {
+const NetExpenditurePercentageReport = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [records, setRecords] = useState([]);
@@ -93,13 +92,11 @@ const NetExpenditureReport = () => {
         total_fr66m: 0,
         total_supplementary: 0,
         total_net_allocation: 0,
-        total_debit: 0,
-        total_other_dept_debit: 0,
-        total_surcharge: 0,
-        total_other_dept_surcharge: 0,
-        total_net_expenditure: 0,
         total_cumulative_expenditure: 0,
-        total_balance: 0
+        total_balance: 0,
+        total_percentage_with_net_allocation: 0,
+        total_perfect_percentage_with_net_allocation: 0,
+        total_expected_percentage: 0
     });
 
     const [filters, setFilters] = useState({
@@ -129,6 +126,12 @@ const NetExpenditureReport = () => {
         return parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
+    // Format percentage
+    const formatPercentage = (value) => {
+        if (value === undefined || value === null) return '0.00';
+        return parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+    };
+
     // Check authentication on mount
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -139,7 +142,22 @@ const NetExpenditureReport = () => {
 
     // Fetch records
     const fetchRecords = async () => {
-        if (!appliedFilters.head) return;
+        if (!appliedFilters.head) {
+            setRecords([]);
+            setTotals({
+                total_allocation: 0,
+                total_fr66p: 0,
+                total_fr66m: 0,
+                total_supplementary: 0,
+                total_net_allocation: 0,
+                total_cumulative_expenditure: 0,
+                total_balance: 0,
+                total_percentage_with_net_allocation: 0,
+                total_perfect_percentage_with_net_allocation: 0,
+                total_expected_percentage: 0
+            });
+            return;
+        }
 
         setLoading(true);
         try {
@@ -149,7 +167,7 @@ const NetExpenditureReport = () => {
                 if (!params[key] || params[key] === '') delete params[key];
             });
 
-            const response = await apiClient.get('/net-expenditure/data', { params });
+            const response = await apiClient.get('/net-expenditure-percentage/data', { params });
 
             if (response.data.success) {
                 setRecords(response.data.data.records || []);
@@ -159,13 +177,11 @@ const NetExpenditureReport = () => {
                     total_fr66m: 0,
                     total_supplementary: 0,
                     total_net_allocation: 0,
-                    total_debit: 0,
-                    total_other_dept_debit: 0,
-                    total_surcharge: 0,
-                    total_other_dept_surcharge: 0,
-                    total_net_expenditure: 0,
                     total_cumulative_expenditure: 0,
-                    total_balance: 0
+                    total_balance: 0,
+                    total_percentage_with_net_allocation: 0,
+                    total_perfect_percentage_with_net_allocation: 0,
+                    total_expected_percentage: 0
                 });
 
                 const total = response.data.data.records?.length || 0;
@@ -191,7 +207,7 @@ const NetExpenditureReport = () => {
             if (program) params.program = program;
             if (project) params.project = project;
 
-            const response = await apiClient.get('/net-expenditure/filter-options', { params });
+            const response = await apiClient.get('/net-expenditure-percentage/filter-options', { params });
 
             if (response.data.success) {
                 setFilterOptions(response.data.data);
@@ -229,6 +245,11 @@ const NetExpenditureReport = () => {
         fetchFilterOptions();
     }, []);
 
+    // Auto-fetch records when appliedFilters changes
+    useEffect(() => {
+        fetchRecords();
+    }, [appliedFilters]);
+
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => {
@@ -250,7 +271,6 @@ const NetExpenditureReport = () => {
             return;
         }
         setAppliedFilters({ ...filters });
-        setTimeout(() => fetchRecords(), 100);
         setShowFilterModal(false);
     };
 
@@ -264,180 +284,183 @@ const NetExpenditureReport = () => {
             total_fr66m: 0,
             total_supplementary: 0,
             total_net_allocation: 0,
-            total_debit: 0,
-            total_other_dept_debit: 0,
-            total_surcharge: 0,
-            total_other_dept_surcharge: 0,
-            total_net_expenditure: 0,
             total_cumulative_expenditure: 0,
-            total_balance: 0
+            total_balance: 0,
+            total_percentage_with_net_allocation: 0,
+            total_perfect_percentage_with_net_allocation: 0,
+            total_expected_percentage: 0
         });
         setCurrentPage(1);
         setTotalRecords(0);
         setLastPage(1);
     };
 
-    // Generate PDF Report - A3 Landscape
-    const handleExportPDF = () => {
-        if (records.length === 0) {
-            toast.error('No data to export');
-            return;
-        }
+    // Generate PDF Report
+const handleExportPDF = () => {
+    if (records.length === 0) {
+        toast.error('No data to export');
+        return;
+    }
 
-        setLoading(true);
+    setLoading(true);
 
-        try {
-            // Create PDF in landscape orientation (A3)
-            const doc = new jsPDF({
-                orientation: 'landscape',
-                unit: 'mm',
-                format: 'a3'
-            });
+    try {
+        // Create PDF in landscape orientation (A4)
+        const doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: 'a4'
+        });
 
-            // Get current date
-            const currentDate = new Date().toLocaleString();
+        // Get current date
+        const currentDate = new Date().toLocaleString();
 
-            // Add Header
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Net Expenditure Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+        // Add Header
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Net Expenditure with Percentage Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
 
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Generated on: ${currentDate}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
 
-            // Add filter information
-            let filterText = `Head : ${appliedFilters.head || 'All'}`;
-            if (appliedFilters.program) filterText += ` | Program: ${appliedFilters.program}`;
-            if (appliedFilters.project) filterText += ` | Project: ${appliedFilters.project}`;
-            if (appliedFilters.month) filterText += ` | Month: ${monthNames[appliedFilters.month]} (Cumulative)`;
+        // Add filter information
+        let filterText = `Head : ${appliedFilters.head || 'All'}`;
+        if (appliedFilters.program) filterText += ` | Program: ${appliedFilters.program}`;
+        if (appliedFilters.project) filterText += ` | Project: ${appliedFilters.project}`;
+        if (appliedFilters.month) filterText += ` | Month: ${monthNames[appliedFilters.month]} (Cumulative)`;
 
-            doc.setFontSize(9);
-            doc.text(filterText, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
+        doc.setFontSize(9);
+        doc.text(filterText, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
 
-            // Prepare table data
-            const tableBody = records.map(record => [
-                record.object,
-                record.subproject,
+        // Prepare table headers
+        const tableHeaders = [
+            'Object',
+            'Sub Project',
+            'Allocation',
+            'FR66P',
+            'FR66M',
+            'Supplementary',
+            'Net Allocation',
+            'Cumulative Exp.',
+            'Balance',
+            '% with Net Allocation',
+            'Perfect % with Net Allocation',
+            'Expected %'
+        ];
+
+        // Prepare table data
+        const tableBody = records.map(record => {
+            return [
+                record.object || '',
+                record.subproject || '-',
                 formatNumber(record.allocation),
                 formatNumber(record.fr66p),
                 formatNumber(record.fr66m),
                 formatNumber(record.supplementary),
                 formatNumber(record.net_allocation),
-                formatNumber(record.debit),
-                formatNumber(record.other_dept_debit),
-                formatNumber(record.surcharge),
-                formatNumber(record.other_dept_surcharge),
-                formatNumber(record.net_expenditure),
                 formatNumber(record.cumulative_expenditure),
-                formatNumber(record.balance)
-            ]);
-
-            // Add totals row
-            tableBody.push([
-                'TOTAL',
-                '',
-                formatNumber(totals.total_allocation),
-                formatNumber(totals.total_fr66p),
-                formatNumber(totals.total_fr66m),
-                formatNumber(totals.total_supplementary),
-                formatNumber(totals.total_net_allocation),
-                formatNumber(totals.total_debit),
-                formatNumber(totals.total_other_dept_debit),
-                formatNumber(totals.total_surcharge),
-                formatNumber(totals.total_other_dept_surcharge),
-                formatNumber(totals.total_net_expenditure),
-                formatNumber(totals.total_cumulative_expenditure),
-                formatNumber(totals.total_balance)
-            ]);
-
-            // Define table headers
-            const tableHeaders = [
-                'Object',
-                'Sub Project',
-                'Allocation (Rs)',
-                'FR30P (Rs)',
-                'FR30M (Rs)',
-                'Supplementary (Rs)',
-                'Net Allocation (Rs)',
-                'Debit-Same (Rs)',
-                'Debit-Other (Rs)',
-                'Surcharge-Same (Rs)',
-                'Surcharge-Other (Rs)',
-                'Net Exp. (Rs)',
-                'Cumulative Exp. (Rs)',
-                'Balance (Rs)'
+                formatNumber(record.balance),
+                formatPercentage(record.percentage_with_net_allocation),
+                formatNumber(record.perfect_percentage_with_net_allocation),
+                formatPercentage(record.expected_percentage)
             ];
+        });
 
-            // Generate table using autoTable function (not doc.autoTable)
-            autoTable(doc, {
-                head: [tableHeaders],
-                body: tableBody,
-                startY: 35,
-                theme: 'grid',
-                headStyles: {
-                    fillColor: [41, 128, 185],
-                    textColor: [255, 255, 255],
-                    fontSize: 8,
+        // Add totals row
+        const totalRow = [
+            'TOTAL',
+            '',
+            formatNumber(totals.total_allocation),
+            formatNumber(totals.total_fr66p),
+            formatNumber(totals.total_fr66m),
+            formatNumber(totals.total_supplementary),
+            formatNumber(totals.total_net_allocation),
+            formatNumber(totals.total_cumulative_expenditure),
+            formatNumber(totals.total_balance),
+            formatPercentage(totals.total_percentage_with_net_allocation),
+            formatNumber(totals.total_perfect_percentage_with_net_allocation),
+            formatPercentage(totals.total_expected_percentage)
+        ];
+        tableBody.push(totalRow);
+
+        // Column styles
+        const columnStyles = {
+            0: { cellWidth: 18, halign: 'center' },
+            1: { cellWidth: 20, halign: 'center' },
+            2: { cellWidth: 22, halign: 'right' },
+            3: { cellWidth: 18, halign: 'right' },
+            4: { cellWidth: 18, halign: 'right' },
+            5: { cellWidth: 22, halign: 'right' },
+            6: { cellWidth: 22, halign: 'right' },
+            7: { cellWidth: 26, halign: 'right' },
+            8: { cellWidth: 20, halign: 'right' },
+            9: { cellWidth: 22, halign: 'right' },
+            10: { cellWidth: 22, halign: 'right' },
+            11: { cellWidth: 20, halign: 'right' }
+        };
+
+        // Generate table
+        autoTable(doc, {
+            head: [tableHeaders],
+            body: tableBody,
+            startY: 35,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [41, 128, 185],
+                textColor: [255, 255, 255],
+                fontSize: 8,
+                fontStyle: 'bold',
+                halign: 'center',
+                cellPadding: 2
+            },
+            bodyStyles: {
+                fontSize: 7,
+                cellPadding: 2,
+                textColor: [0, 0, 0]
+            },
+            columnStyles: columnStyles,
+            alternateRowStyles: { fillColor: [245, 245, 245] },
+            margin: { top: 35, left:23.5, right: 23.5 },
+            tableWidth: 250,
+            rowStyles: {
+                [tableBody.length - 1]: {
                     fontStyle: 'bold',
-                    halign: 'center',
-                    cellPadding: 2
-                },
-                bodyStyles: {
-                    fontSize: 7,
-                    cellPadding: 2,
-                    textColor: [0, 0, 0]
-                },
-                columnStyles: {
-                    0: { cellWidth: 20 }, // Object
-                    1: { cellWidth: 25 }, // Sub Project
-                    2: { cellWidth: 30, halign: 'right' }, // Allocation
-                    3: { cellWidth: 25, halign: 'right' }, // FR66P
-                    4: { cellWidth: 25, halign: 'right' }, // FR66M
-                    5: { cellWidth: 30, halign: 'right' }, // Supplementary
-                    6: { cellWidth: 30, halign: 'right' }, // Net Allocation
-                    7: { cellWidth: 28, halign: 'right' }, // Debit-Same
-                    8: { cellWidth: 28, halign: 'right' }, // Debit-Other
-                    9: { cellWidth: 30, halign: 'right' }, // Surcharge-Same
-                    10: { cellWidth: 30, halign: 'right' }, // Surcharge-Other
-                    11: { cellWidth: 25, halign: 'right' }, // Net Exp.
-                    12: { cellWidth: 30, halign: 'right' }, // Cumulative Exp.
-                    13: { cellWidth: 25, halign: 'right' }  // Balance
-                },
-                alternateRowStyles: { fillColor: [245, 245, 245] },
-                margin: { top: 35, left: 10, right: 10 },
-                didDrawPage: function (data) {
-                    // Footer is added after table generation
+                    fillColor: [220, 235, 245],
+                    textColor: [0, 0, 0],
+                    fontSize: 8
                 }
-            });
-
-            // Add footer to all pages
-            const pageCount = doc.internal.getNumberOfPages();
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setTextColor(128, 128, 128);
-                doc.text(
-                    `Page ${i} of ${pageCount}`,
-                    doc.internal.pageSize.getWidth() / 2,
-                    doc.internal.pageSize.getHeight() - 10,
-                    { align: 'center' }
-                );
+            },
+            didDrawPage: function (data) {
+                // Footer is added after table generation
             }
+        });
 
-            // Save PDF
-            doc.save(`net_expenditure_report_${appliedFilters.head}_${new Date().toISOString().split('T')[0]}.pdf`);
-            toast.success("PDF exported successfully!");
-
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            toast.error("Failed to generate report");
-        } finally {
-            setLoading(false);
+        // Add footer to all pages
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(128, 128, 128);
+            doc.text(
+                `Page ${i} of ${pageCount}`,
+                doc.internal.pageSize.getWidth() / 2,
+                doc.internal.pageSize.getHeight() - 10,
+                { align: 'center' }
+            );
         }
-    };
 
+        // Save PDF
+        doc.save(`net_expenditure_percentage_${appliedFilters.head}_${new Date().toISOString().split('T')[0]}.pdf`);
+        toast.success("PDF exported successfully!");
 
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        toast.error("Failed to generate PDF");
+    } finally {
+        setLoading(false);
+    }
+};
     const handleExportCSV = async () => {
         if (records.length === 0) {
             toast.error('No data to export');
@@ -451,7 +474,7 @@ const NetExpenditureReport = () => {
                 if (!params[key]) delete params[key];
             });
 
-            const response = await apiClient.get('/net-expenditure/export', { params });
+            const response = await apiClient.get('/net-expenditure-percentage/export', { params });
 
             if (response.data.success) {
                 const csvData = response.data.data;
@@ -461,27 +484,18 @@ const NetExpenditureReport = () => {
                         headers.join(','),
                         ...csvData.map(row => headers.map(h => {
                             const value = row[h];
-
-                            // Handle null, undefined, or empty values
                             if (value === null || value === undefined || value === '') {
                                 return '""';
                             }
-
-                            // If value is 0 (number), keep it as "0"
                             if (value === 0) {
                                 return '0';
                             }
-
-                            // For numeric values, format properly
                             if (typeof value === 'number') {
-                                // Format with 2 decimal places if it's a decimal/currency value
                                 if (Number.isInteger(value)) {
                                     return value.toString();
                                 }
                                 return value.toFixed(2);
                             }
-
-                            // For strings, wrap in quotes and escape
                             return `"${value.toString().replace(/"/g, '""')}"`;
                         }).join(','))
                     ];
@@ -490,7 +504,7 @@ const NetExpenditureReport = () => {
                     const url = URL.createObjectURL(csvBlob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `net-expenditure-${new Date().toISOString().split('T')[0]}.csv`;
+                    a.download = `net-expenditure-percentage-${new Date().toISOString().split('T')[0]}.csv`;
                     a.click();
                     URL.revokeObjectURL(url);
                     toast.success("CSV exported successfully!");
@@ -515,13 +529,11 @@ const NetExpenditureReport = () => {
         fetchFilterOptions();
     };
 
-    // Paginated records
     const paginatedRecords = records.slice(
         (currentPage - 1) * entriesPerPage,
         currentPage * entriesPerPage
     );
 
-    // Get month display text
     const getMonthDisplay = (month) => {
         if (!month) return '';
         return monthNames[month] ? `${monthNames[month]}` : `Month ${month}`;
@@ -529,7 +541,6 @@ const NetExpenditureReport = () => {
 
     return (
         <>
-            {/* Loading Overlay */}
             {loading && (
                 <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 shadow-xl">
@@ -540,15 +551,13 @@ const NetExpenditureReport = () => {
             )}
 
             <div className="space-y-6">
-
-
                 {/* Page Header */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <div className="flex justify-between items-start">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-800">Net Expenditure Report</h1>
+                            <h1 className="text-2xl font-bold text-gray-800">Net Expenditure with Percentage Report</h1>
                             <p className="text-sm text-gray-500 mt-1">
-                                View net allocation with cumulative expenditure (Jan to selected month)
+                                View net allocation with cumulative expenditure and percentage analysis
                             </p>
                         </div>
                         {appliedFilters.head && (
@@ -560,7 +569,6 @@ const NetExpenditureReport = () => {
                         )}
                     </div>
                 </div>
-
 
                 {/* Active Filters Display */}
                 {(appliedFilters.head || appliedFilters.program || appliedFilters.project || appliedFilters.month) && (
@@ -616,7 +624,7 @@ const NetExpenditureReport = () => {
                             }`}
                     >
                         <FileText size={16} />
-                        <span>Export PDF (A3)</span>
+                        <span>Export PDF</span>
                     </button>
                     <button
                         onClick={handleExportCSV}
@@ -648,23 +656,21 @@ const NetExpenditureReport = () => {
                                     <th className="px-2 py-2 text-left font-semibold text-gray-700 border border-gray-300">Object</th>
                                     <th className="px-2 py-2 text-left font-semibold text-gray-700 border border-gray-300">Sub Project</th>
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Allocation</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">FR30P</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">FR30M</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">FR66P</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">FR66M</th>
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Supplementary</th>
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Net Allocation</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Debit (Same)</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Debit (Other)</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Surcharge (Same)</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Surcharge (Other)</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Net Exp.</th>
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Cumulative Exp.</th>
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Balance</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">% with Net Allocation</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Perfect % with Net Allocation</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Expected %</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {!appliedFilters.head ? (
                                     <tr>
-                                        <td colSpan="14" className="text-center py-12 text-gray-500">
+                                        <td colSpan="12" className="text-center py-12 text-gray-500">
                                             <div className="flex flex-col items-center gap-2">
                                                 <Filter size={40} className="text-gray-300" />
                                                 <p>Please click the Filter button and select a TR No to view data</p>
@@ -673,7 +679,7 @@ const NetExpenditureReport = () => {
                                     </tr>
                                 ) : paginatedRecords.length === 0 ? (
                                     <tr>
-                                        <td colSpan="14" className="text-center py-12 text-gray-500">
+                                        <td colSpan="12" className="text-center py-12 text-gray-500">
                                             <div className="flex flex-col items-center gap-2">
                                                 <p>No records found for the selected filters.</p>
                                                 <button
@@ -695,14 +701,18 @@ const NetExpenditureReport = () => {
                                             <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(record.fr66m)}</td>
                                             <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(record.supplementary)}</td>
                                             <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(record.net_allocation)}</td>
-                                            <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(record.debit)}</td>
-                                            <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(record.other_dept_debit)}</td>
-                                            <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(record.surcharge)}</td>
-                                            <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(record.other_dept_surcharge)}</td>
-                                            <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(record.net_expenditure)}</td>
                                             <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(record.cumulative_expenditure)}</td>
-                                            <td className={`px-2 py-2 text-right font-bold border border-gray-300 ${parseFloat(record.balance) >= 0 ? 'text-gray-600' : 'text-gray-600'}`}>
+                                            <td className={`px-2 py-2 text-right font-bold border border-gray-300 ${parseFloat(record.balance) >= 0 ? 'text-gray-600' : 'text-red-600'}`}>
                                                 {formatNumber(record.balance)}
+                                            </td>
+                                            <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
+                                                {formatPercentage(record.percentage_with_net_allocation)}
+                                            </td>
+                                            <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
+                                                {formatNumber(record.perfect_percentage_with_net_allocation)}
+                                            </td>
+                                            <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
+                                                {formatPercentage(record.expected_percentage)}
                                             </td>
                                         </tr>
                                     ))
@@ -717,14 +727,18 @@ const NetExpenditureReport = () => {
                                         <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(totals.total_fr66m)}</td>
                                         <td className="px-2 py-2 text-right text-gray-600 border border-gray-300">{formatNumber(totals.total_supplementary)}</td>
                                         <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(totals.total_net_allocation)}</td>
-                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(totals.total_debit)}</td>
-                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(totals.total_other_dept_debit)}</td>
-                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(totals.total_surcharge)}</td>
-                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(totals.total_other_dept_surcharge)}</td>
-                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(totals.total_net_expenditure)}</td>
                                         <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">{formatNumber(totals.total_cumulative_expenditure)}</td>
-                                        <td className={`px-2 py-2 text-right font-bold border border-gray-300 ${totals.total_balance >= 0 ? 'text-gray-600' : 'text-gray-600'}`}>
+                                        <td className={`px-2 py-2 text-right font-bold border border-gray-300 ${totals.total_balance >= 0 ? 'text-gray-600' : 'text-red-600'}`}>
                                             {formatNumber(totals.total_balance)}
+                                        </td>
+                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
+                                            {formatPercentage(totals.total_percentage_with_net_allocation)}
+                                        </td>
+                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
+                                            {formatNumber(totals.total_perfect_percentage_with_net_allocation)}
+                                        </td>
+                                        <td className="px-2 py-2 text-right font-bold text-gray-600 border border-gray-300">
+                                            {formatPercentage(totals.total_expected_percentage)}
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -783,7 +797,7 @@ const NetExpenditureReport = () => {
                     <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
                         <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-semibold text-gray-800">Filter Net Expenditure</h3>
+                                <h3 className="text-lg font-semibold text-gray-800">Filter Net Expenditure with Percentage</h3>
                                 <button
                                     onClick={() => setShowFilterModal(false)}
                                     className="text-gray-400 hover:text-gray-600 transition"
@@ -893,4 +907,4 @@ const NetExpenditureReport = () => {
     );
 };
 
-export default NetExpenditureReport;
+export default NetExpenditurePercentageReport;

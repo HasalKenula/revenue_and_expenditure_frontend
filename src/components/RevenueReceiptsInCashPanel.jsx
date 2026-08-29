@@ -738,7 +738,7 @@ const RevenueReceiptsInCash = () => {
                                         });
 
                                         const isOther = record.account_number === 'Repop & Fixed';
-                                        const bgColor = isOther ? 'bg-yellow-50' : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50');
+                                        const bgColor = isOther ? 'bg-white' : (index % 2 === 0 ? 'bg-white' : 'bg-white');
 
                                         return (
                                             <tr key={index} className={`border-b border-gray-100 hover:bg-gray-50 transition ${bgColor}`}>
