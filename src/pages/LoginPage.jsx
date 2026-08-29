@@ -115,10 +115,10 @@ export default function Login() {
                                 <span className="text-blue-200">System Online</span>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {/* <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                                <span className="text-blue-200">256-bit Encrypted</span>
+                                </svg> */}
+                                {/* <span className="text-blue-200">256-bit Encrypted</span> */}
                             </div>
                         </div>
                     </div>
@@ -241,14 +241,14 @@ export default function Login() {
                         </form>
 
                         {/* Register Link */}
-                        <div className="mt-6 text-center">
+                        {/* <div className="mt-6 text-center">
                             <p className="text-sm text-gray-600">
                                 Don't have an account?{' '}
                                 <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
                                     Register here
                                 </Link>
                             </p>
-                        </div>
+                        </div> */}
 
                         {/* Divider */}
                         <div className="relative my-8">
@@ -261,7 +261,7 @@ export default function Login() {
                         </div>
 
                         {/* Security Badges */}
-                        <div className="flex justify-center space-x-6">
+                        {/* <div className="flex justify-center space-x-6">
                             <div className="flex items-center space-x-2 text-xs text-gray-500">
                                 <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -280,7 +280,7 @@ export default function Login() {
                                 </svg>
                                 <span>GDPR Compliant</span>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
