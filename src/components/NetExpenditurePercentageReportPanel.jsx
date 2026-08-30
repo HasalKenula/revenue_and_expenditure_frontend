@@ -25,7 +25,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -344,16 +344,16 @@ const handleExportPDF = () => {
             'Net Allocation',
             'Cumulative Exp.',
             'Balance',
-            '% with Net Allocation',
-            'Perfect % with Net Allocation',
-            'Expected %'
+            'Percentage with Net Allocation(%)',
+            'Expected Net Allocation',
+            'Expected  Percentage (%)'
         ];
 
         // Prepare table data
         const tableBody = records.map(record => {
             return [
-                record.object || '',
-                record.subproject || '-',
+                record.object,
+                record.subproject,
                 formatNumber(record.allocation),
                 formatNumber(record.fr66p),
                 formatNumber(record.fr66m),
@@ -391,12 +391,12 @@ const handleExportPDF = () => {
             2: { cellWidth: 22, halign: 'right' },
             3: { cellWidth: 18, halign: 'right' },
             4: { cellWidth: 18, halign: 'right' },
-            5: { cellWidth: 22, halign: 'right' },
-            6: { cellWidth: 22, halign: 'right' },
+            5: { cellWidth: 25, halign: 'right' },
+            6: { cellWidth: 25, halign: 'right' },
             7: { cellWidth: 26, halign: 'right' },
-            8: { cellWidth: 20, halign: 'right' },
-            9: { cellWidth: 22, halign: 'right' },
-            10: { cellWidth: 22, halign: 'right' },
+            8: { cellWidth: 23, halign: 'right' },
+            9: { cellWidth: 25, halign: 'right' },
+            10: { cellWidth: 25, halign: 'right' },
             11: { cellWidth: 20, halign: 'right' }
         };
 
@@ -421,7 +421,7 @@ const handleExportPDF = () => {
             },
             columnStyles: columnStyles,
             alternateRowStyles: { fillColor: [245, 245, 245] },
-            margin: { top: 35, left:23.5, right: 23.5 },
+            margin: { top: 35, left:16, right: 16 },
             tableWidth: 250,
             rowStyles: {
                 [tableBody.length - 1]: {
@@ -662,9 +662,9 @@ const handleExportPDF = () => {
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Net Allocation</th>
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Cumulative Exp.</th>
                                     <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Balance</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">% with Net Allocation</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Perfect % with Net Allocation</th>
-                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Expected %</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Percentage with Net Allocation(%)</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Expected Net Allocation</th>
+                                    <th className="px-2 py-2 text-right font-semibold text-gray-700 border border-gray-300">Expected Percentage(%)</th>
                                 </tr>
                             </thead>
                             <tbody>

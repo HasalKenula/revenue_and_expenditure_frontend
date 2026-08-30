@@ -337,8 +337,8 @@ const SupplementaryPanel = () => {
 
         {/* Page Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Supplementary Budget Management</h1>
-          <p className="text-sm text-gray-500 mt-1">Record and manage supplementary budget allocations (FR66P/FR66M)</p>
+          <h1 className="text-2xl font-bold text-gray-800">Supplementary & FR30P/FR30M Management</h1>
+          <p className="text-sm text-gray-500 mt-1">Record and manage supplementary budget allocations (FR30P/FR30M)</p>
         </div>
 
         {/* Action Buttons */}

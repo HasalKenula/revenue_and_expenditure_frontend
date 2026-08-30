@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import logo from '../assets/FinLogo.png';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -121,10 +122,17 @@ const Sidebar = () => {
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
       {/* Logo */}
-      <div className="p-4 border-b border-gray-200">
+      {/* <div className="p-4 border-b border-gray-200">
         <h1 className="text-xl font-bold text-gray-800">FinSystem</h1>
         <p className="text-xs text-gray-500 mt-1">Southern Province</p>
 
+      </div> */}
+      <div className="p-4 border-b border-gray-200 flex items-center gap-3">
+        <img src={logo} alt="FinSystem Logo" className="h-15 w-auto" />
+        <div>
+          <h1 className="text-xl font-bold text-gray-800">FinSystem</h1>
+          <p className="text-xs text-gray-500 mt-1">Southern Province</p>
+        </div>
       </div>
 
       {/* Navigation */}
@@ -159,12 +167,12 @@ const Sidebar = () => {
               </Link>
             </div>
 
-            <div>
+            {/* <div>
               <Link to="/head" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <Upload size={18} />
                 <span className="text-sm">Head Reports</span>
               </Link>
-            </div>
+            </div> */}
           </>
         )}
 
@@ -181,7 +189,7 @@ const Sidebar = () => {
             <div>
               <Link to="/treasury" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <Building2 size={18} />
-                <span className="text-sm">Treasury Revenue</span>
+                <span className="text-sm">Southern Treasury Revenue</span>
               </Link>
             </div>
 
@@ -206,14 +214,14 @@ const Sidebar = () => {
             <div>
               <Link to="/acccount-data" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <PieChart size={18} />
-                <span className="text-sm">Account data</span>
+                <span className="text-sm">Revenue Account data</span>
               </Link>
             </div>
 
             <div>
               <Link to="/receipts-data" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <DollarSign size={18} />
-                <span className="text-sm"> Receipts </span>
+                <span className="text-sm">Revenue Receipts data</span>
               </Link>
             </div>
 
@@ -266,7 +274,7 @@ const Sidebar = () => {
             <div>
               <Link to="/supplementary" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <FileText size={18} />
-                <span className="text-sm">Supplementary</span>
+                <span className="text-sm">Supplementary & FR30P/FR30M</span>
               </Link>
             </div>
 
@@ -274,7 +282,7 @@ const Sidebar = () => {
             <div>
               <Link to="/impress-issue" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <TrendingUp size={18} />
-                <span className="text-sm">Impress Issue</span>
+                <span className="text-sm">Imprest Issue</span>
               </Link>
             </div>
 
@@ -282,7 +290,7 @@ const Sidebar = () => {
             <div>
               <Link to="/impress-settlement" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <CheckCircle size={18} />
-                <span className="text-sm">Impress Settlement</span>
+                <span className="text-sm">Imprest Settlement</span>
               </Link>
             </div>
 
@@ -298,7 +306,7 @@ const Sidebar = () => {
             <div>
               <Link to="/reports" className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                 <PieChart size={18} />
-                <span className="text-sm">Reports</span>
+                <span className="text-sm">Expenditure Reports</span>
               </Link>
             </div>
 

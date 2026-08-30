@@ -286,7 +286,7 @@ const AccountNumbers = () => {
                       className="rounded border-gray-300"
                     />
                   </th>
-                  <th className="px-4 py-3 text-left">ID</th>
+                  {/* <th className="px-4 py-3 text-left">ID</th> */}
                   <th className="px-4 py-3 text-left">Account Number</th>
                   <th className="px-4 py-3 text-left">Description</th>
                   <th className="px-4 py-3 text-left">Created At</th>
@@ -311,7 +311,7 @@ const AccountNumbers = () => {
                           className="rounded border-gray-300"
                         />
                       </td>
-                      <td className="px-4 py-3">{account.id}</td>
+                      {/* <td className="px-4 py-3">{account.id}</td> */}
                       <td className="px-4 py-3">
                         <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                           {account.account_number}

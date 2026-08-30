@@ -460,7 +460,7 @@ const RevenueAccountData = () => {
         </div>
 
         {/* Month Wise Summary */}
-        {monthWiseSummary && monthWiseSummary.length > 0 && (
+        {/* {monthWiseSummary && monthWiseSummary.length > 0 && (
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <h3 className="text-sm font-semibold text-gray-700 mb-3">Month Wise Revenue Summary</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -473,7 +473,7 @@ const RevenueAccountData = () => {
               ))}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-3">
@@ -585,7 +585,7 @@ const RevenueAccountData = () => {
                       className="rounded border-gray-300"
                     />
                   </th>
-                  <th className="px-4 py-3 text-left">ID</th>
+                  {/* <th className="px-4 py-3 text-left">ID</th> */}
                   <th className="px-4 py-3 text-left">Account Number</th>
                   <th className="px-4 py-3 text-left">Revenue Code</th>
                   <th className="px-4 py-3 text-left">Revenue Code Name</th>
@@ -614,7 +614,7 @@ const RevenueAccountData = () => {
                           className="rounded border-gray-300"
                         />
                       </td>
-                      <td className="px-4 py-3">{revenue.id}</td>
+                      {/* <td className="px-4 py-3">{revenue.id}</td> */}
                       <td className="px-4 py-3">
                         <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                           {revenue.account_number?.account_number || 'N/A'}

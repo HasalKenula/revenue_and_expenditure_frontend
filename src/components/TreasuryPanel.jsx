@@ -600,7 +600,7 @@ const TreasuryPanel = () => {
 
         {/* Page Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Treasury Management</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Southern Treasury Revenue Management</h1>
           <p className="text-sm text-gray-500 mt-1">Manage treasury transactions and financial records</p>
         </div>
 
