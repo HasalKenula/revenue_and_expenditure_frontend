@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import ImprestPanel from "../components/ImprestPanel";
 import MoneyTransists from "../components/MoneyTransistsPanel";
 
 function MoneyTransistsPage() {

@@ -1,4 +1,3 @@
-// src/pages/NetExpenditurePage.jsx
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import NetAllocationPanel from "../components/NetAllocationPanel";

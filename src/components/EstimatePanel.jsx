@@ -506,37 +506,6 @@ const EstimatePanel = () => {
   };
 
   // Delete selected records
-  // const handleDelete = async () => {
-  //   if (selectedRows.length === 0) return;
-  //   //if (!confirm(`Delete ${selectedRows.length} record(s)?`)) return;
-
-  //   setLoading(true);
-  //   try {
-  //     const response = await axios.delete(`${API_BASE_URL}/estimates/delete-multiple`, {
-  //       data: { ids: selectedRows },
-  //       headers: getAuthHeaders()
-  //     });
-
-  //     toast.success(response.data.message);
-  //     setSelectedRows([]);
-  //     fetchRecords();
-  //     fetchFilterOptions();
-  //     fetchSummary();
-  //   } catch (error) {
-  //     console.error('Error deleting records:', error);
-  //     if (error.response?.status === 401) {
-  //       toast.error('Session expired. Please login again.');
-  //       localStorage.removeItem('token');
-  //       navigate('/login');
-  //     } else {
-  //       toast.error('Failed to delete records');
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // Delete selected records
   const handleDelete = async () => {
     if (selectedRows.length === 0) {
       toast.error('Please select at least one record to delete');
