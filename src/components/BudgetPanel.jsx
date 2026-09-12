@@ -965,7 +965,7 @@ const BudgetPanel = ({ onSelectDepartment }) => {
                                         value={newRecord.objname}
                                         onChange={(e) => setNewRecord({ ...newRecord, objname: e.target.value })}
                                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g., Information Technology"
+                                        placeholder="e.g., Salaries"
                                     />
                                 </div>
                                 <div>
@@ -975,7 +975,7 @@ const BudgetPanel = ({ onSelectDepartment }) => {
                                         value={newRecord.head}
                                         onChange={(e) => setNewRecord({ ...newRecord, head: e.target.value })}
                                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g., 101"
+                                        placeholder="e.g., 300"
                                     />
                                 </div>
                                 <div>
@@ -985,7 +985,7 @@ const BudgetPanel = ({ onSelectDepartment }) => {
                                         value={newRecord.program}
                                         onChange={(e) => setNewRecord({ ...newRecord, program: e.target.value })}
                                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g., 202"
+                                        placeholder="e.g., 3"
                                     />
                                 </div>
                                 <div>
@@ -995,7 +995,7 @@ const BudgetPanel = ({ onSelectDepartment }) => {
                                         value={newRecord.project}
                                         onChange={(e) => setNewRecord({ ...newRecord, project: e.target.value })}
                                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g., 303"
+                                        placeholder="e.g., 1"
                                     />
                                 </div>
                                 <div>
@@ -1005,7 +1005,7 @@ const BudgetPanel = ({ onSelectDepartment }) => {
                                         value={newRecord.subproj}
                                         onChange={(e) => setNewRecord({ ...newRecord, subproj: e.target.value })}
                                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g., 404"
+                                        placeholder="e.g., 1"
                                     />
                                 </div>
                                 <div>
@@ -1015,7 +1015,7 @@ const BudgetPanel = ({ onSelectDepartment }) => {
                                         value={newRecord.object}
                                         onChange={(e) => setNewRecord({ ...newRecord, object: e.target.value })}
                                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g., 505"
+                                        placeholder="e.g., 1001"
                                     />
                                 </div>
                                 <div>

@@ -504,7 +504,7 @@ const OpeningBalancePanel = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Head Code *</label>
-                  <input type="number" value={newRecord.head} onChange={(e) => setNewRecord({ ...newRecord, head: e.target.value })} className="w-full border rounded-lg px-3 py-2" placeholder="e.g., 101" />
+                  <input type="number" value={newRecord.head} onChange={(e) => setNewRecord({ ...newRecord, head: e.target.value })} className="w-full border rounded-lg px-3 py-2" placeholder="e.g., 300" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Financial Year *</label>

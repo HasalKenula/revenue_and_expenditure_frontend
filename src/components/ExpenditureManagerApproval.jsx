@@ -25,7 +25,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL ;
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -340,7 +340,7 @@ const ExpenditureManagerApproval = () => {
                 fetchRecords();
                 setTimeout(() => setMessage(''), 3000);
             }
-            toast.success('deleted successfully!');
+            toast.success('Allow to Upload successfully!');
         } catch (error) {
             console.error('Delete error:', error);
             setMessage(error.response?.data?.message || 'Delete failed');
@@ -863,7 +863,7 @@ const ExpenditureManagerApproval = () => {
 
                 {/* Delete Confirmation Modal */}
                 {showDeleteModal && userToDelete && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
                         <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold text-gray-800">Allow To Upload the Summary</h3>
@@ -940,7 +940,7 @@ const ExpenditureManagerApproval = () => {
                                                 Deleting...
                                             </>
                                         ) : (
-                                            'Confirm Delete'
+                                            'Confirm'
                                         )}
                                     </button>
                                 </div>

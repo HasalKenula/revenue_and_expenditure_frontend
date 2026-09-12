@@ -22,7 +22,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -386,7 +386,7 @@ const ImprestBalancePanel = () => {
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
       startY += 7;
-      doc.text(`Grand Total:`, 25, startY);
+      doc.text(`Balance:`, 25, startY);
       doc.text(`${formatNumber(totalGrand)}`, 190, startY, { align: 'right' });
       startY += 10;
 
@@ -414,7 +414,7 @@ const ImprestBalancePanel = () => {
 
       // Table headers
       const tableHeaders = [
-        'TR No', 'Opening Balance', 'DR Amount', 'Issue Amount', 'CR Amount', 'Settle Amount', 'Grand Total'
+        'Head', 'Opening Balance', 'DR Amount', 'Issue Amount', 'CR Amount', 'Settle Amount', 'Grand Total'
       ];
 
       const tableBody = records.map(record => [

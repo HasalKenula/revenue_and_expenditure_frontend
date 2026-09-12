@@ -14,7 +14,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL ;
 
 const RevenueAccountData = () => {
   const navigate = useNavigate();
@@ -459,21 +459,7 @@ const RevenueAccountData = () => {
           <p className="text-sm text-gray-500 mt-1">Manage revenue data linked to account numbers and estimates</p>
         </div>
 
-        {/* Month Wise Summary */}
-        {/* {monthWiseSummary && monthWiseSummary.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Month Wise Revenue Summary</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              {monthWiseSummary.map((item, index) => (
-                <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500">{item.month} {item.year}</p>
-                  <p className="text-sm font-bold text-green-600">Rs.{formatCurrency(item.total_amount)}</p>
-                  <p className="text-xs text-gray-400">{item.total_records} records</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )} */}
+       
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-3">

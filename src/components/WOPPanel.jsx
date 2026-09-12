@@ -399,7 +399,7 @@ const WOPPanel = () => {
             <div>
               <h1 className="text-2xl font-bold text-gray-800">WOP Report (DR/CR Summary)</h1>
               <p className="text-sm text-gray-500 mt-1">
-                View DR and CR amounts by TR No for code 8098
+                View DR and CR amounts by Head No for code 8098
               </p>
             </div>
             {appliedFilters.year && appliedFilters.month && (

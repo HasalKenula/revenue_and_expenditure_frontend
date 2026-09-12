@@ -1,7 +1,5 @@
-// src/pages/NetExpenditurePage.jsx
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import NetExpenditureReport from "../components/NetExpenditureReport";
 import NetExpenditurePercentageReport from "../components/NetExpenditurePercentageReportPanel";
 
 function NetExpenditurePercentagePage() {
