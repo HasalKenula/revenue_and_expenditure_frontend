@@ -1,5 +1,5 @@
 // components/Sidebar.jsx
-import React, { useState } from 'react';
+import React, { Activity, useState } from 'react';
 import {
   Home,
   Building2,
@@ -22,7 +22,9 @@ import {
   Layers,
   Grid,
   FolderOpen,
-  User
+  User,
+  Shield,
+  ActivityIcon
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -173,6 +175,31 @@ const Sidebar = () => {
                 <span className="text-sm">Head Reports</span>
               </Link>
             </div> */}
+          </>
+        )}
+
+        {/* ==================== ADMIN ONLY MENU ITEMS ==================== */}
+        {userRole === 'admin' && (
+          <>
+            <div className="border-t border-gray-200 my-2"></div>
+            <div className="px-4 py-1 text-xs text-red-600 font-semibold uppercase tracking-wider">
+              Admin Panel
+            </div>
+
+            {/* Admin Register - Only Admin */}
+            <Link to="/admin/register">
+              <button className="w-full flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                <Shield size={18} />
+                <span className="text-sm">User Management</span>
+              </button>
+            </Link>
+
+            <Link to="/system-logs">
+              <button className="w-full flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                <ActivityIcon size={18} />
+                <span className="text-sm">System Logs</span>
+              </button>
+            </Link>
           </>
         )}
 

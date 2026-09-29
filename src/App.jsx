@@ -64,6 +64,8 @@ import NatureOfRevenuePage from "./pages/NatureOfRevenuePage";
 import CashInTransactionPage from "./pages/CashInTransactionPage";
 import MoneyTransistsPage from "./pages/MoneyTransistsPage";
 import NetExpenditurePercentagePage from "./pages/NetExpenditurePercentagePage";
+import SystemLogsPage from "./pages/SystemLogsPage";
+import AdminRegisterPage from "./pages/AdminRegister";
 
 
 
@@ -602,6 +604,24 @@ function Layout() {
                     element={
                         <RoleProtectedRoute requiredRoles="expenditure_manager">
                             <NetExpenditurePercentagePage />
+                        </RoleProtectedRoute>
+                    }
+                />
+
+                {/* ==================== ADMIN ONLY ROUTE ==================== */}
+                <Route
+                    path="/admin/register"
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <AdminRegisterPage />
+                        </RoleProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/system-logs"
+                    element={
+                        <RoleProtectedRoute requiredRoles="admin">
+                            <SystemLogsPage />
                         </RoleProtectedRoute>
                     }
                 />
