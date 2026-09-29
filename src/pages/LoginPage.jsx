@@ -36,6 +36,9 @@ export default function Login() {
 
             // Redirect based on user role
             switch (user.role) {
+                case 'admin':
+                    navigate('/admin/register');
+                    break;
                 case 'user':
                     navigate('/user_upload');
                     break;
